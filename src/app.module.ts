@@ -5,9 +5,11 @@ import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { BoardsModule } from './apis/boards/boards.module';
 
 @Module({
 	imports: [
+		BoardsModule,
 		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
