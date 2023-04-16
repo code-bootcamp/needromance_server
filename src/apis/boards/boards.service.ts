@@ -27,7 +27,7 @@ export class BoardsService {
 			title: createBoardDTO.title,
 			contents: createBoardDTO.contents,
 		});
-		await this.boardsRepository.save(board);
+		await this.boardsRepository.insert(board);
 
 		return board;
 	}
@@ -73,7 +73,7 @@ export class BoardsService {
 		const board = await this.getBoardById({ id });
 		board.title = updateBoardDTO.title;
 		board.contents = updateBoardDTO.contents;
-		await this.boardsRepository.save(board);
+		await this.boardsRepository.update({ id }, board);
 		return board;
 	}
 
