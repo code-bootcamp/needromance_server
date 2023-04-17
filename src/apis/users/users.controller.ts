@@ -69,7 +69,7 @@ export class UsersController {
 	@Post('/signup')
 	createUser(
 		@Body() createUserDTO: CreateUserDTO, //
-	): void {
+	): Promise<string> {
 		return this.userService.createUser({ createUserDTO });
 	}
 }

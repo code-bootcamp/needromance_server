@@ -1,8 +1,8 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './entity/user.entity';
 import {
 	IUserServiceCheckToken,
@@ -22,6 +22,7 @@ export class UsersService {
 		private readonly cacheManager: Cache,
 
 		private readonly mailerService: MailerService,
+		private readonly dataSource: DataSource,
 	) {}
 
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
@@ -87,12 +88,26 @@ export class UsersService {
 		const getToken = await this.cacheManager.get(email as string);
 		return getToken === token ? true : false;
 	}
-	createUser({ createUserDTO }: IUserServiceCreateUser): void {
-		console.log('$$$$$$');
-		console.log(createUserDTO);
-		//회원정보를 입력받고 db에 저장한다.
-		//userImg는 null 값이다.
 
-		//create매서드로 할수 없나? 관계까지 쿼리빌더로 설정하면 되는거 아닌가?
+	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
+		//검증된 nickname과 email그리고 password를 입력받는다.
+		//insert와 우사하게 동작하는 query이다.
+		return this.dataSource
+			.createQueryBuilder()
+			.insert()
+			.into(User)
+			.values({ ...createUserDTO })
+			.execute()
+			.then((res) => {
+				return '회원 가입 성공';
+			})
+			.catch((err) => {
+				console.log(err);
+				throw new UnprocessableEntityException('회원가입 실패');
+			});
+		//상태코드는 모두 200으로 갈텐데 메세지와 상태코드를 맞춰서 보내는 방법이 없을까?
+
+		// const user = await this.userRepository.save({ ...createUserDTO });
+		// return user ? '회원가입 성공' : '회원가입 실패';
 	}
 }
