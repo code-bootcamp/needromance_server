@@ -1,5 +1,8 @@
+
 import { User } from 'src/apis/users/entity/user.entity';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Hashtag } from 'src/apis/hashtags/entity/hashtag.entity';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+
 
 @Entity()
 export class Board {
@@ -15,6 +18,16 @@ export class Board {
 	@CreateDateColumn()
 	createdAt: Date;
 
+
 	@ManyToOne(() => User, (user) => user.boards)
 	user: User;
+
+	@ManyToMany(
+		() => Hashtag, //
+		(hashtags) => hashtags.boards,
+		{ nullable: true },
+	)
+	@JoinTable()
+	hashtags: Hashtag[];
+
 }

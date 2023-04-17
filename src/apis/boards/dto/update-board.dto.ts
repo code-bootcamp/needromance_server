@@ -1,4 +1,3 @@
-export class UpdateBoardDTO {
-	title?: string;
-	contents?: string;
-}
+import { CreateBoardDTO } from './create-board.dto';
+
+export class UpdateBoardDTO extends CreateBoardDTO {}

@@ -8,11 +8,14 @@ import { AppService } from './app.service';
 import { BoardsModule } from './apis/boards/boards.module';
 import { UsersModule } from './apis/users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { HashtagsModule } from './apis/hashtags/hashtags.module';
+
 
 @Module({
 	imports: [
 		BoardsModule,
 		UsersModule,
+		HashtagsModule,
 		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
