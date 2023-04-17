@@ -32,7 +32,7 @@ export class BoardsService {
 			contents,
 			hashtags: _hashtags,
 		});
-		await this.boardsRepository.insert(board);
+		await this.boardsRepository.save(board);
 		return board;
 	}
 
