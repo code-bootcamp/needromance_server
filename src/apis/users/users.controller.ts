@@ -53,12 +53,12 @@ export class UsersController {
 	 * @returns boolean
 	 */
 
-	// @Get('/checktoken')
-	// checkToken(
-	// 	@Req() req: Request, //
-	// ): Promise<void> {
-	// 	return this.userService.checkToken({ req });
-	// }
+	@Get('/checktoken')
+	checkToken(
+		@Req() req: Request, //
+	): Promise<boolean> {
+		return this.userService.checkToken({ req });
+	}
 
 	/**
 	 * Post '/user/signup' 라우트 핸들러
@@ -66,10 +66,10 @@ export class UsersController {
 	 * @returns 회원가입 성공 유무 상태코드
 	 */
 
-	// @Post('/signup')
-	// createUser(
-	// 	@Body() createUserDTO: CreateUserDTO, //
-	// ): void {
-	// 	return this.userService.createUser({ createUserDTO });
-	// }
+	@Post('/signup')
+	createUser(
+		@Body() createUserDTO: CreateUserDTO, //
+	): void {
+		return this.userService.createUser({ createUserDTO });
+	}
 }

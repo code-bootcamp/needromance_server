@@ -51,7 +51,9 @@ export class UsersService {
 		const token = String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
 		const { email } = req.query;
 		//redis에 email과 인증번호 저장
-		this.cacheManager.set(`${email}`, `${token}`, 180000);
+		await this.cacheManager.set(email as string, token, {
+			ttl: 180, //
+		});
 		//템플릿을 하나의 파일로 빼서 관리할수 없을까?
 		const romanceTemplate = `
         <html>
@@ -69,23 +71,28 @@ export class UsersService {
         </html>
       `;
 		//이메일로 인증번호 전송
-		this.mailerService.sendMail({
+		const test2 = await this.mailerService.sendMail({
 			to: email as string,
 			from: process.env.EMAIL_USER,
 			subject: `💞로맨스가 필요해💞`,
 			html: romanceTemplate,
 		});
+		console.log(test2);
+		//만에하나 에러가 날 경우를 대비한 에러 에러핸들링이 필요하다.
+		//전반적인 기능개발 이후 에러 핸들링 할것
 	}
 
-	// async checkToken({ req }: IUserServiceCheckToken) {
-	// 	console.log(req);
-	// }
-	// createUser({ createUserDTO }: IUserServiceCreateUser): void {
-	// 	console.log('$$$$$$');
-	// 	console.log(createUserDTO);
-	// 	//회원정보를 입력받고 db에 저장한다.
-	// 	//userImg는 null 값이다.
+	async checkToken({ req }: IUserServiceCheckToken): Promise<boolean> {
+		const { email, token } = req.query;
+		const getToken = await this.cacheManager.get(email as string);
+		return getToken === token ? true : false;
+	}
+	createUser({ createUserDTO }: IUserServiceCreateUser): void {
+		console.log('$$$$$$');
+		console.log(createUserDTO);
+		//회원정보를 입력받고 db에 저장한다.
+		//userImg는 null 값이다.
 
-	// 	//create매서드로 할수 없나? 관계까지 쿼리빌더로 설정하면 되는거 아닌가?
-	// }
+		//create매서드로 할수 없나? 관계까지 쿼리빌더로 설정하면 되는거 아닌가?
+	}
 }
