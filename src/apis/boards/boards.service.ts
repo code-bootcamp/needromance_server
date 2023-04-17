@@ -9,38 +9,42 @@ import {
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
+import { HashtagsService } from '../hashtags/hashtags.service';
 
 @Injectable()
 export class BoardsService {
 	constructor(
 		@InjectRepository(Board)
 		private readonly boardsRepository: Repository<Board>, //
+		private readonly hashtagsService: HashtagsService, //
 	) {}
 
 	/**
 	 * 게시글 생성 서비스 로직
-	 * @param createBoardDTO 게시글 생성 DTO: title, contents
+	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @returns 생성한 게시글 정보
 	 */
 	async createBoard({ createBoardDTO }: IBoardsServiceCreateBoard): Promise<Board> {
+		const { title, contents, hashtags } = createBoardDTO;
+		const _hashtags = await this.hashtagsService.createHashtags({ hashtags });
 		const board = this.boardsRepository.create({
-			title: createBoardDTO.title,
-			contents: createBoardDTO.contents,
+			title,
+			contents,
+			hashtags: _hashtags,
 		});
 		await this.boardsRepository.insert(board);
-
 		return board;
 	}
 
 	/**
-	 * 게시글 조회 서비스 로직
+	 * 메인페이지 게시글 조회 서비스 로직
 	 * @param page 메인페이지의 게시글 페이지
 	 * @returns 조회한 게시글 10개
 	 */
 	async getTenBoards({ page }: IBoardsServiceGetTenBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder
-			.orderBy({ 'board.createdAt': 'ASC' })
+			.orderBy({ 'board.createdAt': 'DESC' })
 			.skip(10 * (page - 1))
 			.take(10)
 			.getMany();
@@ -54,7 +58,10 @@ export class BoardsService {
 	 */
 	async getBoardById({ id }: IBoardsServiceGetBoardById): Promise<Board> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
-		const board = await queryBuilder.where('board.id = :id', { id }).getOne();
+		const board = await queryBuilder
+			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.where('board.id = :id', { id })
+			.getOne();
 
 		if (!board) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
@@ -66,14 +73,17 @@ export class BoardsService {
 	/**
 	 * 게시글 업데이트 서비스 로직.
 	 * @param id 게시글 id
-	 * @param updateBoardDTO 게시글 업데이트 DTO: title, contents
+	 * @param updateBoardDTO 게시글 업데이트 DTO: title?, contents?, hashtags?
 	 * @returns 업데이트한 게시글 정보
 	 */
 	async updateBoard({ id, updateBoardDTO }: IBoardsServiceUpdateBoard): Promise<Board> {
 		const board = await this.getBoardById({ id });
-		board.title = updateBoardDTO.title;
-		board.contents = updateBoardDTO.contents;
-		await this.boardsRepository.update({ id }, board);
+		const { title, contents, hashtags } = updateBoardDTO;
+		board.title = title;
+		board.contents = contents;
+		board.hashtags = await this.hashtagsService.createHashtags({ hashtags });
+		await this.boardsRepository.save(board);
+
 		return board;
 	}
 
