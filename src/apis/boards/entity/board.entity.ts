@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Hashtag } from 'src/apis/hashtags/entity/hashtag.entity';
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Board {
@@ -13,4 +14,12 @@ export class Board {
 
 	@CreateDateColumn()
 	createdAt: Date;
+
+	@ManyToMany(
+		() => Hashtag, //
+		(hashtags) => hashtags.boards,
+		{ nullable: true },
+	)
+	@JoinTable()
+	hashtags: Hashtag[];
 }

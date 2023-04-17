@@ -6,10 +6,12 @@ import type { RedisClientOptions } from 'redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BoardsModule } from './apis/boards/boards.module';
+import { HashtagsModule } from './apis/hashtags/hashtags.module';
 
 @Module({
 	imports: [
 		BoardsModule,
+		HashtagsModule,
 		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
