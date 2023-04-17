@@ -6,10 +6,13 @@ import type { RedisClientOptions } from 'redis';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BoardsModule } from './apis/boards/boards.module';
+import { UsersModule } from './apis/users/users.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
 	imports: [
 		BoardsModule,
+		UsersModule,
 		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
 			type: process.env.DATABASE_TYPE as 'mysql',
@@ -26,6 +29,20 @@ import { BoardsModule } from './apis/boards/boards.module';
 			store: redisStore,
 			url: `redis://${process.env.REDIS_DATABASE_HOST}:6379`,
 			isGlobal: true,
+		}),
+
+		MailerModule.forRootAsync({
+			useFactory: () => ({
+				transport: {
+					service: 'Gmail',
+					// host: process.env.EMAIL_HOST,
+					secure: false,
+					auth: {
+						user: process.env.EMAIL_USER,
+						pass: process.env.EMAIL_PASS,
+					},
+				},
+			}),
 		}),
 	],
 	controllers: [
