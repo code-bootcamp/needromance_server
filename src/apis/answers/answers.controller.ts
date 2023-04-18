@@ -10,6 +10,11 @@ export class AnswersController {
 		private readonly answersService: AnswersService, //
 	) {}
 
+	/**
+	 * POST '/answers' 라우트 핸들러
+	 * @param createAnswerDTO 답변 생성 DTO: contents, userId, boardId
+	 * @returns 생성한 답변 정보
+	 */
 	@Post()
 	createAnswer(
 		@Body() createAnswerDTO: CreateAnswerDTO, //
@@ -17,6 +22,12 @@ export class AnswersController {
 		return this.answersService.createAnswer({ createAnswerDTO });
 	}
 
+	/**
+	 * PATCH '/answers/:id' 라우트 핸들러
+	 * @param id 답변 id
+	 * @param updateAnswerDTO 답변 업데이트 DTO: contents
+	 * @returns 업데이트한 답변 정보
+	 */
 	@Patch('/:id')
 	updateAnswer(
 		@Param('id', ParseIntPipe) id: number, //
