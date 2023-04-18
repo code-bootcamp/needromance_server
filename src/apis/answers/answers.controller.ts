@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDTO } from './dto/create-answer.dto';
 import { Answer } from './entity/answer.entity';
@@ -34,5 +34,16 @@ export class AnswersController {
 		@Body() updateAnswerDTO: UpdateAnswerDTO,
 	): Promise<Answer> {
 		return this.answersService.updateAnswer({ id, updateAnswerDTO });
+	}
+
+	/**
+	 * DELETE '/answers/:id' 라우트 핸들러
+	 * @param id 답변 id
+	 */
+	@Delete('/:id')
+	deleteAnswer(
+		@Param('id', ParseIntPipe) id: number, //
+	): Promise<void> {
+		return this.answersService.deleteAnswer({ id });
 	}
 }

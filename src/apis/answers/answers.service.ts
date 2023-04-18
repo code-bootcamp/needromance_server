@@ -4,6 +4,7 @@ import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
 import {
 	IAnswersServiceCreateAnswer,
+	IAnswersServiceDeleteAnswer,
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceUpdateAnswer,
 } from './interface/answers-service.interface';
@@ -46,7 +47,7 @@ export class AnswersService {
 		const answer = await queryBuilder.where('id = :id', { id }).getOne();
 
 		if (!answer) {
-			throw new NotFoundException('댓글을 찾을 수 없습니다.');
+			throw new NotFoundException('답변을 찾을 수 없습니다.');
 		}
 
 		return answer;
@@ -64,5 +65,17 @@ export class AnswersService {
 		await this.answersRepository.save(answer);
 
 		return answer;
+	}
+
+	/**
+	 * 답변 삭제 서비스 로직. 답변을 삭제하지 못하면 NotFoundException 던짐.
+	 * @param id 답변 id
+	 */
+	async deleteAnswer({ id }: IAnswersServiceDeleteAnswer): Promise<void> {
+		const deleteResult = await this.answersRepository.delete({ id });
+
+		if (!deleteResult.affected) {
+			throw new NotFoundException('답변을 찾을 수 없습니다.');
+		}
 	}
 }

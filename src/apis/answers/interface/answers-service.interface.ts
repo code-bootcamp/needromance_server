@@ -13,3 +13,7 @@ export interface IAnswersServiceUpdateAnswer {
 	id: number;
 	updateAnswerDTO: UpdateAnswerDTO;
 }
+
+export interface IAnswersServiceDeleteAnswer {
+	id: number;
+}
