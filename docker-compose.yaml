@@ -13,7 +13,7 @@ services:
       - ./.env.docker
 
   romance-mysql:
-    image: mysql:latest
+    image: mysql:8
     environment:
       MYSQL_DATABASE: 'romance'
       MYSQL_ROOT_PASSWORD: 'root'
