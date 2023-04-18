@@ -1,8 +1,6 @@
-
 import { User } from 'src/apis/users/entity/user.entity';
 import { Hashtag } from 'src/apis/hashtags/entity/hashtag.entity';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Board {
@@ -18,7 +16,6 @@ export class Board {
 	@CreateDateColumn()
 	createdAt: Date;
 
-
 	@ManyToOne(() => User, (user) => user.boards)
 	user: User;
 
@@ -29,5 +26,4 @@ export class Board {
 	)
 	@JoinTable()
 	hashtags: Hashtag[];
-
 }
