@@ -15,7 +15,15 @@ export class Answer {
 	})
 	status: boolean;
 
-	@CreateDateColumn()
+	@CreateDateColumn({
+		type: 'timestamp',
+		transformer: {
+			from: (value: Date) => value,
+			to: () => {
+				return new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+			},
+		},
+	})
 	createdAt: Date;
 
 	@ManyToOne(

@@ -23,7 +23,15 @@ export class Board {
 	@Column()
 	contents: string;
 
-	@CreateDateColumn()
+	@CreateDateColumn({
+		type: 'timestamp',
+		transformer: {
+			from: (value: Date) => value,
+			to: () => {
+				return new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+			},
+		},
+	})
 	createdAt: Date;
 
 	@ManyToOne(
