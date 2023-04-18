@@ -10,7 +10,9 @@ export class Answer {
 	@Column()
 	contents: string;
 
-	@Column()
+	@Column({
+		default: false, // 기본값 - 채택되지 않음
+	})
 	status: boolean;
 
 	@CreateDateColumn()
