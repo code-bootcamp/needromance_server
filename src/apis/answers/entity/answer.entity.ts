@@ -1,4 +1,5 @@
 import { Board } from 'src/apis/boards/entity/board.entity';
+import { User } from 'src/apis/users/entity/user.entity';
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -20,4 +21,10 @@ export class Answer {
 		(board) => board.answers,
 	)
 	board: Board;
+
+	@ManyToOne(
+		() => User, //
+		(user) => user.answers,
+	)
+	user: User;
 }
