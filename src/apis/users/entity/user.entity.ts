@@ -72,6 +72,8 @@ export class User {
 		(likedAnswers) => likedAnswers.likedByUsers,
 		{ nullable: true },
 	)
-	@JoinTable()
+	@JoinTable({
+		name: 'user_likedAnswers',
+	})
 	likedAnswers: Answer[];
 }

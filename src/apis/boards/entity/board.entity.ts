@@ -37,7 +37,9 @@ export class Board {
 		(hashtags) => hashtags.boards,
 		{ nullable: true },
 	)
-	@JoinTable()
+	@JoinTable({
+		name: 'board_hashtags',
+	})
 	hashtags: Hashtag[];
 
 	@OneToMany(
