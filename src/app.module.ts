@@ -13,6 +13,7 @@ import { AnswersModule } from './apis/answers/answers.module';
 
 @Module({
 	imports: [
+		AnswersModule,
 		BoardsModule,
 		UsersModule,
 		HashtagsModule,
@@ -47,8 +48,6 @@ import { AnswersModule } from './apis/answers/answers.module';
 				},
 			}),
 		}),
-
-		AnswersModule,
 	],
 	controllers: [
 		AppController, //
