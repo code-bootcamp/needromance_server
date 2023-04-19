@@ -2,6 +2,7 @@ import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
+import { Board } from '../boards/entity/board.entity';
 import { User } from '../users/entity/user.entity';
 import { AdminService } from './admin.service';
 
@@ -34,5 +35,13 @@ export class AdminController {
 		@Req() req: Request & IAuthUser, //
 	): Promise<User[]> {
 		return this.adminService.fetchUsers({ req });
+	}
+
+	@Get('/boards')
+	@UseGuards(restAuthGuard('access'))
+	fetchBoards(
+		@Req() req: Request & IAuthUser, //
+	): Promise<Board[]> {
+		return this.adminService.fetchBoards({ req });
 	}
 }

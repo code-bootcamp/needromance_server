@@ -71,6 +71,24 @@ export class BoardsService {
 	}
 
 	/**
+	 *admin에서 사용될 단일 로직, 모든 게시글을 조회한다.
+	 * @param null 입력값 없음
+	 * @returns 모든 게시글
+	 */
+	async getBoards(): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder //
+			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.getMany();
+
+		if (!boards) {
+			throw new NotFoundException('게시글을 찾을 수 없습니다.');
+		}
+
+		return boards;
+	}
+
+	/**
 	 * 게시글 업데이트 서비스 로직.
 	 * @param id 게시글 id
 	 * @param updateBoardDTO 게시글 업데이트 DTO: title?, contents?, hashtags?

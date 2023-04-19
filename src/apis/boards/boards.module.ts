@@ -18,5 +18,8 @@ import { HashtagsModule } from '../hashtags/hashtags.module';
 	providers: [
 		BoardsService, //
 	],
+	exports: [
+		BoardsService, //
+	],
 })
 export class BoardsModule {}
