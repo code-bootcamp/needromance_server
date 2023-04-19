@@ -78,12 +78,14 @@ export class AnswersService {
 
 	/**
 	 * 답변 업데이트 서비스 로직.
+	 * @param userId 유저 id
 	 * @param id 답변 id
 	 * @param updateAnswerDTO 답변 업데이트 DTO: contents
 	 * @returns 업데이트한 답변 정보
 	 */
 	async updateAnswer({ userId, id, updateAnswerDTO }: IAnswersServiceUpdateAnswer): Promise<Answer> {
-		const answer = await this.getAnswerById({ id });
+		await this.usersService.getOneUserById({ id: userId });
+		const answer = await this.getAnswerByIdAndUserId({ id, userId });
 		answer.contents = updateAnswerDTO.contents;
 		await this.answersRepository.save(answer);
 
