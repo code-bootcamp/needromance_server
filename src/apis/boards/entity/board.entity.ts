@@ -1,5 +1,6 @@
 import { User } from 'src/apis/users/entity/user.entity';
 import { Hashtag } from 'src/apis/hashtags/entity/hashtag.entity';
+
 import {
 	Column,
 	CreateDateColumn,
@@ -11,6 +12,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Answer } from 'src/apis/answers/entity/answer.entity';
+
 
 @Entity()
 export class Board {
@@ -34,10 +36,12 @@ export class Board {
 	})
 	createdAt: Date;
 
+
 	@ManyToOne(
 		() => User, //
 		(user) => user.boards,
 	)
+
 	user: User;
 
 	@ManyToMany(
@@ -56,4 +60,5 @@ export class Board {
 		{ nullable: true },
 	)
 	answers: Answer[];
+
 }

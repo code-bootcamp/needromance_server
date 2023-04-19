@@ -4,9 +4,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entity/user.entity';
+import * as bcrypt from 'bcrypt';
 import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
+	IUserServiceFindOneByEmail,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceSendToken,
@@ -25,10 +27,16 @@ export class UsersService {
 		private readonly dataSource: DataSource,
 	) {}
 
+	async isUser({ email }: IUserServiceFindOneByEmail): Promise<User> {
+		const user = await this.dataSource
+			.getRepository(User)
+			.createQueryBuilder('user')
+			.where('user.email = :email', { email })
+			.getOne();
+		return user;
+	}
+
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
-		//올바른 이메일인지 검증후 보내주기에 따로 검증하지 않았음
-		//이메일 중복검사만함
-		//갯수를 조회하여 중복검사를 진행
 		const { email } = req.query;
 		const isValid = await this.userRepository.count({
 			where: {
@@ -92,11 +100,13 @@ export class UsersService {
 	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
 		//검증된 nickname과 email그리고 password를 입력받는다.
 		//insert와 우사하게 동작하는 query이다.
+
+		const hashPassword = await bcrypt.hash(createUserDTO.password, 10);
 		return this.dataSource
 			.createQueryBuilder()
 			.insert()
 			.into(User)
-			.values({ ...createUserDTO })
+			.values({ ...createUserDTO, password: hashPassword })
 			.execute()
 			.then((res) => {
 				return '회원 가입 성공';
@@ -105,6 +115,7 @@ export class UsersService {
 				console.log(err);
 				throw new UnprocessableEntityException('회원가입 실패');
 			});
+		//왤컴 템플릿도 보내줘야 할까?
 		//상태코드는 모두 200으로 갈텐데 메세지와 상태코드를 맞춰서 보내는 방법이 없을까?
 
 		// const user = await this.userRepository.save({ ...createUserDTO });

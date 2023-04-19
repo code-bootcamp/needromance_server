@@ -23,8 +23,8 @@ export class UsersController {
 	}
 
 	/**
-	 * Get '/find/email' 라우트 핸들러
-	 * @param req / req.query.email email 정보
+	 * Get '/find/nickname' 라우트 핸들러
+	 * @param req / req.query.nickname nickname 정보
 	 * @returns boolean
 	 */
 
@@ -35,9 +35,9 @@ export class UsersController {
 		return this.userService.isValidNickname({ req });
 	}
 	/**
-	 * Get '/find/email' 라우트 핸들러
+	 * Get '/sendtoken' 라우트 핸들러
 	 * @param req / req.query.email email 정보
-	 * @returns boolean
+	 * @returns void
 	 */
 
 	@Get('/sendtoken')
@@ -48,8 +48,8 @@ export class UsersController {
 	}
 
 	/**
-	 * Get '/find/email' 라우트 핸들러
-	 * @param req / req.query.email email 정보
+	 * Get '/checktoken' 라우트 핸들러
+	 * @param req / req.query.token token 정보
 	 * @returns boolean
 	 */
 
@@ -63,7 +63,7 @@ export class UsersController {
 	/**
 	 * Post '/user/signup' 라우트 핸들러
 	 * @param createUserDTO 회원가입 정보
-	 * @returns 회원가입 성공 유무 상태코드
+	 * @returns 회원가입 성공 유무 상태코드및 메세지
 	 */
 
 	@Post('/signup')

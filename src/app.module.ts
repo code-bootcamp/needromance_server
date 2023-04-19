@@ -10,9 +10,13 @@ import { UsersModule } from './apis/users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HashtagsModule } from './apis/hashtags/hashtags.module';
 import { AnswersModule } from './apis/answers/answers.module';
+import { AuthModule } from './apis/auth/auth.module';
+import { AdminModule } from './apis/admin/admin.module';
 
 @Module({
 	imports: [
+  	AdminModule,
+		AuthModule,
 		AnswersModule,
 		BoardsModule,
 		UsersModule,
