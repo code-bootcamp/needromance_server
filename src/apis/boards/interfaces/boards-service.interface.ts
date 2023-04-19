@@ -26,5 +26,6 @@ export interface IBoardsServiceUpdateBoard {
 }
 
 export interface IBoardsServiceDeleteBoard {
+	userId: string;
 	id: number;
 }

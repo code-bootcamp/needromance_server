@@ -122,10 +122,14 @@ export class BoardsService {
 
 	/**
 	 * 게시글 삭제 서비스 로직. 게시글을 삭제하지 못하면 NotFoundException 던짐.
+	 * @param userId 유저 id
 	 * @param id 게시글 id
 	 */
-	async deleteBoard({ id }: IBoardsServiceDeleteBoard): Promise<void> {
-		const deleteResult = await this.boardsRepository.delete({ id });
+	async deleteBoard({ userId, id }: IBoardsServiceDeleteBoard): Promise<void> {
+		const deleteResult = await this.boardsRepository.delete({
+			id,
+			user: { id: userId },
+		});
 
 		if (!deleteResult.affected) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');

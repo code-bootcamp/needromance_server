@@ -72,13 +72,15 @@ export class BoardsController {
 
 	/**
 	 * DELETE '/boards/:id' 라우트 핸들러
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @param id 게시글 id
 	 */
 	@Delete('/:id')
 	@UseGuards(restAuthGuard('access'))
 	deleteBoard(
-		@Param('id', ParseIntPipe) id: number, //
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number,
 	): Promise<void> {
-		return this.boardsService.deleteBoard({ id });
+		return this.boardsService.deleteBoard({ userId: req.user.id, id });
 	}
 }
