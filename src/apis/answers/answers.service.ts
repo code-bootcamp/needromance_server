@@ -94,10 +94,18 @@ export class AnswersService {
 
 	/**
 	 * 답변 삭제 서비스 로직. 답변을 삭제하지 못하면 NotFoundException 던짐.
+	 * @param userId 유저 id
 	 * @param id 답변 id
 	 */
 	async deleteAnswer({ userId, id }: IAnswersServiceDeleteAnswer): Promise<void> {
-		const deleteResult = await this.answersRepository.delete({ id });
+		await this.usersService.getOneUserById({ id: userId });
+		await this.getAnswerByIdAndUserId({ id, userId });
+		const deleteResult = await this.answersRepository.delete({
+			id,
+			user: {
+				id: userId,
+			},
+		});
 
 		if (!deleteResult.affected) {
 			throw new NotFoundException('답변을 찾을 수 없습니다.');
