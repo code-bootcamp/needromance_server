@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import {
 	IAuthServiceGetAccessToken,
 	IAuthServiceLogout,
+	IAuthServiceRestoreToken,
 	IAuthServiceSetAdminRefreshToken,
 	IAuthServiceSetRefreshToken,
 	IAuthServiceSignIn,
@@ -27,6 +28,7 @@ export class AuthService {
 			{
 				role: 'user',
 				nickname: user.nickname, //
+				email: user.email,
 				sub: user.id,
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
@@ -40,6 +42,7 @@ export class AuthService {
 			{
 				role: 'admin',
 				nickname: 'admin', //
+				email: process.env.ADMIN_EMAIL,
 				sub: 1,
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
@@ -104,7 +107,6 @@ export class AuthService {
 	}
 
 	async logout({ req }: IAuthServiceLogout): Promise<string> {
-		// console.log(req.headers);
 		try {
 			if (!req.headers) {
 				throw new UnauthorizedException('JWT token is missing');
@@ -130,10 +132,19 @@ export class AuthService {
 					ttl: isRefreshToken['exp'] - Math.trunc(Date.now() / 1000),
 				},
 			);
-			console.log(isSave1, isSave2);
 			return isSave1 === 'OK' && isSave2 === 'OK' ? '로그아웃에 성공했습니다.' : '로그아웃에 실패했습니다.';
 		} catch (err) {
 			throw new UnauthorizedException('JWT token is missing');
+		}
+	}
+
+	async restoreAccessToken({ req }: IAuthServiceRestoreToken): Promise<string> {
+		if (req.user.role === 'user') {
+			console.log(req.user.email);
+			const user = await this.usersService.isUser({ email: req.user.email });
+			return this.getUserAccessToken({ user });
+		} else {
+			return this.getAdminAccessToken();
 		}
 	}
 }

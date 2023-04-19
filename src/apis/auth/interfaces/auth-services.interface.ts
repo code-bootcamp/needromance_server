@@ -9,6 +9,9 @@ export interface IAuthServiceSignIn {
 export interface IAuthUser {
 	user?: {
 		id: string;
+		role: string;
+		nickname: string;
+		email: string;
 	};
 }
 
@@ -27,5 +30,8 @@ export interface IAuthServiceSetAdminRefreshToken {
 
 export interface IAuthServiceLogout {
 	req: Request & IAuthUser;
-	// res: Response;
+}
+
+export interface IAuthServiceRestoreToken {
+	req: Request & IAuthUser;
 }

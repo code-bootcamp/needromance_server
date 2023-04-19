@@ -32,4 +32,13 @@ export class AuthController {
 	): Promise<string> {
 		return this.authService.logout({ req });
 	}
+
+	@UseGuards(restAuthGuard('access'))
+	@HttpCode(HttpStatus.OK)
+	@Post('/restoretoken')
+	restoreAccessToken(
+		@Req() req: Request & IAuthUser, //
+	): Promise<string> {
+		return this.authService.restoreAccessToken({ req });
+	}
 }
