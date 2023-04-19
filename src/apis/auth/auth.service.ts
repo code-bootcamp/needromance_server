@@ -104,24 +104,22 @@ export class AuthService {
 	}
 
 	async logout({ req }: IAuthServiceLogout): Promise<string> {
-		console.log(req.user);
+		// console.log(req.headers);
 		try {
 			if (!req.headers) {
 				throw new UnauthorizedException('JWT token is missing');
 			}
 			const accessToken = req.headers.authorization.split(' ')[1];
 			const refreshToken = req.headers.cookie.split('=')[1];
-			const isAccessToken = jwt.verify(accessToken, `process.env.JWT_ACCESS_KEY`, function (err, decoded) {
-				return decoded;
-			});
-			const isRefreshToken = jwt.verify(refreshToken, `process.env.JWT_REFRESH_KEY`, function (err, decoded) {
-				return decoded;
-			});
+
+			//여기서 에러가 발생함
+			const isAccessToken = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+			const isRefreshToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
 			const isSave1 = await this.cacheManager.set(
 				`accessToken:${accessToken}`, //
 				'accessToken',
 				{
-					ttl: isAccessToken[1]['exp'] - Math.trunc(Date.now() / 1000),
+					ttl: isAccessToken['exp'] - Math.trunc(Date.now() / 1000),
 				},
 			);
 
@@ -129,10 +127,10 @@ export class AuthService {
 				`refreshToken:${refreshToken}`, //
 				'refreshToken',
 				{
-					ttl: isRefreshToken[0]['exp'] - Math.trunc(Date.now() / 1000),
+					ttl: isRefreshToken['exp'] - Math.trunc(Date.now() / 1000),
 				},
 			);
-
+			console.log(isSave1, isSave2);
 			return isSave1 === 'OK' && isSave2 === 'OK' ? '로그아웃에 성공했습니다.' : '로그아웃에 실패했습니다.';
 		} catch (err) {
 			throw new UnauthorizedException('JWT token is missing');

@@ -25,10 +25,10 @@ export class AuthController {
 	}
 
 	@UseGuards(restAuthGuard('access'))
+	@HttpCode(HttpStatus.OK)
 	@Post('/logout')
 	logout(
 		@Req() req: Request & IAuthUser, //
-		@Res() res: Response,
 	): Promise<string> {
 		return this.authService.logout({ req });
 	}
