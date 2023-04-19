@@ -1,4 +1,5 @@
 import { CreateAnswerDTO } from '../dto/create-answer.dto';
+import { UpdateAnswerStatusDTO } from '../dto/update-answer-status.dto';
 import { UpdateAnswerDTO } from '../dto/update-answer.dto';
 
 export interface IAnswersServiceCreateAnswer {
@@ -24,4 +25,10 @@ export interface IAnswersServiceUpdateAnswer {
 export interface IAnswersServiceDeleteAnswer {
 	userId: string;
 	id: number;
+}
+
+export interface IAnswersServiceUpdateAnswerStatus {
+	userId: string;
+	id: number;
+	updateAnswerStatusDTO: UpdateAnswerStatusDTO;
 }

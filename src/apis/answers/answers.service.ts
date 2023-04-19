@@ -8,6 +8,7 @@ import {
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceUpdateAnswer,
+	IAnswersServiceUpdateAnswerStatus,
 } from './interface/answers-service.interface';
 import { UsersService } from '../users/users.service';
 
@@ -112,7 +113,7 @@ export class AnswersService {
 		}
 	}
 
-	async updateAnswerStatus({ userId, id, updateAnswerStatusDTO }): Promise<Answer> {
+	async updateAnswerStatus({ userId, id, updateAnswerStatusDTO }: IAnswersServiceUpdateAnswerStatus): Promise<Answer> {
 		console.log(updateAnswerStatusDTO.boardId, typeof updateAnswerStatusDTO.boardId);
 		console.log(updateAnswerStatusDTO.status, typeof updateAnswerStatusDTO.status);
 

@@ -1,15 +1,4 @@
-import {
-	Body,
-	Controller,
-	Delete,
-	Param,
-	ParseBoolPipe,
-	ParseIntPipe,
-	Patch,
-	Post,
-	Req,
-	UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDTO } from './dto/create-answer.dto';
 import { Answer } from './entity/answer.entity';
