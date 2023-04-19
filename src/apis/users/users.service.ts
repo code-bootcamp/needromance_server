@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { CACHE_MANAGER, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { DataSource, Repository } from 'typeorm';
@@ -9,6 +9,7 @@ import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
 	IUserServiceFindOneByEmail,
+	IUserServiceGetOneUserById,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceSendToken,
@@ -120,5 +121,21 @@ export class UsersService {
 
 		// const user = await this.userRepository.save({ ...createUserDTO });
 		// return user ? '회원가입 성공' : '회원가입 실패';
+	}
+
+	/**
+	 * 유저 조회 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐
+	 * @param id 유저 id
+	 * @returns id로 조회한 유저 정보
+	 */
+	async getOneUserById({ id }: IUserServiceGetOneUserById): Promise<User> {
+		const queryBuilder = this.userRepository.createQueryBuilder('user');
+		const user = await queryBuilder.where('user.id = :id', { id }).getOne();
+
+		if (!user) {
+			throw new NotFoundException('유저를 찾을 수 없습니다.');
+		}
+
+		return user;
 	}
 }
