@@ -11,6 +11,7 @@ import {
 	IAnswersServiceUpdateAnswerStatus,
 } from './interface/answers-service.interface';
 import { UsersService } from '../users/users.service';
+import { BoardsService } from '../boards/boards.service';
 
 @Injectable()
 export class AnswersService {
@@ -18,6 +19,7 @@ export class AnswersService {
 		@InjectRepository(Answer)
 		private readonly answersRepository: Repository<Answer>, //
 		private readonly usersService: UsersService,
+		private readonly boardsService: BoardsService,
 	) {}
 
 	/**
@@ -116,6 +118,12 @@ export class AnswersService {
 	async updateAnswerStatus({ userId, id, updateAnswerStatusDTO }: IAnswersServiceUpdateAnswerStatus): Promise<Answer> {
 		console.log(updateAnswerStatusDTO.boardId, typeof updateAnswerStatusDTO.boardId);
 		console.log(updateAnswerStatusDTO.status, typeof updateAnswerStatusDTO.status);
+		console.log(userId);
+
+		// 유저가 작성한 게시글인지 확인하기
+		// 답변 id로 답변 조회하기(유저 조인 필요)
+		// 조회한 답변 status 칼럼 true로 변경하기
+		// 답변을 작성한 유저의 포인트 10 증가시키기
 
 		const answer = await this.getAnswerById({ id });
 		answer.status = updateAnswerStatusDTO.status;

@@ -20,5 +20,8 @@ import { UsersModule } from '../users/users.module';
 	providers: [
 		BoardsService, //
 	],
+	exports: [
+		BoardsService, //
+	],
 })
 export class BoardsModule {}
