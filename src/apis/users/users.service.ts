@@ -8,11 +8,15 @@ import * as bcrypt from 'bcrypt';
 import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
+	IUserServiceDeleteUser,
+	IUserServiceFetchUser,
 	IUserServiceFindOneByEmail,
 	IUserServiceGetOneUserById,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
+	IUserServiceRstorePassword,
 	IUserServiceSendToken,
+	IUserServiceUpdateUser,
 	IUsersServiceUpdateUserPoint,
 } from './interface/users-service.interface';
 
@@ -37,7 +41,21 @@ export class UsersService {
 			.getOne();
 		return user;
 	}
-
+	async fetchUsers(): Promise<User[]> {
+		const result = await this.dataSource //
+			.getRepository(User)
+			.createQueryBuilder('user')
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
+			.getMany();
+		console.log(result);
+		return result;
+	}
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
 		const { email } = req.query;
 		const isValid = await this.userRepository.count({
@@ -124,6 +142,71 @@ export class UsersService {
 		// return user ? '회원가입 성공' : '회원가입 실패';
 	}
 
+	async deleteUser({ req }: IUserServiceDeleteUser): Promise<string> {
+		//이메일 검증
+		if (req.user.email === req.body.email) {
+			const user = await this.isUser({ email: req.user.email });
+			if (!user) {
+				throw new UnprocessableEntityException('이미 탈퇴한 회원입니다.');
+			}
+			//비밀번호 검증
+			const isValid = await bcrypt.compare(req.body.password, user.password);
+			if (isValid) {
+				const result = await this.dataSource //
+					.createQueryBuilder()
+					.delete()
+					.from(User)
+					.where('user.id = :id', { id: user.id })
+					.execute();
+				return result.affected ? '탈퇴성공' : '탈퇴실패';
+			} else {
+				throw new UnprocessableEntityException('비밀번호가 일치하지 않습니다.');
+			}
+		} else {
+			throw new UnprocessableEntityException('이메일이 일치하지 않습니다.');
+		}
+	}
+
+	async updateUser({ req }: IUserServiceUpdateUser): Promise<User> {
+		const user = await this.isUser({ email: req.user.email });
+
+		await this.dataSource
+			.createQueryBuilder()
+			.update(User)
+			.set({
+				nickname: req.body.nickname,
+				userImg: req.body.userImg,
+			})
+			.where('user.id = :id', { id: user.id })
+			.execute();
+
+		const result = await this.isUser({ email: req.user.email });
+		const { password, ...updateUser } = result;
+		return updateUser;
+	}
+
+	async findPassword({ req }: IUserServiceRstorePassword): Promise<string> {
+		const user = await this.isUser({ email: req.body.email });
+
+		const hashPassword = await bcrypt.hash(req.body.password, 10);
+		const result = await this.dataSource
+			.createQueryBuilder()
+			.update(User)
+			.set({
+				password: hashPassword,
+			})
+			.where('user.id = :id', { id: user.id })
+			.execute();
+
+		return result.affected ? '비밀번호 재설정 성공' : '비밀번호 재설정 실패';
+	}
+
+	async fetchUser({ req }: IUserServiceFetchUser): Promise<User> {
+		const result = await this.isUser({ email: req.user.email });
+		const { password, ...user } = result;
+		return user;
+
+
 	/**
 	 * 유저 조회 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐
 	 * @param id 유저 id
@@ -157,5 +240,6 @@ export class UsersService {
 		}
 
 		await this.userRepository.save(user);
+
 	}
 }

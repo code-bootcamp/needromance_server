@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import {
 	IAuthServiceGetAccessToken,
 	IAuthServiceLogout,
+	IAuthServiceRestoreToken,
 	IAuthServiceSetAdminRefreshToken,
 	IAuthServiceSetRefreshToken,
 	IAuthServiceSignIn,
@@ -23,16 +24,15 @@ export class AuthService {
 	) {}
 
 	getUserAccessToken({ user }: IAuthServiceGetAccessToken): string {
-		const aa = this.jwtService.sign(
+		return this.jwtService.sign(
 			{
 				role: 'user',
 				nickname: user.nickname, //
+				email: user.email,
 				sub: user.id,
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
 		);
-
-		return aa;
 	}
 
 	getAdminAccessToken(): string {
@@ -40,6 +40,7 @@ export class AuthService {
 			{
 				role: 'admin',
 				nickname: 'admin', //
+				email: process.env.ADMIN_EMAIL,
 				sub: 1,
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
@@ -86,15 +87,16 @@ export class AuthService {
 
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
 		const { email, password } = req.body;
+
 		if (email === process.env.ADMIN_EMAIL) {
 			await this.setAdminRefreshToken({ res });
 			return this.getAdminAccessToken();
 		}
 
 		const user = await this.usersService.isUser({ email });
-
+		console.log(user);
 		const isValid = await bcrypt.compare(password, user.password);
-
+		console.log(isValid);
 		if (!isValid) {
 			throw new UnauthorizedException('올바른 정보를 입력해주세요');
 		}
@@ -104,24 +106,21 @@ export class AuthService {
 	}
 
 	async logout({ req }: IAuthServiceLogout): Promise<string> {
-		console.log(req.user);
 		try {
 			if (!req.headers) {
 				throw new UnauthorizedException('JWT token is missing');
 			}
 			const accessToken = req.headers.authorization.split(' ')[1];
 			const refreshToken = req.headers.cookie.split('=')[1];
-			const isAccessToken = jwt.verify(accessToken, `process.env.JWT_ACCESS_KEY`, function (err, decoded) {
-				return decoded;
-			});
-			const isRefreshToken = jwt.verify(refreshToken, `process.env.JWT_REFRESH_KEY`, function (err, decoded) {
-				return decoded;
-			});
+
+			//여기서 에러가 발생함
+			const isAccessToken = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+			const isRefreshToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
 			const isSave1 = await this.cacheManager.set(
 				`accessToken:${accessToken}`, //
 				'accessToken',
 				{
-					ttl: isAccessToken[1]['exp'] - Math.trunc(Date.now() / 1000),
+					ttl: isAccessToken['exp'] - Math.trunc(Date.now() / 1000),
 				},
 			);
 
@@ -129,13 +128,22 @@ export class AuthService {
 				`refreshToken:${refreshToken}`, //
 				'refreshToken',
 				{
-					ttl: isRefreshToken[0]['exp'] - Math.trunc(Date.now() / 1000),
+					ttl: isRefreshToken['exp'] - Math.trunc(Date.now() / 1000),
 				},
 			);
-
 			return isSave1 === 'OK' && isSave2 === 'OK' ? '로그아웃에 성공했습니다.' : '로그아웃에 실패했습니다.';
 		} catch (err) {
 			throw new UnauthorizedException('JWT token is missing');
+		}
+	}
+
+	async restoreAccessToken({ req }: IAuthServiceRestoreToken): Promise<string> {
+		if (req.user.role === 'user') {
+			console.log(req.user.email);
+			const user = await this.usersService.isUser({ email: req.user.email });
+			return this.getUserAccessToken({ user });
+		} else {
+			return this.getAdminAccessToken();
 		}
 	}
 }

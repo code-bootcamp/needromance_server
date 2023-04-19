@@ -1,6 +1,10 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
+import { IAuthRequest } from 'src/commons/interface';
+import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
+import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from './dto/create-user.dto';
+import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 
 @Controller('user')
@@ -71,5 +75,58 @@ export class UsersController {
 		@Body() createUserDTO: CreateUserDTO, //
 	): Promise<string> {
 		return this.userService.createUser({ createUserDTO });
+	}
+
+	/**
+	 * Delete '/user/delete' 라우트 핸들러
+	 * @param req 회원탈퇴 정보및 accesstoken
+	 * @returns 회원탈퇴 성공 유무 메세지
+	 */
+	@UseGuards(restAuthGuard('access'))
+	@Delete('/delete')
+	deleteUser(
+		@Req() req: Request & IAuthUser, //
+	): Promise<string> {
+		return this.userService.deleteUser({ req });
+	}
+
+	/**
+	 * Patch '/user/update' 라우트 핸들러
+	 * @param req  갱신할 정보및 accesstoken
+	 * @returns 회원정보
+	 */
+	@UseGuards(restAuthGuard('access'))
+	@Patch('/update')
+	updateUser(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User> {
+		return this.userService.updateUser({ req });
+	}
+
+	/**
+	 * Patch '/user/update' 라우트 핸들러
+	 * @param req  이메일과 비밀번호
+	 * @returns 비밀번호 재설정 성공유무 메시지
+	 */
+
+	@Patch('find/password')
+	findPassword(
+		@Req() req: Request, //
+	): Promise<string> {
+		return this.userService.findPassword({ req });
+	}
+
+	/**
+	 * Get '/user/login' 라우트 핸들러
+	 * @param req  accesstoken
+	 * @returns 회원정보
+	 */
+
+	@UseGuards(restAuthGuard('access'))
+	@Get('login')
+	fetchUser(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User> {
+		return this.userService.fetchUser({ req });
 	}
 }

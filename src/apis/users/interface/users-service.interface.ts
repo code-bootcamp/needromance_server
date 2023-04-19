@@ -1,4 +1,5 @@
 import { Request } from 'express';
+import { IAuthUser } from 'src/apis/auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from '../dto/create-user.dto';
 
 export interface IUserServiceFindOneByEmail {
@@ -24,6 +25,22 @@ export interface IUserServiceCreateUser {
 	createUserDTO: CreateUserDTO;
 }
 
+
+export interface IUserServiceDeleteUser {
+	req: Request & IAuthUser;
+}
+
+export interface IUserServiceUpdateUser {
+	req: Request & IAuthUser;
+}
+
+export interface IUserServiceRstorePassword {
+	req: Request;
+}
+export interface IUserServiceFetchUser {
+	req: Request & IAuthUser;
+
+
 export interface IUserServiceGetOneUserById {
 	id: string;
 }
@@ -31,4 +48,5 @@ export interface IUserServiceGetOneUserById {
 export interface IUsersServiceUpdateUserPoint {
 	id: string;
 	status: boolean;
+
 }
