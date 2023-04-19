@@ -14,16 +14,18 @@ export class BoardsController {
 
 	/**
 	 * POST '/boards' 라우트 핸들러
-	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
+	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @returns 생성한 게시글 정보
 	 */
 	@Post()
 	@UseGuards(restAuthGuard('access'))
 	createBoard(
-		@Body() createBoardDTO: CreateBoardDTO, //
 		@Req() req: Request & IAuthUser, //
+		@Body() createBoardDTO: CreateBoardDTO,
 	): Promise<Board> {
+		console.log(req.user);
+
 		return this.boardsService.createBoard({ userId: req.user.id, createBoardDTO });
 	}
 

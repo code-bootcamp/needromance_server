@@ -21,6 +21,7 @@ export class BoardsService {
 
 	/**
 	 * 게시글 생성 서비스 로직
+	 * @param userId 게시글 생성 유저 id
 	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @returns 생성한 게시글 정보
 	 */
@@ -47,6 +48,9 @@ export class BoardsService {
 	async getTenBoards({ page }: IBoardsServiceGetTenBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder
+			.leftJoinAndSelect('board.user', 'user')
+			.leftJoinAndSelect('board.hashtags', 'hashtags')
+			.leftJoinAndSelect('board.answers', 'answer')
 			.orderBy({ 'board.createdAt': 'DESC' })
 			.skip(10 * (page - 1))
 			.take(10)
