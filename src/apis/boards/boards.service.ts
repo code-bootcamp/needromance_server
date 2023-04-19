@@ -82,6 +82,26 @@ export class BoardsService {
 	}
 
 	/**
+	 * (게시글 id과 유저 id 사용) 단일 게시글 조회 서비스 로직. 게시글을 찾지 못하면 NotFoundException 던짐.
+	 * @param id 게시글 id
+	 * @param userId 유저 id
+	 * @returns 게시글 id와 유저 id에 해당하는 게시글
+	 */
+	async getBoardByIdAndUserId({ id, userId }): Promise<Board> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const board = await queryBuilder
+			.where('board.id = :id', { id })
+			.andWhere('board.user.id = :userId', { userId })
+			.getOne();
+
+		if (!board) {
+			throw new NotFoundException('게시글을 찾을 수 없습니다.');
+		}
+
+		return board;
+	}
+
+	/**
 	 * 게시글 업데이트 서비스 로직.
 	 * @param id 게시글 id
 	 * @param updateBoardDTO 게시글 업데이트 DTO: title?, contents?, hashtags?
