@@ -109,6 +109,8 @@ export class BoardsService {
 	 * @returns 업데이트한 게시글 정보
 	 */
 	async updateBoard({ userId, id, updateBoardDTO }: IBoardsServiceUpdateBoard): Promise<Board> {
+		await this.usersService.getOneUserById({ id: userId });
+
 		const board = await this.getBoardByIdAndUserId({ id, userId });
 		const { title, contents, hashtags } = updateBoardDTO;
 		board.title = title;
@@ -125,6 +127,9 @@ export class BoardsService {
 	 * @param id 게시글 id
 	 */
 	async deleteBoard({ userId, id }: IBoardsServiceDeleteBoard): Promise<void> {
+		await this.usersService.getOneUserById({ id: userId });
+		await this.getBoardByIdAndUserId({ id, userId });
+
 		const deleteResult = await this.boardsRepository.delete({
 			id,
 			user: { id: userId },
