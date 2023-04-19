@@ -205,8 +205,7 @@ export class UsersService {
 		const result = await this.isUser({ email: req.user.email });
 		const { password, ...user } = result;
 		return user;
-
-
+	}
 	/**
 	 * 유저 조회 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐
 	 * @param id 유저 id
@@ -240,6 +239,5 @@ export class UsersService {
 		}
 
 		await this.userRepository.save(user);
-
 	}
 }
