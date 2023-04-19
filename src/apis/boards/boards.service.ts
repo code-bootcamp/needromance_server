@@ -29,15 +29,14 @@ export class BoardsService {
 	 * @returns 생성한 게시글 정보
 	 */
 	async createBoard({ userId: id, createBoardDTO }: IBoardsServiceCreateBoard): Promise<Board> {
-		await this.usersService.getOneUserById({ id });
-
+		const user = await this.usersService.getOneUserById({ id });
 		const { title, contents, hashtags } = createBoardDTO;
 		const _hashtags = await this.hashtagsService.createHashtags({ hashtags });
 		const board = this.boardsRepository.create({
 			title,
 			contents,
 			hashtags: _hashtags,
-			user: { id },
+			user,
 		});
 		await this.boardsRepository.save(board);
 		return board;
