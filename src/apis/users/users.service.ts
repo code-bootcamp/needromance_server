@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { CACHE_MANAGER, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { DataSource, Repository } from 'typeorm';
@@ -9,9 +9,11 @@ import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
 	IUserServiceFindOneByEmail,
+	IUserServiceGetOneUserById,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceSendToken,
+	IUsersServiceUpdateUserPoint,
 } from './interface/users-service.interface';
 
 @Injectable()
@@ -120,5 +122,40 @@ export class UsersService {
 
 		// const user = await this.userRepository.save({ ...createUserDTO });
 		// return user ? '회원가입 성공' : '회원가입 실패';
+	}
+
+	/**
+	 * 유저 조회 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐
+	 * @param id 유저 id
+	 * @returns id로 조회한 유저 정보
+	 */
+	async getOneUserById({ id }: IUserServiceGetOneUserById): Promise<User> {
+		const queryBuilder = this.userRepository.createQueryBuilder('user');
+		const user = await queryBuilder.where('user.id = :id', { id }).getOne();
+
+		if (!user) {
+			throw new NotFoundException('유저를 찾을 수 없습니다.');
+		}
+
+		return user;
+	}
+
+	/**
+	 * 유저 포인트 업데이트 서비스 로직.
+	 * status가 true인 경우(유저가 작성한 답변이 채택된 경우) point 10 증가
+	 * status가 false인 경우(채택된 답변이 채택 취소된 경우) point 10 감소
+	 * @param id 유저 id
+	 * @param status 답변 채택 여부
+	 */
+	async updateUserPoint({ id, status }: IUsersServiceUpdateUserPoint): Promise<void> {
+		const user = await this.getOneUserById({ id });
+
+		if (status) {
+			user.point += 10;
+		} else {
+			user.point -= 10;
+		}
+
+		await this.userRepository.save(user);
 	}
 }

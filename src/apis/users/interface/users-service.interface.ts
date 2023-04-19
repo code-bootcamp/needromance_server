@@ -23,3 +23,12 @@ export interface IUserServiceCheckToken {
 export interface IUserServiceCreateUser {
 	createUserDTO: CreateUserDTO;
 }
+
+export interface IUserServiceGetOneUserById {
+	id: string;
+}
+
+export interface IUsersServiceUpdateUserPoint {
+	id: string;
+	status: boolean;
+}
