@@ -1,6 +1,9 @@
 import { Request } from 'express';
 import { CreateUserDTO } from '../dto/create-user.dto';
 
+export interface IUserServiceFindOneByEmail {
+	email: string;
+}
 export interface IUserServiceIsValidEmail {
 	req: Request;
 }
