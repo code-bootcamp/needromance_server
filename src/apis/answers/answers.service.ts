@@ -112,7 +112,14 @@ export class AnswersService {
 		}
 	}
 
-	async updateStatus({ userId, id, status }): Promise<void> {
+	async updateAnswerStatus({ userId, id, updateAnswerStatusDTO }): Promise<Answer> {
+		console.log(updateAnswerStatusDTO.boardId, typeof updateAnswerStatusDTO.boardId);
+		console.log(updateAnswerStatusDTO.status, typeof updateAnswerStatusDTO.status);
+
 		const answer = await this.getAnswerById({ id });
+		answer.status = updateAnswerStatusDTO.status;
+		await this.answersRepository.save(answer);
+
+		return answer;
 	}
 }

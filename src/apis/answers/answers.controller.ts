@@ -16,6 +16,7 @@ import { Answer } from './entity/answer.entity';
 import { UpdateAnswerDTO } from './dto/update-answer.dto';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
+import { UpdateAnswerStatusDTO } from './dto/update-answer-status.dto';
 
 @Controller('answers')
 export class AnswersController {
@@ -71,11 +72,11 @@ export class AnswersController {
 
 	@Patch('/:id/status')
 	@UseGuards(restAuthGuard('access'))
-	updateStatus(
+	updateAnswerStatus(
 		@Req() req: Request & IAuthUser, //
 		@Param('id', ParseIntPipe) id: number, //
-		@Body('status', ParseBoolPipe) status: boolean,
-	): Promise<void> {
-		return this.answersService.updateStatus({ userId: req.user.id, id, status });
+		@Body() updateAnswerStatusDTO: UpdateAnswerStatusDTO,
+	): Promise<Answer> {
+		return this.answersService.updateAnswerStatus({ userId: req.user.id, id, updateAnswerStatusDTO });
 	}
 }
