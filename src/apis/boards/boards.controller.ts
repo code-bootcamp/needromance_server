@@ -7,7 +7,6 @@ import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 
 @Controller('boards')
-@UseGuards(restAuthGuard('access'))
 export class BoardsController {
 	constructor(
 		private readonly boardsService: BoardsService, //
@@ -16,9 +15,11 @@ export class BoardsController {
 	/**
 	 * POST '/boards' 라우트 핸들러
 	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @returns 생성한 게시글 정보
 	 */
 	@Post()
+	@UseGuards(restAuthGuard('access'))
 	createBoard(
 		@Body() createBoardDTO: CreateBoardDTO, //
 		@Req() req: Request & IAuthUser, //
@@ -57,6 +58,7 @@ export class BoardsController {
 	 * @returns 업데이트한 게시글 정보
 	 */
 	@Patch('/:id')
+	@UseGuards(restAuthGuard('access'))
 	updateBoard(
 		@Param('id', ParseIntPipe) id: number, //
 		@Body() updateBoardDTO: UpdateBoardDTO, //
@@ -69,6 +71,7 @@ export class BoardsController {
 	 * @param id 게시글 id
 	 */
 	@Delete('/:id')
+	@UseGuards(restAuthGuard('access'))
 	deleteBoard(
 		@Param('id', ParseIntPipe) id: number, //
 	): Promise<void> {
