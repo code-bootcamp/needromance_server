@@ -62,10 +62,11 @@ export class BoardsController {
 	@Patch('/:id')
 	@UseGuards(restAuthGuard('access'))
 	updateBoard(
-		@Param('id', ParseIntPipe) id: number, //
-		@Body() updateBoardDTO: UpdateBoardDTO, //
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateBoardDTO: UpdateBoardDTO,
 	): Promise<Board> {
-		return this.boardsService.updateBoard({ id, updateBoardDTO });
+		return this.boardsService.updateBoard({ userId: req.user.id, id, updateBoardDTO });
 	}
 
 	/**

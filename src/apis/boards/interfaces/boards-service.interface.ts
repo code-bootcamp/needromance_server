@@ -14,7 +14,13 @@ export interface IBoardsServiceGetBoardById {
 	id: number;
 }
 
+export interface IBoardsServiceGetBoardByIdAndUserId {
+	id: number;
+	userId: string;
+}
+
 export interface IBoardsServiceUpdateBoard {
+	userId: string;
 	id: number;
 	updateBoardDTO: UpdateBoardDTO;
 }

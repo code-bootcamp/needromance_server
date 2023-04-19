@@ -6,6 +6,7 @@ import {
 	IBoardsServiceCreateBoard,
 	IBoardsServiceDeleteBoard,
 	IBoardsServiceGetBoardById,
+	IBoardsServiceGetBoardByIdAndUserId,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
@@ -87,7 +88,7 @@ export class BoardsService {
 	 * @param userId 유저 id
 	 * @returns 게시글 id와 유저 id에 해당하는 게시글
 	 */
-	async getBoardByIdAndUserId({ id, userId }): Promise<Board> {
+	async getBoardByIdAndUserId({ id, userId }: IBoardsServiceGetBoardByIdAndUserId): Promise<Board> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const board = await queryBuilder
 			.where('board.id = :id', { id })
@@ -107,8 +108,8 @@ export class BoardsService {
 	 * @param updateBoardDTO 게시글 업데이트 DTO: title?, contents?, hashtags?
 	 * @returns 업데이트한 게시글 정보
 	 */
-	async updateBoard({ id, updateBoardDTO }: IBoardsServiceUpdateBoard): Promise<Board> {
-		const board = await this.getBoardById({ id });
+	async updateBoard({ userId, id, updateBoardDTO }: IBoardsServiceUpdateBoard): Promise<Board> {
+		const board = await this.getBoardByIdAndUserId({ id, userId });
 		const { title, contents, hashtags } = updateBoardDTO;
 		board.title = title;
 		board.contents = contents;
