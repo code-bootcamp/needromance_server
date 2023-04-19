@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Param,
+	ParseBoolPipe,
+	ParseIntPipe,
+	Patch,
+	Post,
+	Req,
+	UseGuards,
+} from '@nestjs/common';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDTO } from './dto/create-answer.dto';
 import { Answer } from './entity/answer.entity';
@@ -56,5 +67,15 @@ export class AnswersController {
 		@Param('id', ParseIntPipe) id: number, //
 	): Promise<void> {
 		return this.answersService.deleteAnswer({ userId: req.user.id, id });
+	}
+
+	@Patch('/:id/status')
+	@UseGuards(restAuthGuard('access'))
+	updateStatus(
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number, //
+		@Body('status', ParseBoolPipe) status: boolean,
+	): Promise<void> {
+		return this.answersService.updateStatus({ userId: req.user.id, id, status });
 	}
 }

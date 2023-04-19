@@ -111,4 +111,8 @@ export class AnswersService {
 			throw new NotFoundException('답변을 찾을 수 없습니다.');
 		}
 	}
+
+	async updateStatus({ userId, id, status }): Promise<void> {
+		const answer = await this.getAnswerById({ id });
+	}
 }
