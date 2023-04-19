@@ -25,6 +25,7 @@ export interface IUserServiceCreateUser {
 	createUserDTO: CreateUserDTO;
 }
 
+
 export interface IUserServiceDeleteUser {
 	req: Request & IAuthUser;
 }
@@ -38,4 +39,14 @@ export interface IUserServiceRstorePassword {
 }
 export interface IUserServiceFetchUser {
 	req: Request & IAuthUser;
+
+
+export interface IUserServiceGetOneUserById {
+	id: string;
+}
+
+export interface IUsersServiceUpdateUserPoint {
+	id: string;
+	status: boolean;
+
 }

@@ -4,6 +4,7 @@ import { BoardsService } from './boards.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Board } from './entity/board.entity';
 import { HashtagsModule } from '../hashtags/hashtags.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
 	imports: [
@@ -11,6 +12,7 @@ import { HashtagsModule } from '../hashtags/hashtags.module';
 			Board, //
 		]), //
 		HashtagsModule,
+		UsersModule,
 	],
 	controllers: [
 		BoardsController, //

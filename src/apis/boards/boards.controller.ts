@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDTO } from './dto/create-board.dto';
 import { UpdateBoardDTO } from './dto/update-board.dto';
 import { Board } from './entity/board.entity';
+import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
+import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 
 @Controller('boards')
 export class BoardsController {
@@ -12,14 +14,17 @@ export class BoardsController {
 
 	/**
 	 * POST '/boards' 라우트 핸들러
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @returns 생성한 게시글 정보
 	 */
 	@Post()
+	@UseGuards(restAuthGuard('access'))
 	createBoard(
-		@Body() createBoardDTO: CreateBoardDTO, //
+		@Req() req: Request & IAuthUser, //
+		@Body() createBoardDTO: CreateBoardDTO,
 	): Promise<Board> {
-		return this.boardsService.createBoard({ createBoardDTO });
+		return this.boardsService.createBoard({ userId: req.user.id, createBoardDTO });
 	}
 
 	/**
@@ -48,26 +53,32 @@ export class BoardsController {
 
 	/**
 	 * PATCH '/boards/:id' 라우트 핸들러
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @param id 게시글 id
 	 * @param updateBoardDTO 게시글 업데이트 DTO: title, contents, hashtags?
 	 * @returns 업데이트한 게시글 정보
 	 */
 	@Patch('/:id')
+	@UseGuards(restAuthGuard('access'))
 	updateBoard(
-		@Param('id', ParseIntPipe) id: number, //
-		@Body() updateBoardDTO: UpdateBoardDTO, //
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateBoardDTO: UpdateBoardDTO,
 	): Promise<Board> {
-		return this.boardsService.updateBoard({ id, updateBoardDTO });
+		return this.boardsService.updateBoard({ userId: req.user.id, id, updateBoardDTO });
 	}
 
 	/**
 	 * DELETE '/boards/:id' 라우트 핸들러
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @param id 게시글 id
 	 */
 	@Delete('/:id')
+	@UseGuards(restAuthGuard('access'))
 	deleteBoard(
-		@Param('id', ParseIntPipe) id: number, //
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number,
 	): Promise<void> {
-		return this.boardsService.deleteBoard({ id });
+		return this.boardsService.deleteBoard({ userId: req.user.id, id });
 	}
 }
