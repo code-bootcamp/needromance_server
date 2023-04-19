@@ -19,17 +19,17 @@ export class AnswersService {
 	) {}
 
 	/**
-	 * 답변 생성 서비스 로직
+	 * 답변 생성 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐.
+	 * @param userId 유저 id
 	 * @param createAnswerDTO 답변 생성 DTO - contents, boardId
 	 * @returns 생성한 답변 정보
 	 */
-	async createAnswer({ userId, createAnswerDTO }: IAnswersServiceCreateAnswer): Promise<Answer> {
+	async createAnswer({ userId: id, createAnswerDTO }: IAnswersServiceCreateAnswer): Promise<Answer> {
+		const user = await this.usersService.getOneUserById({ id });
 		const { contents, boardId } = createAnswerDTO;
 		const answer = this.answersRepository.create({
 			contents,
-			user: {
-				id: userId,
-			},
+			user,
 			board: {
 				id: boardId,
 			},
