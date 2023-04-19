@@ -49,7 +49,7 @@ export class BoardsController {
 	/**
 	 * PATCH '/boards/:id' 라우트 핸들러
 	 * @param id 게시글 id
-	 * @param updateBoardDTO 게시글 업데이트 DTO: title?, contents?, hashtags?
+	 * @param updateBoardDTO 게시글 업데이트 DTO: title, contents, hashtags?
 	 * @returns 업데이트한 게시글 정보
 	 */
 	@Patch('/:id')

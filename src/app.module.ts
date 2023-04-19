@@ -9,10 +9,11 @@ import { BoardsModule } from './apis/boards/boards.module';
 import { UsersModule } from './apis/users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HashtagsModule } from './apis/hashtags/hashtags.module';
-
+import { AnswersModule } from './apis/answers/answers.module';
 
 @Module({
 	imports: [
+		AnswersModule,
 		BoardsModule,
 		UsersModule,
 		HashtagsModule,
