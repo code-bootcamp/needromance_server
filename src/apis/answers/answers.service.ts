@@ -7,6 +7,7 @@ import {
 	IAnswersServiceDeleteAnswer,
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
+	IAnswersServiceGetAnswersByBoardId,
 	IAnswersServiceUpdateAnswer,
 	IAnswersServiceUpdateAnswerStatus,
 } from './interface/answers-service.interface';
@@ -146,5 +147,22 @@ export class AnswersService {
 		await this.answersRepository.save(answer);
 
 		return answer;
+	}
+
+	/**
+	 * (게시글 id 사용) 답변 조회 서비스 로직.
+	 * @param boardId 게시글 id
+	 * @param status 채택 여부 - 1: 채택됨 / 0: 채택되지 않음
+	 * @returns 게시글 id로 조회한 채택되지 않은 답변 정보(유저 조인)
+	 */
+	async getAnswersByBoardId({ boardId, status }: IAnswersServiceGetAnswersByBoardId): Promise<Answer[]> {
+		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answers = await queryBuilder
+			.where('answer.board.id = :boardId', { boardId })
+			.andWhere('answer.status = :status', { status })
+			.leftJoinAndSelect('answer.user', 'user')
+			.getMany();
+
+		return answers;
 	}
 }

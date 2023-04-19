@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDTO } from './dto/create-answer.dto';
 import { Answer } from './entity/answer.entity';
@@ -74,5 +74,19 @@ export class AnswersController {
 		@Body() updateAnswerStatusDTO: UpdateAnswerStatusDTO,
 	): Promise<Answer> {
 		return this.answersService.updateAnswerStatus({ userId: req.user.id, id, updateAnswerStatusDTO });
+	}
+
+	/**
+	 * GET '/answers?board-id=:board-id&status=:status' 라우트 핸들러
+	 * @param boardId 게시글 id
+	 * @param status 채택 여부 - 1: 채택됨 / 0: 채택되지 않음
+	 * @returns 게시글 id로 조회한 답변 정보(유저 조인)
+	 */
+	@Get()
+	getAnswersByBoardId(
+		@Query('board-id', ParseIntPipe) boardId: number, //
+		@Query('status', ParseIntPipe) status: number,
+	): Promise<Answer[]> {
+		return this.answersService.getAnswersByBoardId({ boardId, status });
 	}
 }

@@ -32,3 +32,8 @@ export interface IAnswersServiceUpdateAnswerStatus {
 	id: number;
 	updateAnswerStatusDTO: UpdateAnswerStatusDTO;
 }
+
+export interface IAnswersServiceGetAnswersByBoardId {
+	boardId: number;
+	status: number;
+}
