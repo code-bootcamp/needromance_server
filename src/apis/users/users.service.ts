@@ -9,6 +9,7 @@ import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
 	IUserServiceDeleteUser,
+	IUserServiceFetchUser,
 	IUserServiceFindOneByEmail,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
@@ -167,7 +168,7 @@ export class UsersService {
 		return updateUser;
 	}
 
-	async restorePassword({ req }: IUserServiceRstorePassword): Promise<string> {
+	async findPassword({ req }: IUserServiceRstorePassword): Promise<string> {
 		const user = await this.isUser({ email: req.body.email });
 
 		const hashPassword = await bcrypt.hash(req.body.password, 10);
@@ -181,5 +182,11 @@ export class UsersService {
 			.execute();
 
 		return result.affected ? '비밀번호 재설정 성공' : '비밀번호 재설정 실패';
+	}
+
+	async fetchUser({ req }: IUserServiceFetchUser): Promise<User> {
+		const result = await this.isUser({ email: req.user.email });
+		const { password, ...user } = result;
+		return user;
 	}
 }

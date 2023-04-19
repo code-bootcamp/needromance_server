@@ -99,9 +99,17 @@ export class UsersController {
 	}
 
 	@Patch('find/password')
-	restorePassword(
+	findPassword(
 		@Req() req: Request, //
 	): Promise<string> {
-		return this.userService.restorePassword({ req });
+		return this.userService.findPassword({ req });
+	}
+
+	@UseGuards(restAuthGuard('access'))
+	@Get('login')
+	fetchUser(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User> {
+		return this.userService.fetchUser({ req });
 	}
 }
