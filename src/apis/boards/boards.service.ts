@@ -104,8 +104,9 @@ export class BoardsService {
 
 	/**
 	 * 게시글 업데이트 서비스 로직.
+	 * @param userId 유저 id
 	 * @param id 게시글 id
-	 * @param updateBoardDTO 게시글 업데이트 DTO: title?, contents?, hashtags?
+	 * @param updateBoardDTO 게시글 업데이트 DTO: title, contents, hashtags?
 	 * @returns 업데이트한 게시글 정보
 	 */
 	async updateBoard({ userId, id, updateBoardDTO }: IBoardsServiceUpdateBoard): Promise<Board> {
