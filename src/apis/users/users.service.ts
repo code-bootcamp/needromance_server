@@ -13,6 +13,7 @@ import {
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceSendToken,
+	IUsersServiceUpdateUserPoint,
 } from './interface/users-service.interface';
 
 @Injectable()
@@ -137,5 +138,24 @@ export class UsersService {
 		}
 
 		return user;
+	}
+
+	/**
+	 * 유저 포인트 업데이트 서비스 로직.
+	 * status가 true인 경우(유저가 작성한 답변이 채택된 경우) point 10 증가
+	 * status가 false인 경우(채택된 답변이 채택 취소된 경우) point 10 감소
+	 * @param id 유저 id
+	 * @param status 답변 채택 여부
+	 */
+	async updateUserPoint({ id, status }: IUsersServiceUpdateUserPoint): Promise<void> {
+		const user = await this.getOneUserById({ id });
+
+		if (status) {
+			user.point += 10;
+		} else {
+			user.point -= 10;
+		}
+
+		await this.userRepository.save(user);
 	}
 }

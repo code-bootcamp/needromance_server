@@ -27,3 +27,8 @@ export interface IUserServiceCreateUser {
 export interface IUserServiceGetOneUserById {
 	id: string;
 }
+
+export interface IUsersServiceUpdateUserPoint {
+	id: string;
+	status: boolean;
+}

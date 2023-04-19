@@ -115,18 +115,34 @@ export class AnswersService {
 		}
 	}
 
+	/**
+	 * 답변 채택 서비스 로직.
+	 * 게시글 작성자가 답변을 채택하면 답변 작성자의 포인트를 10 증가시킴.
+	 * 게시글 작성자가 답변 채택을 취소하면 답변 작성자의 포인트를 10 감소시킴.
+	 * @param userId 유저 id
+	 * @param id 답변 id
+	 * @param updateAnswerStatusDTO 답변 상태 업데이트 DTO: boardId, status
+	 * @returns 업데이트한 답변 정보
+	 */
 	async updateAnswerStatus({ userId, id, updateAnswerStatusDTO }: IAnswersServiceUpdateAnswerStatus): Promise<Answer> {
-		console.log(updateAnswerStatusDTO.boardId, typeof updateAnswerStatusDTO.boardId);
-		console.log(updateAnswerStatusDTO.status, typeof updateAnswerStatusDTO.status);
-		console.log(userId);
-
 		// 유저가 작성한 게시글인지 확인하기
-		// 답변 id로 답변 조회하기(유저 조인 필요)
-		// 조회한 답변 status 칼럼 true로 변경하기
-		// 답변을 작성한 유저의 포인트 10 증가시키기
+		await this.boardsService.getBoardByIdAndUserId({ id: updateAnswerStatusDTO.boardId, userId });
 
-		const answer = await this.getAnswerById({ id });
-		answer.status = updateAnswerStatusDTO.status;
+		// 답변 id로 답변 조회하기(유저 조인 필요)
+		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await queryBuilder
+			.where('answer.id = :id', { id })
+			.leftJoinAndSelect('answer.user', 'user')
+			.getOne();
+
+		// 조회한 답변 status 칼럼 업데이트하기
+		const { status } = updateAnswerStatusDTO;
+		answer.status = status;
+
+		// 답변이 채택되었다면 답변을 작성한 유저의 포인트 10 증가시키기(유저서비스 사용)
+		// 답변 채택을 취소했다면 답변을 작성한 유저의 포인트 10 감소시키기(유저서비스 사용)
+		this.usersService.updateUserPoint({ id: answer.user.id, status });
+
 		await this.answersRepository.save(answer);
 
 		return answer;
