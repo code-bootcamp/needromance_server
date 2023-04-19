@@ -121,6 +121,7 @@ export class UsersController {
 	 * @param req  accesstoken
 	 * @returns 회원정보
 	 */
+
 	@UseGuards(restAuthGuard('access'))
 	@Get('login')
 	fetchUser(

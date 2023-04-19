@@ -87,15 +87,16 @@ export class AuthService {
 
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
 		const { email, password } = req.body;
+
 		if (email === process.env.ADMIN_EMAIL) {
 			await this.setAdminRefreshToken({ res });
 			return this.getAdminAccessToken();
 		}
 
 		const user = await this.usersService.isUser({ email });
-
+		console.log(user);
 		const isValid = await bcrypt.compare(password, user.password);
-
+		console.log(isValid);
 		if (!isValid) {
 			throw new UnauthorizedException('올바른 정보를 입력해주세요');
 		}

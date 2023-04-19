@@ -1,11 +1,15 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Admin } from './entity/admin.entity';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
+import { IAdminServiceFetchUsers } from './interface/admin-services.interface';
+import { User } from '../users/entity/user.entity';
 @Injectable()
 export class AdminService {
 	constructor(
 		private readonly dataSource: DataSource, //
+		private readonly usersService: UsersService,
 	) {}
 	async signup(): Promise<string> {
 		const email = process.env.ADMIN_EMAIL;
@@ -23,5 +27,13 @@ export class AdminService {
 			.catch((err) => {
 				throw new UnprocessableEntityException('회원가입 실패');
 			});
+	}
+
+	async fetchUsers({ req }: IAdminServiceFetchUsers): Promise<User[]> {
+		if (req.user.role === 'admin') {
+			return this.usersService.fetchUsers();
+		} else {
+			throw new UnauthorizedException('권한이 없습니다.');
+		}
 	}
 }

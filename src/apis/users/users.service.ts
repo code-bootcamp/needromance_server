@@ -39,7 +39,21 @@ export class UsersService {
 			.getOne();
 		return user;
 	}
-
+	async fetchUsers(): Promise<User[]> {
+		const result = await this.dataSource //
+			.getRepository(User)
+			.createQueryBuilder('user')
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
+			.getMany();
+		console.log(result);
+		return result;
+	}
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
 		const { email } = req.query;
 		const isValid = await this.userRepository.count({
