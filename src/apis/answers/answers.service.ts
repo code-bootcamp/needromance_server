@@ -8,17 +8,19 @@ import {
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceUpdateAnswer,
 } from './interface/answers-service.interface';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class AnswersService {
 	constructor(
 		@InjectRepository(Answer)
 		private readonly answersRepository: Repository<Answer>, //
+		private readonly usersService: UsersService,
 	) {}
 
 	/**
 	 * 답변 생성 서비스 로직
-	 * @param createAnswerDTO 답변 생성 DTO - contents, userId, boardId
+	 * @param createAnswerDTO 답변 생성 DTO - contents, boardId
 	 * @returns 생성한 답변 정보
 	 */
 	async createAnswer({ userId, createAnswerDTO }: IAnswersServiceCreateAnswer): Promise<Answer> {
