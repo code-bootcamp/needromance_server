@@ -24,7 +24,7 @@ export class AuthService {
 	) {}
 
 	getUserAccessToken({ user }: IAuthServiceGetAccessToken): string {
-		const aa = this.jwtService.sign(
+		return this.jwtService.sign(
 			{
 				role: 'user',
 				nickname: user.nickname, //
@@ -33,8 +33,6 @@ export class AuthService {
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
 		);
-
-		return aa;
 	}
 
 	getAdminAccessToken(): string {

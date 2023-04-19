@@ -8,10 +8,13 @@ import * as bcrypt from 'bcrypt';
 import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
+	IUserServiceDeleteUser,
 	IUserServiceFindOneByEmail,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
+	IUserServiceRstorePassword,
 	IUserServiceSendToken,
+	IUserServiceUpdateUser,
 } from './interface/users-service.interface';
 
 @Injectable()
@@ -120,5 +123,63 @@ export class UsersService {
 
 		// const user = await this.userRepository.save({ ...createUserDTO });
 		// return user ? '회원가입 성공' : '회원가입 실패';
+	}
+	async deleteUser({ req }: IUserServiceDeleteUser): Promise<string> {
+		//이메일 검증
+		if (req.user.email === req.body.email) {
+			const user = await this.isUser({ email: req.user.email });
+			if (!user) {
+				throw new UnprocessableEntityException('이미 탈퇴한 회원입니다.');
+			}
+			//비밀번호 검증
+			const isValid = await bcrypt.compare(req.body.password, user.password);
+			if (isValid) {
+				const result = await this.dataSource //
+					.createQueryBuilder()
+					.delete()
+					.from(User)
+					.where('user.id = :id', { id: user.id })
+					.execute();
+				return result.affected ? '탈퇴성공' : '탈퇴실패';
+			} else {
+				throw new UnprocessableEntityException('비밀번호가 일치하지 않습니다.');
+			}
+		} else {
+			throw new UnprocessableEntityException('이메일이 일치하지 않습니다.');
+		}
+	}
+
+	async updateUser({ req }: IUserServiceUpdateUser): Promise<User> {
+		const user = await this.isUser({ email: req.user.email });
+
+		await this.dataSource
+			.createQueryBuilder()
+			.update(User)
+			.set({
+				nickname: req.body.nickname,
+				userImg: req.body.userImg,
+			})
+			.where('user.id = :id', { id: user.id })
+			.execute();
+
+		const result = await this.isUser({ email: req.user.email });
+		const { password, ...updateUser } = result;
+		return updateUser;
+	}
+
+	async restorePassword({ req }: IUserServiceRstorePassword): Promise<string> {
+		const user = await this.isUser({ email: req.body.email });
+
+		const hashPassword = await bcrypt.hash(req.body.password, 10);
+		const result = await this.dataSource
+			.createQueryBuilder()
+			.update(User)
+			.set({
+				password: hashPassword,
+			})
+			.where('user.id = :id', { id: user.id })
+			.execute();
+
+		return result.affected ? '비밀번호 재설정 성공' : '비밀번호 재설정 실패';
 	}
 }
