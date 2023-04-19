@@ -68,8 +68,10 @@ export class BoardsService {
 	async getBoardById({ id }: IBoardsServiceGetBoardById): Promise<Board> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const board = await queryBuilder
-			.leftJoinAndSelect('board.hashtags', 'hashtag')
 			.where('board.id = :id', { id })
+			.leftJoinAndSelect('board.user', 'user')
+			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.leftJoinAndSelect('board.answers', 'answer')
 			.getOne();
 
 		if (!board) {
