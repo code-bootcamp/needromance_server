@@ -6,6 +6,7 @@ import {
 	IAnswersServiceCreateAnswer,
 	IAnswersServiceDeleteAnswer,
 	IAnswersServiceGetAnswerById,
+	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceUpdateAnswer,
 } from './interface/answers-service.interface';
 import { UsersService } from '../users/users.service';
@@ -47,6 +48,26 @@ export class AnswersService {
 	async getAnswerById({ id }: IAnswersServiceGetAnswerById): Promise<Answer> {
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
 		const answer = await queryBuilder.where('id = :id', { id }).getOne();
+
+		if (!answer) {
+			throw new NotFoundException('답변을 찾을 수 없습니다.');
+		}
+
+		return answer;
+	}
+
+	/**
+	 * (답변id와 유저 id 사용) 단일 답변 조회 서비스 로직. 답변을 찾지 못하면 NotFoundException 던짐.
+	 * @param id 답변 id
+	 * @param userId 유저 id
+	 * @returns 답변 id와 유저 id로 조회한 답변 정보
+	 */
+	async getAnswerByIdAndUserId({ id, userId }: IAnswersServiceGetAnswerByIdAndUserId): Promise<Answer> {
+		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await queryBuilder
+			.where('id = :id', { id })
+			.andWhere('answer.user.id = :userId', { userId })
+			.getOne();
 
 		if (!answer) {
 			throw new NotFoundException('답변을 찾을 수 없습니다.');

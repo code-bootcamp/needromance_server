@@ -10,6 +10,11 @@ export interface IAnswersServiceGetAnswerById {
 	id: number;
 }
 
+export interface IAnswersServiceGetAnswerByIdAndUserId {
+	id: number;
+	userId: string;
+}
+
 export interface IAnswersServiceUpdateAnswer {
 	userId: string;
 	id: number;
