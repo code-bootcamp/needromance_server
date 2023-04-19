@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDTO } from './dto/create-board.dto';
 import { UpdateBoardDTO } from './dto/update-board.dto';
 import { Board } from './entity/board.entity';
+import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
+import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 
 @Controller('boards')
+@UseGuards(restAuthGuard('access'))
 export class BoardsController {
 	constructor(
 		private readonly boardsService: BoardsService, //
@@ -18,8 +21,9 @@ export class BoardsController {
 	@Post()
 	createBoard(
 		@Body() createBoardDTO: CreateBoardDTO, //
+		@Req() req: Request & IAuthUser, //
 	): Promise<Board> {
-		return this.boardsService.createBoard({ createBoardDTO });
+		return this.boardsService.createBoard({ userId: req.user.id, createBoardDTO });
 	}
 
 	/**

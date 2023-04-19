@@ -24,7 +24,9 @@ export class BoardsService {
 	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @returns 생성한 게시글 정보
 	 */
-	async createBoard({ createBoardDTO }: IBoardsServiceCreateBoard): Promise<Board> {
+	async createBoard({ userId, createBoardDTO }: IBoardsServiceCreateBoard): Promise<Board> {
+		console.log(userId);
+
 		const { title, contents, hashtags } = createBoardDTO;
 		const _hashtags = await this.hashtagsService.createHashtags({ hashtags });
 		const board = this.boardsRepository.create({

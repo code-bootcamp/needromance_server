@@ -13,7 +13,6 @@ import {
 } from 'typeorm';
 import { Answer } from 'src/apis/answers/entity/answer.entity';
 
-
 @Entity()
 export class Board {
 	@PrimaryGeneratedColumn()
@@ -36,12 +35,10 @@ export class Board {
 	})
 	createdAt: Date;
 
-
 	@ManyToOne(
 		() => User, //
 		(user) => user.boards,
 	)
-
 	user: User;
 
 	@ManyToMany(
@@ -60,5 +57,4 @@ export class Board {
 		{ nullable: true },
 	)
 	answers: Answer[];
-
 }

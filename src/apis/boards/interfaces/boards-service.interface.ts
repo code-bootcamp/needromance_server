@@ -2,6 +2,7 @@ import { CreateBoardDTO } from '../dto/create-board.dto';
 import { UpdateBoardDTO } from '../dto/update-board.dto';
 
 export interface IBoardsServiceCreateBoard {
+	userId: string;
 	createBoardDTO: CreateBoardDTO;
 }
 
