@@ -90,6 +90,11 @@ export class UsersController {
 		return this.userService.deleteUser({ req });
 	}
 
+	/**
+	 * Patch '/user/update' 라우트 핸들러
+	 * @param req  갱신할 정보및 accesstoken
+	 * @returns 회원정보
+	 */
 	@UseGuards(restAuthGuard('access'))
 	@Patch('/update')
 	updateUser(
@@ -98,6 +103,12 @@ export class UsersController {
 		return this.userService.updateUser({ req });
 	}
 
+	/**
+	 * Patch '/user/update' 라우트 핸들러
+	 * @param req  이메일과 비밀번호
+	 * @returns 비밀번호 재설정 성공유무 메시지
+	 */
+
 	@Patch('find/password')
 	findPassword(
 		@Req() req: Request, //
@@ -105,6 +116,11 @@ export class UsersController {
 		return this.userService.findPassword({ req });
 	}
 
+	/**
+	 * Get '/user/login' 라우트 핸들러
+	 * @param req  accesstoken
+	 * @returns 회원정보
+	 */
 	@UseGuards(restAuthGuard('access'))
 	@Get('login')
 	fetchUser(
