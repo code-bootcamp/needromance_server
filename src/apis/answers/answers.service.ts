@@ -21,8 +21,8 @@ export class AnswersService {
 	 * @param createAnswerDTO 답변 생성 DTO - contents, userId, boardId
 	 * @returns 생성한 답변 정보
 	 */
-	async createAnswer({ createAnswerDTO }: IAnswersServiceCreateAnswer): Promise<Answer> {
-		const { contents, userId, boardId } = createAnswerDTO;
+	async createAnswer({ userId, createAnswerDTO }: IAnswersServiceCreateAnswer): Promise<Answer> {
+		const { contents, boardId } = createAnswerDTO;
 		const answer = this.answersRepository.create({
 			contents,
 			user: {
@@ -59,7 +59,7 @@ export class AnswersService {
 	 * @param updateAnswerDTO 답변 업데이트 DTO: contents
 	 * @returns 업데이트한 답변 정보
 	 */
-	async updateAnswer({ id, updateAnswerDTO }: IAnswersServiceUpdateAnswer): Promise<Answer> {
+	async updateAnswer({ userId, id, updateAnswerDTO }: IAnswersServiceUpdateAnswer): Promise<Answer> {
 		const answer = await this.getAnswerById({ id });
 		answer.contents = updateAnswerDTO.contents;
 		await this.answersRepository.save(answer);
@@ -71,7 +71,7 @@ export class AnswersService {
 	 * 답변 삭제 서비스 로직. 답변을 삭제하지 못하면 NotFoundException 던짐.
 	 * @param id 답변 id
 	 */
-	async deleteAnswer({ id }: IAnswersServiceDeleteAnswer): Promise<void> {
+	async deleteAnswer({ userId, id }: IAnswersServiceDeleteAnswer): Promise<void> {
 		const deleteResult = await this.answersRepository.delete({ id });
 
 		if (!deleteResult.affected) {

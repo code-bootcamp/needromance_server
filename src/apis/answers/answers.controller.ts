@@ -24,7 +24,7 @@ export class AnswersController {
 		@Req() req: Request & IAuthUser, //
 		@Body() createAnswerDTO: CreateAnswerDTO, //
 	): Promise<Answer> {
-		return this.answersService.createAnswer({ createAnswerDTO });
+		return this.answersService.createAnswer({ userId: req.user.id, createAnswerDTO });
 	}
 
 	/**
@@ -41,7 +41,7 @@ export class AnswersController {
 		@Param('id', ParseIntPipe) id: number, //
 		@Body() updateAnswerDTO: UpdateAnswerDTO,
 	): Promise<Answer> {
-		return this.answersService.updateAnswer({ id, updateAnswerDTO });
+		return this.answersService.updateAnswer({ userId: req.user.id, id, updateAnswerDTO });
 	}
 
 	/**
@@ -55,6 +55,6 @@ export class AnswersController {
 		@Req() req: Request & IAuthUser, //
 		@Param('id', ParseIntPipe) id: number, //
 	): Promise<void> {
-		return this.answersService.deleteAnswer({ id });
+		return this.answersService.deleteAnswer({ userId: req.user.id, id });
 	}
 }
