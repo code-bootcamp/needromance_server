@@ -24,8 +24,6 @@ export class BoardsController {
 		@Req() req: Request & IAuthUser, //
 		@Body() createBoardDTO: CreateBoardDTO,
 	): Promise<Board> {
-		console.log(req.user);
-
 		return this.boardsService.createBoard({ userId: req.user.id, createBoardDTO });
 	}
 
