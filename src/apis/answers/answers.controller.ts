@@ -59,6 +59,13 @@ export class AnswersController {
 		return this.answersService.deleteAnswer({ userId: req.user.id, id });
 	}
 
+	/**
+	 * PATCH '/:id/status' 라우트 핸들러
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
+	 * @param id 답변 id
+	 * @param updateAnswerStatusDTO 답변 상태 업데이트 DTO: boardId, status
+	 * @returns 업데이트한 답변 정보
+	 */
 	@Patch('/:id/status')
 	@UseGuards(restAuthGuard('access'))
 	updateAnswerStatus(
