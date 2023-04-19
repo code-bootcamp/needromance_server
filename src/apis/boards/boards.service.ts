@@ -10,6 +10,7 @@ import {
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
 import { HashtagsService } from '../hashtags/hashtags.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class BoardsService {
@@ -17,6 +18,7 @@ export class BoardsService {
 		@InjectRepository(Board)
 		private readonly boardsRepository: Repository<Board>, //
 		private readonly hashtagsService: HashtagsService, //
+		private readonly usersService: UsersService, //
 	) {}
 
 	/**
@@ -25,16 +27,16 @@ export class BoardsService {
 	 * @param createBoardDTO 게시글 생성 DTO: title, contents, hashtags?
 	 * @returns 생성한 게시글 정보
 	 */
-	async createBoard({ userId, createBoardDTO }: IBoardsServiceCreateBoard): Promise<Board> {
+	async createBoard({ userId: id, createBoardDTO }: IBoardsServiceCreateBoard): Promise<Board> {
+		await this.usersService.getOneUserById({ id });
+
 		const { title, contents, hashtags } = createBoardDTO;
 		const _hashtags = await this.hashtagsService.createHashtags({ hashtags });
 		const board = this.boardsRepository.create({
 			title,
 			contents,
 			hashtags: _hashtags,
-			user: {
-				id: userId,
-			},
+			user: { id },
 		});
 		await this.boardsRepository.save(board);
 		return board;
