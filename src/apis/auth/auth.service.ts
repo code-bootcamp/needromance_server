@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import {
 	IAuthServiceGetAccessToken,
@@ -7,6 +7,7 @@ import {
 	IAuthServiceSetAdminRefreshToken,
 	IAuthServiceSetRefreshToken,
 	IAuthServiceSignIn,
+	IAuthServiceSocialLogin,
 } from './interfaces/auth-services.interface';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
@@ -17,10 +18,10 @@ import { Cache } from 'cache-manager';
 @Injectable()
 export class AuthService {
 	constructor(
-		private readonly usersService: UsersService, //
-		private readonly jwtService: JwtService,
 		@Inject(CACHE_MANAGER)
 		private readonly cacheManager: Cache,
+		private readonly usersService: UsersService, //
+		private readonly jwtService: JwtService,
 	) {}
 
 	getUserAccessToken({ user }: IAuthServiceGetAccessToken): string {
@@ -87,16 +88,14 @@ export class AuthService {
 
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
 		const { email, password } = req.body;
-
 		if (email === process.env.ADMIN_EMAIL) {
 			await this.setAdminRefreshToken({ res });
 			return this.getAdminAccessToken();
 		}
 
 		const user = await this.usersService.isUser({ email });
-		console.log(user);
+		if (!user) throw new UnprocessableEntityException('등록되지 않은 회원입니다.');
 		const isValid = await bcrypt.compare(password, user.password);
-		console.log(isValid);
 		if (!isValid) {
 			throw new UnauthorizedException('올바른 정보를 입력해주세요');
 		}
@@ -145,5 +144,21 @@ export class AuthService {
 		} else {
 			return this.getAdminAccessToken();
 		}
+	}
+
+	async socialLogin({ req, res }: IAuthServiceSocialLogin) {
+		console.log(req.user);
+
+		const user = await this.usersService.isUser({ email: req.user.email });
+		//회원이 아닌경우 닉네임 재설정을 해준다.
+		if (!user) {
+			//이 부분은 배포후 작업하겠다.
+		}
+
+		//회원인 경우 토큰발급해주어 로그인 시켜준다.
+		await this.setRefreshToken({ user, res });
+
+		//마지막으로 메인페이지로 라다이랙트시켜준다.
+		res.redirect('/마이페이지');
 	}
 }

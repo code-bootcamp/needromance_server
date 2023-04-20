@@ -15,7 +15,7 @@ import { AdminModule } from './apis/admin/admin.module';
 
 @Module({
 	imports: [
-  	AdminModule,
+		AdminModule,
 		AuthModule,
 		AnswersModule,
 		BoardsModule,
