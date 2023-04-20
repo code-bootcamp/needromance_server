@@ -35,3 +35,14 @@ export interface IAuthServiceLogout {
 export interface IAuthServiceRestoreToken {
 	req: Request & IAuthUser;
 }
+
+export interface IAuthServiceSocialLogin {
+	req: Request & IOAuthUser;
+	res: Response;
+}
+export interface IOAuthUser {
+	user: {
+		email: string;
+		role: string;
+	};
+}

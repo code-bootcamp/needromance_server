@@ -1,8 +1,9 @@
-import { Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { restAuthGuard } from './guard/jwt-auth-quard';
-import { IAuthUser } from './interfaces/auth-services.interface';
+import { IAuthUser, IOAuthUser } from './interfaces/auth-services.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -29,9 +30,10 @@ export class AuthController {
 	 * @param req 헤더에 accesstoken을 담아 요청을 보냄
 	 * @returns 로그아웃 성공유무 메세지
 	 */
-	@UseGuards(restAuthGuard('access'))
+
 	@HttpCode(HttpStatus.OK)
 	@Post('/logout')
+	@UseGuards(restAuthGuard('access'))
 	logout(
 		@Req() req: Request & IAuthUser, //
 	): Promise<string> {
@@ -43,12 +45,24 @@ export class AuthController {
 	 * @param req 헤더에 accesstoken을 담아 요청을 보냄
 	 * @returns accestoken
 	 */
-	@UseGuards(restAuthGuard('access'))
+
 	@HttpCode(HttpStatus.OK)
 	@Post('/restoretoken')
+	@UseGuards(restAuthGuard('access'))
 	restoreAccessToken(
 		@Req() req: Request & IAuthUser, //
 	): Promise<string> {
 		return this.authService.restoreAccessToken({ req });
+	}
+
+	// @HttpCode(HttpStatus.OK)
+	@Get('/login/google')
+	@UseGuards(AuthGuard('google'))
+	async loginGoogle(
+		@Req() req: Request & IOAuthUser, //
+		@Res() res: Response,
+	) {
+		this.authService.socialLogin({ req, res });
+		return res.redirect('http://127.0.0.1:5500/need-romance/test.html');
 	}
 }

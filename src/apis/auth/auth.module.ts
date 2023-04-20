@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh-strategy';
+import { JwtGoogleStrategy } from './strategies/jwt-social-google.strategy';
 
 @Module({
 	imports: [
@@ -17,6 +18,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh-strategy';
 		AuthService, //
 		JwtAccessStrategy,
 		JwtRefreshStrategy,
+		JwtGoogleStrategy,
 	],
 	controllers: [
 		AuthController, //
