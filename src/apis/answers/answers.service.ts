@@ -9,6 +9,7 @@ import {
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceGetAnswersByBoardId,
 	IAnswersServiceUpdateAnswer,
+	IAnswersServiceUpdateAnswerLikes,
 	IAnswersServiceUpdateAnswerStatus,
 } from './interface/answers-service.interface';
 import { UsersService } from '../users/users.service';
@@ -164,5 +165,11 @@ export class AnswersService {
 			.getMany();
 
 		return answers;
+	}
+
+	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<string> {
+		console.log(userId, id, updateAnswerLikesDTO);
+
+		return 'updateAnswerLikes';
 	}
 }

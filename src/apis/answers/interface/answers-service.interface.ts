@@ -1,4 +1,5 @@
 import { CreateAnswerDTO } from '../dto/create-answer.dto';
+import { UpdateAnswerLikesDTO } from '../dto/update-answer-likes.dto';
 import { UpdateAnswerStatusDTO } from '../dto/update-answer-status.dto';
 import { UpdateAnswerDTO } from '../dto/update-answer.dto';
 
@@ -36,4 +37,10 @@ export interface IAnswersServiceUpdateAnswerStatus {
 export interface IAnswersServiceGetAnswersByBoardId {
 	boardId: number;
 	status: number;
+}
+
+export interface IAnswersServiceUpdateAnswerLikes {
+	userId: string;
+	id: number;
+	updateAnswerLikesDTO: UpdateAnswerLikesDTO;
 }
