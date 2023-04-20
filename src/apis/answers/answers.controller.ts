@@ -6,6 +6,7 @@ import { UpdateAnswerDTO } from './dto/update-answer.dto';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { UpdateAnswerStatusDTO } from './dto/update-answer-status.dto';
+import { UpdateAnswerLikesDTO } from './dto/update-answer-likes.dto';
 
 @Controller('answers')
 export class AnswersController {
@@ -88,5 +89,15 @@ export class AnswersController {
 		@Query('status', ParseIntPipe) status: number,
 	): Promise<Answer[]> {
 		return this.answersService.getAnswersByBoardId({ boardId, status });
+	}
+
+	@Patch('/:id/likes')
+	@UseGuards(restAuthGuard('access'))
+	updateAnswerLikes(
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateAnswerLikesDTO: UpdateAnswerLikesDTO,
+	): string {
+		return 'updateAnswerLikes';
 	}
 }
