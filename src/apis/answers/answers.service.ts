@@ -204,4 +204,8 @@ export class AnswersService {
 		const likes = (await relationQueryBuilder.loadMany()).length;
 		return likes;
 	}
+
+	async getBestAnswers(): Promise<string> {
+		return 'getBestAnswers';
+	}
 }

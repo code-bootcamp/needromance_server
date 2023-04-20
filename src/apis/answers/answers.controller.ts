@@ -104,4 +104,9 @@ export class AnswersController {
 	): Promise<number> {
 		return this.answersService.updateAnswerLikes({ userId: req.user.id, id });
 	}
+
+	@Get('/best')
+	getBestAnswers(): Promise<string> {
+		return this.answersService.getBestAnswers();
+	}
 }
