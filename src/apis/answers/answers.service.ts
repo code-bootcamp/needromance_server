@@ -53,8 +53,8 @@ export class AnswersService {
 	 * @returns id에 해당하는 답변
 	 */
 	async getAnswerById({ id }: IAnswersServiceGetAnswerById): Promise<Answer> {
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder.where('id = :id', { id }).getOne();
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await relationQueryBuilder.where('id = :id', { id }).getOne();
 
 		if (!answer) {
 			throw new NotFoundException('답변을 찾을 수 없습니다.');
@@ -70,8 +70,8 @@ export class AnswersService {
 	 * @returns 답변 id와 유저 id로 조회한 답변 정보
 	 */
 	async getAnswerByIdAndUserId({ id, userId }: IAnswersServiceGetAnswerByIdAndUserId): Promise<Answer> {
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await relationQueryBuilder
 			.where('id = :id', { id })
 			.andWhere('answer.user.id = :userId', { userId })
 			.getOne();
@@ -133,8 +133,8 @@ export class AnswersService {
 		await this.boardsService.getBoardByIdAndUserId({ id: updateAnswerStatusDTO.boardId, userId });
 
 		// 답변 id로 답변 조회하기(유저 조인 필요)
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await relationQueryBuilder
 			.where('answer.id = :id', { id })
 			.leftJoinAndSelect('answer.user', 'user')
 			.getOne();
@@ -159,8 +159,8 @@ export class AnswersService {
 	 * @returns 게시글 id로 조회한 채택되지 않은 답변 정보(유저 조인)
 	 */
 	async getAnswersByBoardId({ boardId, status }: IAnswersServiceGetAnswersByBoardId): Promise<Answer[]> {
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answers = await queryBuilder
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answers = await relationQueryBuilder
 			.where('answer.board.id = :boardId', { boardId })
 			.andWhere('answer.status = :status', { status })
 			.leftJoinAndSelect('answer.user', 'user')
@@ -186,33 +186,22 @@ export class AnswersService {
 	 * @returns 답변의 좋아요 개수
 	 */
 	async updateAnswerLikes({ userId, id }: IAnswersServiceUpdateAnswerLikes): Promise<number> {
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const likedByUsers: User[] = await queryBuilder //
+		const relationQueryBuilder = this.answersRepository //
+			.createQueryBuilder('answer')
 			.relation(Answer, 'likedByUsers')
-			.of(id)
-			.loadMany();
+			.of(id);
+		const likedByUsers: User[] = await relationQueryBuilder.loadMany();
 		const userLikedAnswer = this.checkUserLikedAnswer({ likedByUsers, userId });
 
 		if (userLikedAnswer) {
 			// 이미 좋아요를 누른 경우 좋아요에서 유저 제거
-			await queryBuilder //
-				.relation(Answer, 'likedByUsers')
-				.of(id)
-				.remove(userId);
+			await relationQueryBuilder.remove(userId);
 		} else {
 			// 좋아요를 누르지 않은 경우 좋아요에 유저 추가
-			await queryBuilder //
-				.relation(Answer, 'likedByUsers')
-				.of(id)
-				.add(userId);
+			await relationQueryBuilder.add(userId);
 		}
 
-		const likes = (
-			await queryBuilder //
-				.relation(Answer, 'likedByUsers')
-				.of(id)
-				.loadMany()
-		).length;
+		const likes = (await relationQueryBuilder.loadMany()).length;
 		return likes;
 	}
 }
