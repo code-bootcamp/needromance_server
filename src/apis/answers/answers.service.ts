@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
@@ -183,39 +183,31 @@ export class AnswersService {
 	 * 답변 좋아요 서비스 로직.
 	 * @param userId 유저 id
 	 * @param id 답변 id
-	 * @param updateAnswerLikesDTO 답변 좋아요 업데이트 DTO: likes
-	 * @returns 업데이트한 답변 정보
+	 * @returns 답변의 좋아요 개수
 	 */
-	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<Answer> {
+	async updateAnswerLikes({ userId, id }: IAnswersServiceUpdateAnswerLikes): Promise<number> {
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder
-			.where('answer.id = :id', { id })
-			.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
-			.getOne();
+		const likedByUsers: User[] = await queryBuilder //
+			.relation(Answer, 'likedByUsers')
+			.of(id)
+			.loadMany();
+		const userIdxInLikes = this.checkUserLikedAnswer({ likedByUsers, userId });
 
-		// 두 번 이상 좋아요를 누를 수 없게 하기
-		if (updateAnswerLikesDTO.likes) {
-			const userIdxInLikes = this.checkUserLikedAnswer({ likedByUsers: answer.likedByUsers, userId });
-
-			if (userIdxInLikes !== -1) {
-				throw new UnprocessableEntityException('두 번 이상 좋아요를 누를 수 없습니다.');
-			}
-		}
-
-		if (updateAnswerLikesDTO.likes) {
-			// 좋아요를 누르는 경우 좋아요 저장하기
-			const user = await this.usersService.getOneUserById({ id: userId });
-			answer.likedByUsers.push(user);
+		if (userIdxInLikes !== -1) {
+			// 이미 좋아요를 누른 경우 좋아요에서 유저 제거
+			await queryBuilder //
+				.relation(Answer, 'likedByUsers')
+				.of(id)
+				.remove(userId);
 		} else {
-			// 좋아요를 취소하는 경우 좋아요에서 유저 제거하기
-			const userIdxInLikes = this.checkUserLikedAnswer({ likedByUsers: answer.likedByUsers, userId });
-
-			if (userIdxInLikes !== -1) {
-				answer.likedByUsers.splice(userIdxInLikes, 1);
-			}
+			// 좋아요를 누르지 않은 경우 좋아요에 유저 추가
+			await queryBuilder //
+				.relation(Answer, 'likedByUsers')
+				.of(id)
+				.add(userId);
 		}
-		await this.answersRepository.save(answer);
 
-		return answer;
+		const likes = (await queryBuilder.relation(Answer, 'likedByUsers').of(id).loadMany()).length;
+		return likes;
 	}
 }

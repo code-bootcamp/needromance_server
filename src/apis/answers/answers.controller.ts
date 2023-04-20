@@ -6,7 +6,6 @@ import { UpdateAnswerDTO } from './dto/update-answer.dto';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { UpdateAnswerStatusDTO } from './dto/update-answer-status.dto';
-import { UpdateAnswerLikesDTO } from './dto/update-answer-likes.dto';
 
 @Controller('answers')
 export class AnswersController {
@@ -95,7 +94,6 @@ export class AnswersController {
 	 * PATCH '/answers/:id/likes' 라우트 핸들러
 	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @param id 답변 id
-	 * @param updateAnswerLikesDTO 답변 좋아요 업데이트 DTO: likes
 	 * @returns 업데이트한 답변 정보
 	 */
 	@Patch('/:id/likes')
@@ -103,8 +101,7 @@ export class AnswersController {
 	updateAnswerLikes(
 		@Req() req: Request & IAuthUser, //
 		@Param('id', ParseIntPipe) id: number,
-		@Body() updateAnswerLikesDTO: UpdateAnswerLikesDTO,
-	): Promise<Answer> {
-		return this.answersService.updateAnswerLikes({ userId: req.user.id, id, updateAnswerLikesDTO });
+	): Promise<number> {
+		return this.answersService.updateAnswerLikes({ userId: req.user.id, id });
 	}
 }
