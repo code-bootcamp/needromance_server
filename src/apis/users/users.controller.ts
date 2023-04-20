@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-import { IAuthRequest } from 'src/commons/interface';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from './dto/create-user.dto';
