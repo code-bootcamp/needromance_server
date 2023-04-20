@@ -187,34 +187,31 @@ export class AnswersService {
 	 * @returns 업데이트한 답변 정보
 	 */
 	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<Answer> {
-		// 두 번 이상 좋아요를 누를 수 없게 하기
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
 		const answer = await queryBuilder
 			.where('answer.id = :id', { id })
 			.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
 			.getOne();
 
+		// 두 번 이상 좋아요를 누를 수 없게 하기
 		if (updateAnswerLikesDTO.likes) {
-			const index = answer.likedByUsers.findIndex((likedUser: User) => {
-				return likedUser.id === userId;
-			});
+			const userIdxInLikes = this.checkUserLikedAnswer({ likedByUsers: answer.likedByUsers, userId });
 
-			if (index !== -1) {
+			if (userIdxInLikes !== -1) {
 				throw new UnprocessableEntityException('두 번 이상 좋아요를 누를 수 없습니다.');
 			}
 		}
 
-		// 처음으로 좋아요를 누르는 경우 좋아요 저장하기
-		const user = await this.usersService.getOneUserById({ id: userId });
 		if (updateAnswerLikesDTO.likes) {
+			// 좋아요를 누르는 경우 좋아요 저장하기
+			const user = await this.usersService.getOneUserById({ id: userId });
 			answer.likedByUsers.push(user);
 		} else {
-			const index = answer.likedByUsers.findIndex((likedUser: User) => {
-				return likedUser.id === userId;
-			});
+			// 좋아요를 취소하는 경우 좋아요에서 유저 제거하기
+			const userIdxInLikes = this.checkUserLikedAnswer({ likedByUsers: answer.likedByUsers, userId });
 
-			if (index !== -1) {
-				answer.likedByUsers.splice(index, 1);
+			if (userIdxInLikes !== -1) {
+				answer.likedByUsers.splice(userIdxInLikes, 1);
 			}
 		}
 		await this.answersRepository.save(answer);
