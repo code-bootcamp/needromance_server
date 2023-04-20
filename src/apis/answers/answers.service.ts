@@ -173,10 +173,10 @@ export class AnswersService {
 	 * 좋아요를 누른 유저 배열에 유저가 존재하는지 확인하는 서비스 로직.
 	 * @param likedByUsers 답변에 좋아요를 누른 유저 배열
 	 * @param userId 유저 id
-	 * @returns 답변에 좋아요를 누른 유저 배열에 유저가 존재한다면 해당 인덱스 반환. 유저가 존재하지 않는다면 -1 반환.
+	 * @returns 답변에 좋아요를 누른 유저 배열에 유저가 존재한다면 true 반환. 존재하지 않는다면 false 반환.
 	 */
-	checkUserLikedAnswer({ likedByUsers, userId }: IAnswersServiceCheckUserLikedAnswer): number {
-		return likedByUsers.findIndex((likedUser: User) => likedUser.id === userId);
+	checkUserLikedAnswer({ likedByUsers, userId }: IAnswersServiceCheckUserLikedAnswer): boolean {
+		return likedByUsers.findIndex((likedUser: User) => likedUser.id === userId) !== -1;
 	}
 
 	/**
@@ -191,9 +191,9 @@ export class AnswersService {
 			.relation(Answer, 'likedByUsers')
 			.of(id)
 			.loadMany();
-		const userIdxInLikes = this.checkUserLikedAnswer({ likedByUsers, userId });
+		const userLikedAnswer = this.checkUserLikedAnswer({ likedByUsers, userId });
 
-		if (userIdxInLikes !== -1) {
+		if (userLikedAnswer) {
 			// 이미 좋아요를 누른 경우 좋아요에서 유저 제거
 			await queryBuilder //
 				.relation(Answer, 'likedByUsers')
@@ -207,7 +207,12 @@ export class AnswersService {
 				.add(userId);
 		}
 
-		const likes = (await queryBuilder.relation(Answer, 'likedByUsers').of(id).loadMany()).length;
+		const likes = (
+			await queryBuilder //
+				.relation(Answer, 'likedByUsers')
+				.of(id)
+				.loadMany()
+		).length;
 		return likes;
 	}
 }
