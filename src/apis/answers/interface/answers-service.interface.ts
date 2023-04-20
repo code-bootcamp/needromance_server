@@ -39,11 +39,6 @@ export interface IAnswersServiceGetAnswersByBoardId {
 	status: number;
 }
 
-export interface IAnswersServiceGetOneAnswerJoinUser {
-	id: number;
-	userId: string;
-}
-
 export interface IAnswersServiceUpdateAnswerLikes {
 	userId: string;
 	id: number;

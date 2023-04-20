@@ -8,7 +8,6 @@ import {
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceGetAnswersByBoardId,
-	IAnswersServiceGetOneAnswerJoinUser,
 	IAnswersServiceUpdateAnswer,
 	IAnswersServiceUpdateAnswerLikes,
 	IAnswersServiceUpdateAnswerStatus,
@@ -169,6 +168,13 @@ export class AnswersService {
 		return answers;
 	}
 
+	/**
+	 * 답변 좋아요 서비스 로직.
+	 * @param userId 유저 id
+	 * @param id 답변 id
+	 * @param updateAnswerLikesDTO 답변 좋아요 업데이트 DTO: likes
+	 * @returns 업데이트한 답변 정보
+	 */
 	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<Answer> {
 		// 두 번 이상 좋아요를 누를 수 없게 하기
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
