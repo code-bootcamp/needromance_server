@@ -91,6 +91,13 @@ export class AnswersController {
 		return this.answersService.getAnswersByBoardId({ boardId, status });
 	}
 
+	/**
+	 * PATCH '/answers/:id/likes' 라우트 핸들러
+	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
+	 * @param id 답변 id
+	 * @param updateAnswerLikesDTO 답변 좋아요 업데이트 DTO: likes
+	 * @returns 업데이트한 답변 정보
+	 */
 	@Patch('/:id/likes')
 	@UseGuards(restAuthGuard('access'))
 	updateAnswerLikes(
