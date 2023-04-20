@@ -6,6 +6,7 @@ import { UpdateAnswerDTO } from './dto/update-answer.dto';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { UpdateAnswerStatusDTO } from './dto/update-answer-status.dto';
+import { GetBestAnswers } from './dto/get-best-answers.dto';
 
 @Controller('answers')
 export class AnswersController {
@@ -106,7 +107,7 @@ export class AnswersController {
 	}
 
 	@Get('/best')
-	getBestAnswers(): Promise<string> {
+	getBestAnswers(): Promise<GetBestAnswers[]> {
 		return this.answersService.getBestAnswers();
 	}
 }

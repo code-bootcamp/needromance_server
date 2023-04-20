@@ -16,6 +16,7 @@ import {
 import { UsersService } from '../users/users.service';
 import { BoardsService } from '../boards/boards.service';
 import { User } from '../users/entity/user.entity';
+import { GetBestAnswers } from './dto/get-best-answers.dto';
 
 @Injectable()
 export class AnswersService {
@@ -205,7 +206,24 @@ export class AnswersService {
 		return likes;
 	}
 
-	async getBestAnswers(): Promise<string> {
-		return 'getBestAnswers';
+	async getBestAnswers(): Promise<GetBestAnswers[]> {
+		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const topThreeAnswers = (
+			await queryBuilder
+				.leftJoinAndSelect('answer.user', 'user')
+				.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
+				.orderBy('answer.id', 'DESC')
+				.getMany()
+		).slice(0, 3);
+		const bestAnswers: GetBestAnswers[] = topThreeAnswers.map((bestAnswer: Answer) => {
+			return new GetBestAnswers(
+				bestAnswer.user.userImg,
+				bestAnswer.user.nickname,
+				bestAnswer.contents,
+				bestAnswer.likedByUsers.length,
+			);
+		});
+
+		return bestAnswers;
 	}
 }
