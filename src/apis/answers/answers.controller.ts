@@ -97,7 +97,7 @@ export class AnswersController {
 		@Req() req: Request & IAuthUser, //
 		@Param('id', ParseIntPipe) id: number,
 		@Body() updateAnswerLikesDTO: UpdateAnswerLikesDTO,
-	): Promise<string> {
+	): Promise<Answer> {
 		return this.answersService.updateAnswerLikes({ userId: req.user.id, id, updateAnswerLikesDTO });
 	}
 }

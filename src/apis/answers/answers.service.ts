@@ -169,7 +169,7 @@ export class AnswersService {
 		return answers;
 	}
 
-	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<string> {
+	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<Answer> {
 		// 두 번 이상 좋아요를 누를 수 없게 하기
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
 		const answer = await queryBuilder
@@ -202,6 +202,6 @@ export class AnswersService {
 		}
 		await this.answersRepository.save(answer);
 
-		return 'updateAnswerLikes';
+		return answer;
 	}
 }
