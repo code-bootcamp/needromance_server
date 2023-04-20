@@ -33,7 +33,7 @@ export class BoardsController {
 	 * @returns 조회한 게시글 10개
 	 */
 	@Get()
-	findAll(
+	getTenBoards(
 		@Query('page', ParseIntPipe) page: number, //
 	): Promise<Board[]> {
 		return this.boardsService.getTenBoards({ page });
@@ -45,7 +45,7 @@ export class BoardsController {
 	 * @returns 조회한 게시글 정보
 	 */
 	@Get('/:id')
-	findOne(
+	getBoardById(
 		@Param('id', ParseIntPipe) id: number, //
 	): Promise<Board> {
 		return this.boardsService.getBoardById({ id });
