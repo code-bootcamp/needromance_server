@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
@@ -15,6 +15,7 @@ import {
 } from './interface/answers-service.interface';
 import { UsersService } from '../users/users.service';
 import { BoardsService } from '../boards/boards.service';
+import { User } from '../users/entity/user.entity';
 
 @Injectable()
 export class AnswersService {
@@ -168,22 +169,38 @@ export class AnswersService {
 		return answers;
 	}
 
-	async getOneAnswerJoinUser({ id, userId }: IAnswersServiceGetOneAnswerJoinUser): Promise<Answer> {
+	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<string> {
+		// 두 번 이상 좋아요를 누를 수 없게 하기
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
 		const answer = await queryBuilder
 			.where('answer.id = :id', { id })
-			.leftJoinAndSelect('answer.user', 'user', 'user.id = :userId', { userId })
+			.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
 			.getOne();
 
-		return answer;
-	}
+		if (updateAnswerLikesDTO.likes) {
+			const index = answer.likedByUsers.findIndex((likedUser: User) => {
+				return likedUser.id === userId;
+			});
 
-	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<string> {
-		// 자신이 작성한 답변에 좋아요 할 수 없게 하기
-		const answer = await this.getOneAnswerJoinUser({ id, userId });
-		if (answer.user) {
-			throw new ConflictException('자신이 작성한 답변에 좋아요 할 수 없습니다.');
+			if (index !== -1) {
+				throw new UnprocessableEntityException('두 번 이상 좋아요를 누를 수 없습니다.');
+			}
 		}
+
+		// 처음으로 좋아요를 누르는 경우 좋아요 저장하기
+		const user = await this.usersService.getOneUserById({ id: userId });
+		if (updateAnswerLikesDTO.likes) {
+			answer.likedByUsers.push(user);
+		} else {
+			const index = answer.likedByUsers.findIndex((likedUser: User) => {
+				return likedUser.id === userId;
+			});
+
+			if (index !== -1) {
+				answer.likedByUsers.splice(index, 1);
+			}
+		}
+		await this.answersRepository.save(answer);
 
 		return 'updateAnswerLikes';
 	}
