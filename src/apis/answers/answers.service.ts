@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import {
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceGetAnswersByBoardId,
+	IAnswersServiceGetOneAnswerJoinUser,
 	IAnswersServiceUpdateAnswer,
 	IAnswersServiceUpdateAnswerLikes,
 	IAnswersServiceUpdateAnswerStatus,
@@ -167,8 +168,22 @@ export class AnswersService {
 		return answers;
 	}
 
+	async getOneAnswerJoinUser({ id, userId }: IAnswersServiceGetOneAnswerJoinUser): Promise<Answer> {
+		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await queryBuilder
+			.where('answer.id = :id', { id })
+			.leftJoinAndSelect('answer.user', 'user', 'user.id = :userId', { userId })
+			.getOne();
+
+		return answer;
+	}
+
 	async updateAnswerLikes({ userId, id, updateAnswerLikesDTO }: IAnswersServiceUpdateAnswerLikes): Promise<string> {
-		console.log(userId, id, updateAnswerLikesDTO);
+		// 자신이 작성한 답변에 좋아요 할 수 없게 하기
+		const answer = await this.getOneAnswerJoinUser({ id, userId });
+		if (answer.user) {
+			throw new ConflictException('자신이 작성한 답변에 좋아요 할 수 없습니다.');
+		}
 
 		return 'updateAnswerLikes';
 	}
