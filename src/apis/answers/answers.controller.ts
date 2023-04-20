@@ -106,6 +106,10 @@ export class AnswersController {
 		return this.answersService.updateAnswerLikes({ userId: req.user.id, id });
 	}
 
+	/**
+	 * GET '/answers/best' 라우트 핸들러
+	 * @returns GetBestAnswers 배열 - GetBestAnswers: userImg, nickname, contents, likes
+	 */
 	@Get('/best')
 	getBestAnswers(): Promise<GetBestAnswers[]> {
 		return this.answersService.getBestAnswers();

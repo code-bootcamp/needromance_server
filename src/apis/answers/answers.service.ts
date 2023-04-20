@@ -206,6 +206,10 @@ export class AnswersService {
 		return likes;
 	}
 
+	/**
+	 * 좋아요 수 내림차순으로 조회한 첫 번째 3개의 답변을 사용하여 GetBestAnswers 배열을 생성하여 리턴.
+	 * @returns GetBestAnswers 배열 - GetBestAnswers: userImg, nickname, contents, likes
+	 */
 	async getBestAnswers(): Promise<GetBestAnswers[]> {
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
 		const topThreeAnswers = (
