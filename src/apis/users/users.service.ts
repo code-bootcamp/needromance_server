@@ -235,7 +235,7 @@ export class UsersService {
 		if (status) {
 			user.point += 10;
 		} else {
-			user.point -= 10;
+			// user.point -= 10;
 		}
 
 		await this.userRepository.save(user);

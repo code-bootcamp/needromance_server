@@ -36,6 +36,7 @@ export interface IUserServiceUpdateUser {
 export interface IUserServiceRstorePassword {
 	req: Request;
 }
+
 export interface IUserServiceFetchUser {
 	req: Request & IAuthUser;
 }

@@ -1,3 +1,4 @@
+import { User } from 'src/apis/users/entity/user.entity';
 import { CreateAnswerDTO } from '../dto/create-answer.dto';
 import { UpdateAnswerStatusDTO } from '../dto/update-answer-status.dto';
 import { UpdateAnswerDTO } from '../dto/update-answer.dto';
@@ -31,4 +32,19 @@ export interface IAnswersServiceUpdateAnswerStatus {
 	userId: string;
 	id: number;
 	updateAnswerStatusDTO: UpdateAnswerStatusDTO;
+}
+
+export interface IAnswersServiceGetAnswersByBoardId {
+	boardId: number;
+	status: number;
+}
+
+export interface IAnswersServiceCheckUserLikedAnswer {
+	likedByUsers: User[];
+	userId: string;
+}
+
+export interface IAnswersServiceUpdateAnswerLikes {
+	userId: string;
+	id: number;
 }

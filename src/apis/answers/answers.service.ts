@@ -3,15 +3,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
 import {
+	IAnswersServiceCheckUserLikedAnswer,
 	IAnswersServiceCreateAnswer,
 	IAnswersServiceDeleteAnswer,
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
+	IAnswersServiceGetAnswersByBoardId,
 	IAnswersServiceUpdateAnswer,
+	IAnswersServiceUpdateAnswerLikes,
 	IAnswersServiceUpdateAnswerStatus,
 } from './interface/answers-service.interface';
 import { UsersService } from '../users/users.service';
 import { BoardsService } from '../boards/boards.service';
+import { User } from '../users/entity/user.entity';
+import { GetBestAnswers } from './dto/get-best-answers.dto';
 
 @Injectable()
 export class AnswersService {
@@ -49,8 +54,8 @@ export class AnswersService {
 	 * @returns id에 해당하는 답변
 	 */
 	async getAnswerById({ id }: IAnswersServiceGetAnswerById): Promise<Answer> {
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder.where('id = :id', { id }).getOne();
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await relationQueryBuilder.where('id = :id', { id }).getOne();
 
 		if (!answer) {
 			throw new NotFoundException('답변을 찾을 수 없습니다.');
@@ -66,8 +71,8 @@ export class AnswersService {
 	 * @returns 답변 id와 유저 id로 조회한 답변 정보
 	 */
 	async getAnswerByIdAndUserId({ id, userId }: IAnswersServiceGetAnswerByIdAndUserId): Promise<Answer> {
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await relationQueryBuilder
 			.where('id = :id', { id })
 			.andWhere('answer.user.id = :userId', { userId })
 			.getOne();
@@ -129,8 +134,8 @@ export class AnswersService {
 		await this.boardsService.getBoardByIdAndUserId({ id: updateAnswerStatusDTO.boardId, userId });
 
 		// 답변 id로 답변 조회하기(유저 조인 필요)
-		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await queryBuilder
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await relationQueryBuilder
 			.where('answer.id = :id', { id })
 			.leftJoinAndSelect('answer.user', 'user')
 			.getOne();
@@ -146,5 +151,83 @@ export class AnswersService {
 		await this.answersRepository.save(answer);
 
 		return answer;
+	}
+
+	/**
+	 * (게시글 id 사용) 답변 조회 서비스 로직.
+	 * @param boardId 게시글 id
+	 * @param status 채택 여부 - 1: 채택됨 / 0: 채택되지 않음
+	 * @returns 게시글 id로 조회한 채택되지 않은 답변 정보(유저 조인)
+	 */
+	async getAnswersByBoardId({ boardId, status }: IAnswersServiceGetAnswersByBoardId): Promise<Answer[]> {
+		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answers = await relationQueryBuilder
+			.where('answer.board.id = :boardId', { boardId })
+			.andWhere('answer.status = :status', { status })
+			.leftJoinAndSelect('answer.user', 'user')
+			.getMany();
+
+		return answers;
+	}
+
+	/**
+	 * 좋아요를 누른 유저 배열에 유저가 존재하는지 확인하는 서비스 로직.
+	 * @param likedByUsers 답변에 좋아요를 누른 유저 배열
+	 * @param userId 유저 id
+	 * @returns 답변에 좋아요를 누른 유저 배열에 유저가 존재한다면 true 반환. 존재하지 않는다면 false 반환.
+	 */
+	checkUserLikedAnswer({ likedByUsers, userId }: IAnswersServiceCheckUserLikedAnswer): boolean {
+		return likedByUsers.findIndex((likedUser: User) => likedUser.id === userId) !== -1;
+	}
+
+	/**
+	 * 답변 좋아요 서비스 로직.
+	 * @param userId 유저 id
+	 * @param id 답변 id
+	 * @returns 답변의 좋아요 개수
+	 */
+	async updateAnswerLikes({ userId, id }: IAnswersServiceUpdateAnswerLikes): Promise<number> {
+		const relationQueryBuilder = this.answersRepository //
+			.createQueryBuilder('answer')
+			.relation(Answer, 'likedByUsers')
+			.of(id);
+		const likedByUsers: User[] = await relationQueryBuilder.loadMany();
+		const userLikedAnswer = this.checkUserLikedAnswer({ likedByUsers, userId });
+
+		if (userLikedAnswer) {
+			// 이미 좋아요를 누른 경우 좋아요에서 유저 제거
+			await relationQueryBuilder.remove(userId);
+		} else {
+			// 좋아요를 누르지 않은 경우 좋아요에 유저 추가
+			await relationQueryBuilder.add(userId);
+		}
+
+		const likes = (await relationQueryBuilder.loadMany()).length;
+		return likes;
+	}
+
+	/**
+	 * 좋아요 수 내림차순으로 조회한 첫 번째 3개의 답변을 사용하여 GetBestAnswers 배열을 생성하여 리턴.
+	 * @returns GetBestAnswers 배열 - GetBestAnswers: userImg, nickname, contents, likes
+	 */
+	async getBestAnswers(): Promise<GetBestAnswers[]> {
+		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const topThreeAnswers = (
+			await queryBuilder
+				.leftJoinAndSelect('answer.user', 'user')
+				.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
+				.orderBy('answer.id', 'DESC')
+				.getMany()
+		).slice(0, 3);
+		const bestAnswers: GetBestAnswers[] = topThreeAnswers.map((bestAnswer: Answer) => {
+			return new GetBestAnswers(
+				bestAnswer.user.userImg,
+				bestAnswer.user.nickname,
+				bestAnswer.contents,
+				bestAnswer.likedByUsers.length,
+			);
+		});
+
+		return bestAnswers;
 	}
 }
