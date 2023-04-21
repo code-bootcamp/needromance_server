@@ -126,7 +126,7 @@ export class UsersController {
 	@Get()
 	getTopUsers(
 		@Query('sort') sort: string, //
-	): Promise<string> {
+	): Promise<User[]> {
 		return this.userService.getTopUsers({ sort });
 	}
 }

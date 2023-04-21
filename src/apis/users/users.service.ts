@@ -242,7 +242,17 @@ export class UsersService {
 		await this.userRepository.save(user);
 	}
 
-	async getTopUsers({ sort }: IUsersServiceGetTopUsers): Promise<string> {
-		return 'getTopUsers';
+	async getTopUsers({ sort }: IUsersServiceGetTopUsers): Promise<User[]> {
+		const queryBuilder = this.userRepository.createQueryBuilder('user');
+		if (sort === 'point') {
+			const topFiveUsers: User[] = await queryBuilder //
+				.orderBy('user.point', 'DESC')
+				.take(5)
+				.getMany();
+
+			return topFiveUsers;
+		} else {
+			throw new UnprocessableEntityException('쿼리를 잘못 입력했습니다.');
+		}
 	}
 }
