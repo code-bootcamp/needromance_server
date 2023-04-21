@@ -123,6 +123,11 @@ export class UsersController {
 		return this.userService.fetchUser({ req });
 	}
 
+	/**
+	 * GET '/user?sort=:sort' 라우트 핸들러
+	 * @param sort 정렬 기준: point
+	 * @returns TOP5 유저 배열
+	 */
 	@Get()
 	getTopUsers(
 		@Query('sort') sort: string, //

@@ -242,6 +242,11 @@ export class UsersService {
 		await this.userRepository.save(user);
 	}
 
+	/**
+	 * (point 기준) TOP5 유저 리스트 조회 서비스 로직.
+	 * @param sort 정렬 기준: point
+	 * @returns TOP5 유저 배열
+	 */
 	async getTopUsers({ sort }: IUsersServiceGetTopUsers): Promise<User[]> {
 		const queryBuilder = this.userRepository.createQueryBuilder('user');
 		if (sort === 'point') {
