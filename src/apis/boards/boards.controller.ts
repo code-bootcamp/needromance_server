@@ -27,12 +27,18 @@ export class BoardsController {
 		return this.boardsService.createBoard({ userId: req.user.id, createBoardDTO });
 	}
 
+	/**
+	 * GET '/boards/search?keyword=:keyword&page=:page' 라우트 핸들러
+	 * @param keyword 검색 키워드
+	 * @param page 메인페이지의 게시글 페이지
+	 * @returns 검색 키워드로 조회한 게시글 10개
+	 */
 	@Get('/search')
-	searchBoard(
+	searchBoards(
 		@Query('keyword') keyword: string, //
 		@Query('page', ParseIntPipe) page: number,
 	): Promise<Board[]> {
-		return this.boardsService.searchBoard({ keyword, page });
+		return this.boardsService.searchBoards({ keyword, page });
 	}
 
 	/**

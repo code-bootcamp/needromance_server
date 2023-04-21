@@ -43,7 +43,13 @@ export class BoardsService {
 		return board;
 	}
 
-	async searchBoard({ keyword, page }: IBoardsServiceSearchBoard): Promise<Board[]> {
+	/**
+	 * (게시글 제목 기준) 메인페이지 게시글 검색 서비스 로직.
+	 * @param keyword 검색 키워드
+	 * @param page 메인페이지의 게시글 페이지
+	 * @returns 검색 키워드로 조회한 게시글 10개
+	 */
+	async searchBoards({ keyword, page }: IBoardsServiceSearchBoard): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
