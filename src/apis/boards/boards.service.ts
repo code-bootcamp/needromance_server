@@ -43,10 +43,19 @@ export class BoardsService {
 		return board;
 	}
 
-	async searchBoard({ keyword, page }: IBoardsServiceSearchBoard): Promise<string> {
-		console.log(keyword, typeof keyword);
-		console.log(page, typeof page);
-		return 'searchBoard';
+	async searchBoard({ keyword, page }: IBoardsServiceSearchBoard): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder //
+			.leftJoinAndSelect('board.user', 'user')
+			.leftJoinAndSelect('board.hashtags', 'hashtags')
+			.leftJoinAndSelect('board.answers', 'answer')
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.skip(10 * (page - 1))
+			.take(10)
+			.where('title LIKE :keyword', { keyword: `%${keyword}%` })
+			.getMany();
+
+		return boards;
 	}
 
 	/**

@@ -31,7 +31,7 @@ export class BoardsController {
 	searchBoard(
 		@Query('keyword') keyword: string, //
 		@Query('page', ParseIntPipe) page: number,
-	): Promise<string> {
+	): Promise<Board[]> {
 		return this.boardsService.searchBoard({ keyword, page });
 	}
 
