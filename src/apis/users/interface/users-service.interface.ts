@@ -49,3 +49,7 @@ export interface IUsersServiceUpdateUserPoint {
 	id: string;
 	status: boolean;
 }
+
+export interface IUsersServiceGetTopUsers {
+	sort: string;
+}

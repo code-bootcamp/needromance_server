@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
@@ -17,7 +17,6 @@ export class UsersController {
 	 * @param req / req.query.email email 정보
 	 * @returns boolean
 	 */
-
 	@Get('/find/email')
 	checkEmail(
 		@Req() req: Request, //
@@ -30,19 +29,18 @@ export class UsersController {
 	 * @param req / req.query.nickname nickname 정보
 	 * @returns boolean
 	 */
-
 	@Get('/find/nickname')
 	checkNickname(
 		@Req() req: Request, //
 	): Promise<boolean> {
 		return this.userService.isValidNickname({ req });
 	}
+
 	/**
 	 * Get '/sendtoken' 라우트 핸들러
 	 * @param req / req.query.email email 정보
 	 * @returns void
 	 */
-
 	@Get('/sendtoken')
 	sendToken(
 		@Req() req: Request, //
@@ -55,7 +53,6 @@ export class UsersController {
 	 * @param req / req.query.token token 정보
 	 * @returns boolean
 	 */
-
 	@Get('/checktoken')
 	checkToken(
 		@Req() req: Request, //
@@ -68,7 +65,6 @@ export class UsersController {
 	 * @param createUserDTO 회원가입 정보
 	 * @returns 회원가입 성공 유무 상태코드및 메세지
 	 */
-
 	@Post('/signup')
 	createUser(
 		@Body() createUserDTO: CreateUserDTO, //
@@ -107,7 +103,6 @@ export class UsersController {
 	 * @param req  이메일과 비밀번호
 	 * @returns 비밀번호 재설정 성공유무 메시지
 	 */
-
 	@Patch('find/password')
 	findPassword(
 		@Req() req: Request, //
@@ -120,12 +115,23 @@ export class UsersController {
 	 * @param req  accesstoken
 	 * @returns 회원정보
 	 */
-
 	@UseGuards(restAuthGuard('access'))
 	@Get('login')
 	fetchUser(
 		@Req() req: Request & IAuthUser, //
 	): Promise<User> {
 		return this.userService.fetchUser({ req });
+	}
+
+	/**
+	 * GET '/user?sort=:sort' 라우트 핸들러
+	 * @param sort 정렬 기준: point
+	 * @returns TOP5 유저 배열
+	 */
+	@Get()
+	getTopUsers(
+		@Query('sort') sort: string, //
+	): Promise<User[]> {
+		return this.userService.getTopUsers({ sort });
 	}
 }

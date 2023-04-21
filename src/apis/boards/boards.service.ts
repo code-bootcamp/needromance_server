@@ -8,6 +8,7 @@ import {
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
 	IBoardsServiceGetTenBoards,
+	IBoardsServiceSearchBoards,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
 import { HashtagsService } from '../hashtags/hashtags.service';
@@ -40,6 +41,27 @@ export class BoardsService {
 		});
 		await this.boardsRepository.save(board);
 		return board;
+	}
+
+	/**
+	 * (게시글 제목 기준) 메인페이지 게시글 검색 서비스 로직.
+	 * @param keyword 검색 키워드
+	 * @param page 메인페이지의 게시글 페이지
+	 * @returns 검색 키워드로 조회한 게시글 10개
+	 */
+	async searchBoards({ keyword, page }: IBoardsServiceSearchBoards): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder //
+			.leftJoinAndSelect('board.user', 'user')
+			.leftJoinAndSelect('board.hashtags', 'hashtags')
+			.leftJoinAndSelect('board.answers', 'answer')
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.skip(10 * (page - 1))
+			.take(10)
+			.where('title LIKE :keyword', { keyword: `%${keyword}%` })
+			.getMany();
+
+		return boards;
 	}
 
 	/**
