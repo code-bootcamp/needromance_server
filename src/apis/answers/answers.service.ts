@@ -212,13 +212,13 @@ export class AnswersService {
 	 */
 	async getBestAnswers(): Promise<GetBestAnswers[]> {
 		const queryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const topThreeAnswers = (
-			await queryBuilder
-				.leftJoinAndSelect('answer.user', 'user')
-				.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
-				.orderBy('answer.id', 'DESC')
-				.getMany()
-		).slice(0, 3);
+		const topThreeAnswers = await queryBuilder //
+			.leftJoinAndSelect('answer.user', 'user')
+			.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
+			.orderBy('answer.id', 'DESC')
+			.take(3)
+			.getMany();
+
 		const bestAnswers: GetBestAnswers[] = topThreeAnswers.map((bestAnswer: Answer) => {
 			return new GetBestAnswers(
 				bestAnswer.user.userImg,
