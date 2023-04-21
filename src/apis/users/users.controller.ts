@@ -17,7 +17,6 @@ export class UsersController {
 	 * @param req / req.query.email email 정보
 	 * @returns boolean
 	 */
-
 	@Get('/find/email')
 	checkEmail(
 		@Req() req: Request, //
@@ -30,19 +29,18 @@ export class UsersController {
 	 * @param req / req.query.nickname nickname 정보
 	 * @returns boolean
 	 */
-
 	@Get('/find/nickname')
 	checkNickname(
 		@Req() req: Request, //
 	): Promise<boolean> {
 		return this.userService.isValidNickname({ req });
 	}
+
 	/**
 	 * Get '/sendtoken' 라우트 핸들러
 	 * @param req / req.query.email email 정보
 	 * @returns void
 	 */
-
 	@Get('/sendtoken')
 	sendToken(
 		@Req() req: Request, //
@@ -55,7 +53,6 @@ export class UsersController {
 	 * @param req / req.query.token token 정보
 	 * @returns boolean
 	 */
-
 	@Get('/checktoken')
 	checkToken(
 		@Req() req: Request, //
@@ -68,7 +65,6 @@ export class UsersController {
 	 * @param createUserDTO 회원가입 정보
 	 * @returns 회원가입 성공 유무 상태코드및 메세지
 	 */
-
 	@Post('/signup')
 	createUser(
 		@Body() createUserDTO: CreateUserDTO, //
@@ -107,7 +103,6 @@ export class UsersController {
 	 * @param req  이메일과 비밀번호
 	 * @returns 비밀번호 재설정 성공유무 메시지
 	 */
-
 	@Patch('find/password')
 	findPassword(
 		@Req() req: Request, //
@@ -120,7 +115,6 @@ export class UsersController {
 	 * @param req  accesstoken
 	 * @returns 회원정보
 	 */
-
 	@UseGuards(restAuthGuard('access'))
 	@Get('login')
 	fetchUser(
