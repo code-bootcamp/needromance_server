@@ -8,6 +8,7 @@ import {
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
 	IBoardsServiceGetTenBoards,
+	IBoardsServiceSearchBoard,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
 import { HashtagsService } from '../hashtags/hashtags.service';
@@ -40,6 +41,12 @@ export class BoardsService {
 		});
 		await this.boardsRepository.save(board);
 		return board;
+	}
+
+	async searchBoard({ keyword, page }: IBoardsServiceSearchBoard): Promise<string> {
+		console.log(keyword, typeof keyword);
+		console.log(page, typeof page);
+		return 'searchBoard';
 	}
 
 	/**

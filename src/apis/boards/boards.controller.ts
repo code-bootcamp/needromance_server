@@ -27,6 +27,14 @@ export class BoardsController {
 		return this.boardsService.createBoard({ userId: req.user.id, createBoardDTO });
 	}
 
+	@Get('/search')
+	searchBoard(
+		@Query('keyword') keyword: string, //
+		@Query('page', ParseIntPipe) page: number,
+	): Promise<string> {
+		return this.boardsService.searchBoard({ keyword, page });
+	}
+
 	/**
 	 * GET '/boards?page=:page' 라우트 핸들러
 	 * @param page 메인페이지의 게시글 페이지
