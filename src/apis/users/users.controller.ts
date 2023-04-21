@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
@@ -121,5 +121,12 @@ export class UsersController {
 		@Req() req: Request & IAuthUser, //
 	): Promise<User> {
 		return this.userService.fetchUser({ req });
+	}
+
+	@Get()
+	getTopUsers(
+		@Query('sort') sort: string, //
+	): Promise<string> {
+		return this.userService.getTopUsers({ sort });
 	}
 }

@@ -17,6 +17,7 @@ import {
 	IUserServiceRstorePassword,
 	IUserServiceSendToken,
 	IUserServiceUpdateUser,
+	IUsersServiceGetTopUsers,
 	IUsersServiceUpdateUserPoint,
 } from './interface/users-service.interface';
 
@@ -239,5 +240,9 @@ export class UsersService {
 		}
 
 		await this.userRepository.save(user);
+	}
+
+	async getTopUsers({ sort }: IUsersServiceGetTopUsers): Promise<string> {
+		return 'getTopUsers';
 	}
 }
