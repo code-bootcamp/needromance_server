@@ -6,7 +6,7 @@ export interface IBoardsServiceCreateBoard {
 	createBoardDTO: CreateBoardDTO;
 }
 
-export interface IBoardsServiceSearchBoard {
+export interface IBoardsServiceSearchBoards {
 	keyword: string;
 	page: number;
 }

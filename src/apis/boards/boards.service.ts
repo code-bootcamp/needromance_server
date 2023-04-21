@@ -8,7 +8,7 @@ import {
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
 	IBoardsServiceGetTenBoards,
-	IBoardsServiceSearchBoard,
+	IBoardsServiceSearchBoards,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
 import { HashtagsService } from '../hashtags/hashtags.service';
@@ -49,7 +49,7 @@ export class BoardsService {
 	 * @param page 메인페이지의 게시글 페이지
 	 * @returns 검색 키워드로 조회한 게시글 10개
 	 */
-	async searchBoards({ keyword, page }: IBoardsServiceSearchBoard): Promise<Board[]> {
+	async searchBoards({ keyword, page }: IBoardsServiceSearchBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
