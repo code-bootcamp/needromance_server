@@ -8,6 +8,7 @@ import {
 	IBoardsServiceDeleteBoardsByUserId,
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
+	IBoardsServiceGetBoardsByUserId,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceSearchBoards,
 	IBoardsServiceUpdateBoard,
@@ -194,5 +195,17 @@ export class BoardsService {
 	async deleteBoardsByUserId({ userId }: IBoardsServiceDeleteBoardsByUserId): Promise<void> {
 		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.boardsRepository.delete({ user });
+	}
+
+	/**
+	 * (유저 id 사용) 유저의 모든 게시글 조회 서비스 로직.
+	 * @param userId 유저 id
+	 * @returns 유저 id에 해당하는 모든 게시글
+	 */
+	async getBoardsByUserId({ userId }: IBoardsServiceGetBoardsByUserId): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder.where('board.user.id = :userId', { userId }).getMany();
+
+		return boards;
 	}
 }
