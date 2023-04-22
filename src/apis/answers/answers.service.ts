@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
@@ -24,6 +24,7 @@ export class AnswersService {
 		@InjectRepository(Answer)
 		private readonly answersRepository: Repository<Answer>, //
 		private readonly usersService: UsersService,
+		@Inject(forwardRef(() => BoardsService))
 		private readonly boardsService: BoardsService,
 	) {}
 
