@@ -233,7 +233,7 @@ export class AnswersService {
 	}
 
 	/**
-	 * (게시글 id 사용) 게시글 삭제 전, 게시글의 모든 답변을 삭제하는 서비스 로직.
+	 * (게시글 id 사용) 게시글의 모든 답변 삭제 서비스 로직.
 	 * @param boardId 게시글 id
 	 */
 	async deleteAnswersByBoardId({ boardId }: IAnswersServiceDeleteAnswersByBoardId): Promise<void> {
