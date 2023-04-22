@@ -170,12 +170,15 @@ export class BoardsService {
 	 * @param id 게시글 id
 	 */
 	async deleteBoard({ userId, id }: IBoardsServiceDeleteBoard): Promise<void> {
-		await this.usersService.getOneUserById({ id: userId });
+		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.getBoardByIdAndUserId({ id, userId });
+
+		// 게시글 삭제 전, 게시글의 모든 답변 삭제
+		await this.answersService.deleteAnswersByBoardId({ boardId: id });
 
 		const deleteResult = await this.boardsRepository.delete({
 			id,
-			user: { id: userId },
+			user,
 		});
 
 		if (!deleteResult.affected) {
