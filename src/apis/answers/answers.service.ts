@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entity/answer.entity';
 import { Repository } from 'typeorm';
@@ -6,6 +6,8 @@ import {
 	IAnswersServiceCheckUserLikedAnswer,
 	IAnswersServiceCreateAnswer,
 	IAnswersServiceDeleteAnswer,
+	IAnswersServiceDeleteAnswersByBoardId,
+	IAnswersServiceDeleteAnswersByUserId,
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceGetAnswersByBoardId,
@@ -23,7 +25,9 @@ export class AnswersService {
 	constructor(
 		@InjectRepository(Answer)
 		private readonly answersRepository: Repository<Answer>, //
+		@Inject(forwardRef(() => UsersService))
 		private readonly usersService: UsersService,
+		@Inject(forwardRef(() => BoardsService))
 		private readonly boardsService: BoardsService,
 	) {}
 
@@ -106,13 +110,12 @@ export class AnswersService {
 	 * @param id 답변 id
 	 */
 	async deleteAnswer({ userId, id }: IAnswersServiceDeleteAnswer): Promise<void> {
-		await this.usersService.getOneUserById({ id: userId });
+		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.getAnswerByIdAndUserId({ id, userId });
+
 		const deleteResult = await this.answersRepository.delete({
 			id,
-			user: {
-				id: userId,
-			},
+			user,
 		});
 
 		if (!deleteResult.affected) {
@@ -229,5 +232,26 @@ export class AnswersService {
 		});
 
 		return bestAnswers;
+	}
+
+	/**
+	 * (게시글 id 사용) 게시글의 모든 답변 삭제 서비스 로직.
+	 * @param boardId 게시글 id
+	 */
+	async deleteAnswersByBoardId({ boardId }: IAnswersServiceDeleteAnswersByBoardId): Promise<void> {
+		await this.answersRepository.delete({
+			board: {
+				id: boardId,
+			},
+		});
+	}
+
+	/**
+	 * (유저 id 사용) 유저의 모든 답변 삭제 서비스 로직.
+	 * @param userId 유저 id
+	 */
+	async deleteAnswersByUserId({ userId }: IAnswersServiceDeleteAnswersByUserId): Promise<void> {
+		const user = await this.usersService.getOneUserById({ id: userId });
+		await this.answersRepository.delete({ user });
 	}
 }

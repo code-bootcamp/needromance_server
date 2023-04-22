@@ -1,6 +1,6 @@
 import { Answer } from 'src/apis/answers/entity/answer.entity';
 import { Board } from 'src/apis/boards/entity/board.entity';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -56,24 +56,18 @@ export class User {
 	@OneToMany(
 		() => Board, //
 		(boards) => boards.user,
-		{ nullable: true },
 	)
 	boards: Board[];
 
 	@OneToMany(
 		() => Answer, //
 		(answers) => answers.user,
-		{ nullable: true },
 	)
 	answers: Answer[];
 
 	@ManyToMany(
 		() => Answer, //
 		(likedAnswers) => likedAnswers.likedByUsers,
-		{ nullable: true },
 	)
-	@JoinTable({
-		name: 'user_likedAnswers',
-	})
 	likedAnswers: Answer[];
 }

@@ -1,5 +1,12 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { CACHE_MANAGER, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+	CACHE_MANAGER,
+	Inject,
+	Injectable,
+	NotFoundException,
+	UnprocessableEntityException,
+	forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { DataSource, Repository } from 'typeorm';
@@ -20,6 +27,8 @@ import {
 	IUsersServiceGetTopUsers,
 	IUsersServiceUpdateUserPoint,
 } from './interface/users-service.interface';
+import { AnswersService } from '../answers/answers.service';
+import { BoardsService } from '../boards/boards.service';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +41,10 @@ export class UsersService {
 
 		private readonly mailerService: MailerService,
 		private readonly dataSource: DataSource,
+		@Inject(forwardRef(() => AnswersService))
+		private readonly answersService: AnswersService,
+		@Inject(forwardRef(() => BoardsService))
+		private readonly boardsService: BoardsService,
 	) {}
 
 	async isUser({ email }: IUserServiceFindOneByEmail): Promise<User> {
@@ -153,6 +166,16 @@ export class UsersService {
 			//비밀번호 검증
 			const isValid = await bcrypt.compare(req.body.password, user.password);
 			if (isValid) {
+				// 유저의 모든 답변 삭제
+				await this.answersService.deleteAnswersByUserId({ userId: req.user.id });
+				// 유저 게시글의 모든 답변 삭제
+				const boards = await this.boardsService.getBoardsByUserId({ userId: req.user.id });
+				boards.forEach(async (board) => {
+					await this.answersService.deleteAnswersByBoardId({ boardId: board.id });
+				});
+				// 유저의 모든 게시글 삭제
+				await this.boardsService.deleteBoardsByUserId({ userId: req.user.id });
+
 				const result = await this.dataSource //
 					.createQueryBuilder()
 					.delete()

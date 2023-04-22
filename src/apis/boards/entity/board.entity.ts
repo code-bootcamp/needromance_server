@@ -43,7 +43,6 @@ export class Board {
 	@ManyToMany(
 		() => Hashtag, //
 		(hashtags) => hashtags.boards,
-		{ nullable: true },
 	)
 	@JoinTable({
 		name: 'board_hashtags',
@@ -53,7 +52,6 @@ export class Board {
 	@OneToMany(
 		() => Answer, //
 		(answers) => answers.board,
-		{ nullable: true },
 	)
 	answers: Answer[];
 }

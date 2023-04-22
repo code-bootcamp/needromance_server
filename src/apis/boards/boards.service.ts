@@ -1,18 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { Board } from './entity/board.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
 	IBoardsServiceCreateBoard,
 	IBoardsServiceDeleteBoard,
+	IBoardsServiceDeleteBoardsByUserId,
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
+	IBoardsServiceGetBoardsByUserId,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceSearchBoards,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
 import { HashtagsService } from '../hashtags/hashtags.service';
 import { UsersService } from '../users/users.service';
+import { AnswersService } from '../answers/answers.service';
 
 @Injectable()
 export class BoardsService {
@@ -20,7 +23,10 @@ export class BoardsService {
 		@InjectRepository(Board)
 		private readonly boardsRepository: Repository<Board>, //
 		private readonly hashtagsService: HashtagsService, //
+		@Inject(forwardRef(() => UsersService))
 		private readonly usersService: UsersService, //
+		@Inject(forwardRef(() => AnswersService))
+		private readonly answersService: AnswersService, //
 	) {}
 
 	/**
@@ -167,16 +173,40 @@ export class BoardsService {
 	 * @param id 게시글 id
 	 */
 	async deleteBoard({ userId, id }: IBoardsServiceDeleteBoard): Promise<void> {
-		await this.usersService.getOneUserById({ id: userId });
+		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.getBoardByIdAndUserId({ id, userId });
+
+		// 게시글 삭제 전, 게시글의 모든 답변 삭제
+		await this.answersService.deleteAnswersByBoardId({ boardId: id });
 
 		const deleteResult = await this.boardsRepository.delete({
 			id,
-			user: { id: userId },
+			user,
 		});
 
 		if (!deleteResult.affected) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
 		}
+	}
+
+	/**
+	 * (유저 id 사용) 유저의 모든 게시글 삭제 서비스 로직.
+	 * @param userId 유저 id
+	 */
+	async deleteBoardsByUserId({ userId }: IBoardsServiceDeleteBoardsByUserId): Promise<void> {
+		const user = await this.usersService.getOneUserById({ id: userId });
+		await this.boardsRepository.delete({ user });
+	}
+
+	/**
+	 * (유저 id 사용) 유저의 모든 게시글 조회 서비스 로직.
+	 * @param userId 유저 id
+	 * @returns 유저 id에 해당하는 모든 게시글
+	 */
+	async getBoardsByUserId({ userId }: IBoardsServiceGetBoardsByUserId): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder.where('board.user.id = :userId', { userId }).getMany();
+
+		return boards;
 	}
 }
