@@ -17,10 +17,15 @@ services:
     environment:
       MYSQL_DATABASE: 'romance'
       MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
     ports:
       - 3306:3306
 
   romance-redis:
     image: redis:latest
+    volumes: #redis 마운트할 볼륨 설정
+      - ./redis/redis.conf:/redis/redis.conf
+    restart: always
     ports:
       - 6379:6379
