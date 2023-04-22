@@ -166,6 +166,16 @@ export class UsersService {
 			//비밀번호 검증
 			const isValid = await bcrypt.compare(req.body.password, user.password);
 			if (isValid) {
+				// 유저의 모든 답변 삭제
+				await this.answersService.deleteAnswersByUserId({ userId: req.user.id });
+				// 유저 게시글의 모든 답변 삭제
+				const boards = await this.boardsService.getBoardsByUserId({ userId: req.user.id });
+				boards.forEach(async (board) => {
+					await this.answersService.deleteAnswersByBoardId({ boardId: board.id });
+				});
+				// 유저의 모든 게시글 삭제
+				await this.boardsService.deleteBoardsByUserId({ userId: req.user.id });
+
 				const result = await this.dataSource //
 					.createQueryBuilder()
 					.delete()
