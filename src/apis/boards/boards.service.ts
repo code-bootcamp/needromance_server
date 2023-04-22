@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
 	IBoardsServiceCreateBoard,
 	IBoardsServiceDeleteBoard,
+	IBoardsServiceDeleteBoardsByUserId,
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
 	IBoardsServiceGetTenBoards,
@@ -184,5 +185,14 @@ export class BoardsService {
 		if (!deleteResult.affected) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
 		}
+	}
+
+	/**
+	 * (유저 id 사용) 유저 삭제 전, 유저의 모든 게시글을 삭제하는 서비스 로직.
+	 * @param userId 유저 id
+	 */
+	async deleteBoardsByUserId({ userId }: IBoardsServiceDeleteBoardsByUserId): Promise<void> {
+		const user = await this.usersService.getOneUserById({ id: userId });
+		await this.boardsRepository.delete({ user });
 	}
 }
