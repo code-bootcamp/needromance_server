@@ -52,3 +52,7 @@ export interface IAnswersServiceUpdateAnswerLikes {
 export interface IAnswersServiceDeleteAnswersByBoardId {
 	boardId: number;
 }
+
+export interface IAnswersServiceDeleteAnswersByUserId {
+	userId: string;
+}

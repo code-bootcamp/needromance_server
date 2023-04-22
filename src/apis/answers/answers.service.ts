@@ -7,6 +7,7 @@ import {
 	IAnswersServiceCreateAnswer,
 	IAnswersServiceDeleteAnswer,
 	IAnswersServiceDeleteAnswersByBoardId,
+	IAnswersServiceDeleteAnswersByUserId,
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceGetAnswersByBoardId,
@@ -249,7 +250,7 @@ export class AnswersService {
 	 * (유저 id 사용) 유저의 모든 답변 삭제 서비스 로직.
 	 * @param userId 유저 id
 	 */
-	async deleteAnswersByUserId({ userId }): Promise<void> {
+	async deleteAnswersByUserId({ userId }: IAnswersServiceDeleteAnswersByUserId): Promise<void> {
 		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.answersRepository.delete({ user });
 	}
