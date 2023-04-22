@@ -56,21 +56,18 @@ export class User {
 	@OneToMany(
 		() => Board, //
 		(boards) => boards.user,
-		{ nullable: true },
 	)
 	boards: Board[];
 
 	@OneToMany(
 		() => Answer, //
 		(answers) => answers.user,
-		{ nullable: true },
 	)
 	answers: Answer[];
 
 	@ManyToMany(
 		() => Answer, //
 		(likedAnswers) => likedAnswers.likedByUsers,
-		{ nullable: true },
 	)
 	likedAnswers: Answer[];
 }
