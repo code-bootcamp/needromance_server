@@ -1,6 +1,6 @@
 import { Answer } from 'src/apis/answers/entity/answer.entity';
 import { Board } from 'src/apis/boards/entity/board.entity';
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -72,8 +72,5 @@ export class User {
 		(likedAnswers) => likedAnswers.likedByUsers,
 		{ nullable: true },
 	)
-	@JoinTable({
-		name: 'user_likedAnswers',
-	})
 	likedAnswers: Answer[];
 }

@@ -106,13 +106,12 @@ export class AnswersService {
 	 * @param id 답변 id
 	 */
 	async deleteAnswer({ userId, id }: IAnswersServiceDeleteAnswer): Promise<void> {
-		await this.usersService.getOneUserById({ id: userId });
+		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.getAnswerByIdAndUserId({ id, userId });
+
 		const deleteResult = await this.answersRepository.delete({
 			id,
-			user: {
-				id: userId,
-			},
+			user,
 		});
 
 		if (!deleteResult.affected) {
