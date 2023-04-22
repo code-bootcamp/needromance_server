@@ -24,5 +24,8 @@ services:
 
   romance-redis:
     image: redis:latest
+    volumes: #redis 마운트할 볼륨 설정
+      - ./redis/redis.conf:/redis/redis.conf
+    restart: always
     ports:
       - 6379:6379
