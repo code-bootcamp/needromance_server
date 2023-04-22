@@ -1,5 +1,12 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { CACHE_MANAGER, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import {
+	CACHE_MANAGER,
+	Inject,
+	Injectable,
+	NotFoundException,
+	UnprocessableEntityException,
+	forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { DataSource, Repository } from 'typeorm';
@@ -20,6 +27,8 @@ import {
 	IUsersServiceGetTopUsers,
 	IUsersServiceUpdateUserPoint,
 } from './interface/users-service.interface';
+import { AnswersService } from '../answers/answers.service';
+import { BoardsService } from '../boards/boards.service';
 
 @Injectable()
 export class UsersService {
@@ -32,6 +41,10 @@ export class UsersService {
 
 		private readonly mailerService: MailerService,
 		private readonly dataSource: DataSource,
+		@Inject(forwardRef(() => AnswersService))
+		private readonly answersService: AnswersService,
+		@Inject(forwardRef(() => BoardsService))
+		private readonly boardsService: BoardsService,
 	) {}
 
 	async isUser({ email }: IUserServiceFindOneByEmail): Promise<User> {

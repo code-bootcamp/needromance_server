@@ -12,7 +12,7 @@ import { BoardsModule } from '../boards/boards.module';
 			Answer, //
 		]),
 		forwardRef(() => BoardsModule),
-		UsersModule,
+		forwardRef(() => UsersModule),
 	],
 	controllers: [
 		AnswersController, //

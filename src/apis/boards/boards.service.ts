@@ -23,6 +23,7 @@ export class BoardsService {
 		@InjectRepository(Board)
 		private readonly boardsRepository: Repository<Board>, //
 		private readonly hashtagsService: HashtagsService, //
+		@Inject(forwardRef(() => UsersService))
 		private readonly usersService: UsersService, //
 		@Inject(forwardRef(() => AnswersService))
 		private readonly answersService: AnswersService, //

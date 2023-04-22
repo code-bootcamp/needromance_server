@@ -24,6 +24,7 @@ export class AnswersService {
 	constructor(
 		@InjectRepository(Answer)
 		private readonly answersRepository: Repository<Answer>, //
+		@Inject(forwardRef(() => UsersService))
 		private readonly usersService: UsersService,
 		@Inject(forwardRef(() => BoardsService))
 		private readonly boardsService: BoardsService,
