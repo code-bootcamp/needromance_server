@@ -243,4 +243,13 @@ export class AnswersService {
 			},
 		});
 	}
+
+	/**
+	 * (유저 id 사용) 유저 삭제 전, 유저의 모든 답변을 삭제하는 서비스 로직.
+	 * @param userId 유저 id
+	 */
+	async deleteAnswersByUserId({ userId }): Promise<void> {
+		const user = await this.usersService.getOneUserById({ id: userId });
+		await this.answersRepository.delete({ user });
+	}
 }
