@@ -237,14 +237,10 @@ export class AnswersService {
 	 * @param boardId 게시글 id
 	 */
 	async deleteAnswersByBoardId({ boardId }: IAnswersServiceDeleteAnswersByBoardId): Promise<void> {
-		const deleteResult = await this.answersRepository.delete({
+		await this.answersRepository.delete({
 			board: {
 				id: boardId,
 			},
 		});
-
-		if (!deleteResult.affected) {
-			throw new NotFoundException('게시글에 해당하는 답변을 삭제할 수 없습니다.');
-		}
 	}
 }
