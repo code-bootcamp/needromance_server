@@ -48,3 +48,7 @@ export interface IAnswersServiceUpdateAnswerLikes {
 	userId: string;
 	id: number;
 }
+
+export interface IAnswersServiceDeleteAnswersByBoardId {
+	boardId: number;
+}

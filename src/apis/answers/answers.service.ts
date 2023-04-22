@@ -6,6 +6,7 @@ import {
 	IAnswersServiceCheckUserLikedAnswer,
 	IAnswersServiceCreateAnswer,
 	IAnswersServiceDeleteAnswer,
+	IAnswersServiceDeleteAnswersByBoardId,
 	IAnswersServiceGetAnswerById,
 	IAnswersServiceGetAnswerByIdAndUserId,
 	IAnswersServiceGetAnswersByBoardId,
@@ -229,5 +230,21 @@ export class AnswersService {
 		});
 
 		return bestAnswers;
+	}
+
+	/**
+	 * (게시글 id 사용) 게시글 삭제 전, 게시글의 모든 답변을 삭제하는 서비스 로직.
+	 * @param boardId 게시글 id
+	 */
+	async deleteAnswersByBoardId({ boardId }: IAnswersServiceDeleteAnswersByBoardId): Promise<void> {
+		const deleteResult = await this.answersRepository.delete({
+			board: {
+				id: boardId,
+			},
+		});
+
+		if (!deleteResult.affected) {
+			throw new NotFoundException('게시글에 해당하는 답변을 삭제할 수 없습니다.');
+		}
 	}
 }
