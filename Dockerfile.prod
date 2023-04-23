@@ -1,0 +1,11 @@
+FROM node:18
+
+COPY ./package.json /romance-service/
+COPY ./yarn.lock /romance-service/
+WORKDIR /romance-service/
+RUN yarn install --production
+
+COPY . /romance-service/
+
+RUN yarn build
+CMD yarn start:prod
