@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  romance-service:
+    build:
+      context: .
+      dockerfile: DockerFile
+    volumes:
+      - ./src:/romance-service/src
+    restart: always
+    ports:
+      - 3100:3100
+    env_file:
+      - ./.env.prod
+  ## mysql은 AWS RDS로 외부로 빼두었다.
+  romance-redis:
+    image: redis:latest
+    volumes: #redis 마운트할 볼륨 설정
+      - ./redis/redis.conf:/redis/redis.conf
+    restart: always
+    ports:
+      - 6379:6379
