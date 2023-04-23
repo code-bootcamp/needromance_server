@@ -11,19 +11,8 @@ services:
     ports:
       - 3100:3100
     env_file:
-      - ./.env.docker
-
-  romance-mysql:
-    image: mysql:8
-    environment:
-      MYSQL_DATABASE: 'romance'
-      MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_USER: 'root'
-      MYSQL_PASSWORD: 'root'
-    restart: always
-    ports:
-      - 3306:3306
-
+      - ./.env.prod
+  ## mysql은 AWS RDS로 외부로 빼두었다.
   romance-redis:
     image: redis:latest
     volumes: #redis 마운트할 볼륨 설정
