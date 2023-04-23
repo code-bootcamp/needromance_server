@@ -1,11 +1,18 @@
-FROM node:18
+FROM node:18-alpine
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 COPY ./package.json /romance-service/
 COPY ./yarn.lock /romance-service/
 WORKDIR /romance-service/
+
 RUN yarn install --production
+#pm2설치
+RUN yarn global add pm2
 
 COPY . /romance-service/
 
 RUN yarn build
+# CMD ["pm2-runtime", "node dist/main.js"]
 CMD yarn start:prod
