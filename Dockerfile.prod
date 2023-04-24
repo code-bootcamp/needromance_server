@@ -7,9 +7,10 @@ COPY ./package.json /romance-service/
 COPY ./yarn.lock /romance-service/
 WORKDIR /romance-service/
 
+RUN yarn global add pm2
 RUN yarn install --production
 #pm2설치
-RUN yarn global add pm2
+
 
 COPY . /romance-service/
 

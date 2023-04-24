@@ -48,7 +48,7 @@ export class AuthController {
 
 	@HttpCode(HttpStatus.OK)
 	@Post('/restoretoken')
-	@UseGuards(restAuthGuard('access'))
+	@UseGuards(restAuthGuard('refresh'))
 	restoreAccessToken(
 		@Req() req: Request & IAuthUser, //
 	): Promise<string> {
