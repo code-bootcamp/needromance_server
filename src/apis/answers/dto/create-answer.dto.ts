@@ -5,7 +5,7 @@ export class CreateAnswerDTO {
 		message: '내용을 입력해주세요.',
 	})
 	@IsString({
-		message: '문자열을 입력해주세요.',
+		message: '내용을 문자열로 입력해주세요.',
 	})
 	contents: string;
 
@@ -13,7 +13,7 @@ export class CreateAnswerDTO {
 		message: '게시글 id를 입력해주세요.',
 	})
 	@IsInt({
-		message: '정수를 입력해주세요.',
+		message: '게시글 id를 정수로 입력해주세요.',
 	})
 	boardId: number;
 }
