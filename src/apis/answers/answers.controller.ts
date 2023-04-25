@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
+	Query,
+	Req,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
+} from '@nestjs/common';
 import { AnswersService } from './answers.service';
 import { CreateAnswerDTO } from './dto/create-answer.dto';
 import { Answer } from './entity/answer.entity';
@@ -21,6 +35,7 @@ export class AnswersController {
 	 * @returns 생성한 답변 정보
 	 */
 	@Post()
+	@UsePipes(ValidationPipe)
 	@UseGuards(restAuthGuard('access'))
 	createAnswer(
 		@Req() req: Request & IAuthUser, //
@@ -37,6 +52,7 @@ export class AnswersController {
 	 * @returns 업데이트한 답변 정보
 	 */
 	@Patch('/:id')
+	@UsePipes(ValidationPipe)
 	@UseGuards(restAuthGuard('access'))
 	updateAnswer(
 		@Req() req: Request & IAuthUser, //
