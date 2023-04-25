@@ -1,4 +1,18 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	ParseIntPipe,
+	Patch,
+	Post,
+	Query,
+	Req,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
+} from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { CreateBoardDTO } from './dto/create-board.dto';
 import { UpdateBoardDTO } from './dto/update-board.dto';
@@ -19,6 +33,7 @@ export class BoardsController {
 	 * @returns 생성한 게시글 정보
 	 */
 	@Post()
+	@UsePipes(ValidationPipe)
 	@UseGuards(restAuthGuard('access'))
 	createBoard(
 		@Req() req: Request & IAuthUser, //
@@ -73,6 +88,7 @@ export class BoardsController {
 	 * @returns 업데이트한 게시글 정보
 	 */
 	@Patch('/:id')
+	@UsePipes(ValidationPipe)
 	@UseGuards(restAuthGuard('access'))
 	updateBoard(
 		@Req() req: Request & IAuthUser, //
