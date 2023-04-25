@@ -34,6 +34,11 @@ export class Board {
 	})
 	createdAt: Date;
 
+	@Column({
+		default: 0,
+	})
+	views: number;
+
 	@ManyToOne(
 		() => User, //
 		(user) => user.boards,
