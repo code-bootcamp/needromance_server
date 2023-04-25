@@ -9,7 +9,7 @@ services:
       - ./src:/romance-service/src
     restart: always
     ports:
-      - 3100:3100
+      - 80:3100
     env_file:
       - ./.env.prod
   ## mysql은 AWS RDS로 외부로 빼두었다.
