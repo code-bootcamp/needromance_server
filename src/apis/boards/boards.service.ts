@@ -106,6 +106,13 @@ export class BoardsService {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
 		}
 
+		board.views++;
+		queryBuilder //
+			.update()
+			.set({ views: board.views })
+			.where('id = :id', { id: board.id })
+			.execute();
+
 		return board;
 	}
 
