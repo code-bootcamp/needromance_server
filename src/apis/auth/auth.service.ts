@@ -48,25 +48,25 @@ export class AuthService {
 		);
 	}
 	//refreashtoken 헤더에 넣을때 어떻게 넣지?
-	setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): Response {
+	setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
 		const refreshToken = this.jwtService.sign(
 			{ sub: user.id },
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 		//개발환경
 
-		return res.setHeader(
-			'Set-Cookie', //
-			`refreshToken=${refreshToken};path=/; httpOnly`,
-		);
-
-		//배포환경
-		// res.setHeader('Access-Control-Allow-Origin', process.env.ORIGIN);
-		// res.setHeader('Access-Control-Allow-Credentials', 'true');
-		// res.setHeader(
-		// 	'Set-Cookie',
-		// 	`refreshToken=${refreshToken};path=/; domain=.jjjbackendclass.shop; SameSite=None; Secure; httpOnly`,
+		// return res.setHeader(
+		// 	'Set-Cookie', //
+		// 	`refreshToken=${refreshToken};path=/; httpOnly`,
 		// );
+
+		// 배포환경;
+		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+		res.setHeader('Access-Control-Allow-Credentials', 'true');
+		res.setHeader(
+			'Set-Cookie',
+			`refreshToken=${refreshToken};path=/; domain=.need-romance.site; SameSite=None; Secure; httpOnly`,
+		);
 	}
 
 	setAdminRefreshToken({ res }: IAuthServiceSetAdminRefreshToken): void {
