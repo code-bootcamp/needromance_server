@@ -57,6 +57,7 @@ export class AuthService {
 		res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
+			sameSite: 'none',
 			httpOnly: true,
 			secure: false, //프론트의 주소가 https로 배포되면 true로 바꿀것.
 		});
