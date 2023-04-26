@@ -82,7 +82,7 @@ export class AuthService {
 		res.setHeader('Access-Control-Allow-Credentials', 'true');
 		res.setHeader(
 			'Set-Cookie',
-			`refreshToken=${refreshToken};path=/; domain=.need-romance.site; SameSite=None; Secure; httpOnly`,
+			`refreshToken=${refreshToken};path=/; http://localhost:3000; SameSite=None; Secure; httpOnly`,
 		);
 	}
 
