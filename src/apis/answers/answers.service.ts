@@ -168,6 +168,7 @@ export class AnswersService {
 			.where('answer.board.id = :boardId', { boardId })
 			.andWhere('answer.status = :status', { status })
 			.leftJoinAndSelect('answer.user', 'user')
+			.leftJoinAndSelect('answer.likedByUsers', 'likedByUsers')
 			.getMany();
 
 		return answers;

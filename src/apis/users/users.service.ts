@@ -19,6 +19,7 @@ import {
 	IUserServiceFetchUser,
 	IUserServiceFindOneByEmail,
 	IUserServiceGetOneUserById,
+	IUserServiceGetOneUserByNickname,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceRstorePassword,
@@ -55,6 +56,7 @@ export class UsersService {
 			.getOne();
 		return user;
 	}
+
 	async fetchUsers(): Promise<User[]> {
 		const result = await this.dataSource //
 			.getRepository(User)
@@ -70,6 +72,7 @@ export class UsersService {
 		console.log(result);
 		return result;
 	}
+
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
 		const { email } = req.query;
 		const isValid = await this.userRepository.count({
@@ -131,9 +134,25 @@ export class UsersService {
 		return getToken === token ? true : false;
 	}
 
+	async getOneUserByNickname({ nickname }: IUserServiceGetOneUserByNickname): Promise<User> {
+		const queryBuilder = this.userRepository.createQueryBuilder('user');
+		const user = await queryBuilder //
+			.where('user.nickname = :nickname', { nickname })
+			.getOne();
+		return user;
+	}
+
 	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
 		//검증된 nickname과 email그리고 password를 입력받는다.
 		//insert와 우사하게 동작하는 query이다.
+
+		if (await this.isUser({ email: createUserDTO.email })) {
+			throw new UnprocessableEntityException(`${createUserDTO.email}로 가입된 유저가 존재합니다.`);
+		}
+
+		if (await this.getOneUserByNickname({ nickname: createUserDTO.nickname })) {
+			throw new UnprocessableEntityException(`${createUserDTO.nickname}로 가입된 유저가 존재합니다.`);
+		}
 
 		const hashPassword = await bcrypt.hash(createUserDTO.password, 10);
 		return this.dataSource
@@ -230,6 +249,7 @@ export class UsersService {
 		const { password, ...user } = result;
 		return user;
 	}
+
 	/**
 	 * 유저 조회 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐
 	 * @param id 유저 id
