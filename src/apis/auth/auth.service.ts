@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -61,13 +62,13 @@ export class AuthService {
 		});
 	}
 
-	setAdminRefreshToken({ res }: IAuthServiceSetAdminRefreshToken): void {
+	setAdminRefreshToken({ res }: IAuthServiceSetAdminRefreshToken): Response {
 		const refreshToken = this.jwtService.sign(
 			{ sub: 1 }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 
-		res.cookie('refreshToken', refreshToken, {
+		return res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
 			httpOnly: true,
