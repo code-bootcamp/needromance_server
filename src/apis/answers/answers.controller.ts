@@ -84,6 +84,7 @@ export class AnswersController {
 	 * @returns 업데이트한 답변 정보
 	 */
 	@Patch('/:id/status')
+	@UsePipes(ValidationPipe)
 	@UseGuards(restAuthGuard('access'))
 	updateAnswerStatus(
 		@Req() req: Request & IAuthUser, //
