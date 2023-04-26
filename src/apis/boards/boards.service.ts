@@ -64,7 +64,8 @@ export class BoardsService {
 			.orderBy({ 'board.createdAt': 'DESC' })
 			.skip(10 * (page - 1))
 			.take(10)
-			.where('title LIKE :keyword', { keyword: `%${keyword}%` })
+			.where('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
+			.orWhere('title LIKE :keyword', { keyword: `%${keyword}%` })
 			.getMany();
 
 		return boards;
