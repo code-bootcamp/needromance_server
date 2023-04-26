@@ -75,15 +75,15 @@ export class AuthService {
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 		//개발환경
-		res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/; httpOnly`);
+		// res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/; httpOnly`);
 
-		//배포환경
-		// res.setHeader('Access-Control-Allow-Origin', process.env.ORIGIN);
-		// res.setHeader('Access-Control-Allow-Credentials', 'true');
-		// res.setHeader(
-		// 	'Set-Cookie',
-		// 	`refreshToken=${refreshToken};path=/; domain=.jjjbackendclass.shop; SameSite=None; Secure; httpOnly`,
-		// );
+		// 배포환경
+		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+		res.setHeader('Access-Control-Allow-Credentials', 'true');
+		res.setHeader(
+			'Set-Cookie',
+			`refreshToken=${refreshToken};path=/; domain=.need-romance.site; SameSite=None; Secure; httpOnly`,
+		);
 	}
 
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
