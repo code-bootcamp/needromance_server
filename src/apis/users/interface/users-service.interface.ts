@@ -21,6 +21,10 @@ export interface IUserServiceCheckToken {
 	req: Request;
 }
 
+export interface IUserServiceGetOneUserByNickname {
+	nickname: string;
+}
+
 export interface IUserServiceCreateUser {
 	createUserDTO: CreateUserDTO;
 }
