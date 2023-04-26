@@ -9,7 +9,7 @@ services:
       - ./src:/romance-service/src
     restart: always
     ports:
-      - 3100:3100
+      - 80:3100
     env_file:
       - ./.env.docker
 
@@ -18,8 +18,6 @@ services:
     environment:
       MYSQL_DATABASE: 'romance'
       MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_USER: 'root'
-      MYSQL_PASSWORD: 'root'
     restart: always
     ports:
       - 3306:3306
