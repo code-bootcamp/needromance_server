@@ -83,7 +83,7 @@ export class AuthService {
 		// res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/;  Secure; httpOnly;`);
 		res.setHeader(
 			'Set-Cookie',
-			`refreshToken=${refreshToken};path=/; domain=.need-romance.site; SameSite=None; Secure; httpOnly;`,
+			`refreshToken=${refreshToken};path=/; domain=need-romance.site; SameSite=None; Secure; httpOnly;`,
 		);
 	}
 
