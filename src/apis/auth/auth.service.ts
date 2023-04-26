@@ -12,7 +12,6 @@ import {
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
 import { Cache } from 'cache-manager';
 
 @Injectable()
@@ -54,28 +53,12 @@ export class AuthService {
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 		//개발환경
-		// return res.setHeader(
-		// 	'Set-Cookie', //
-		// 	`refreshToken=${refreshToken};path=/; httpOnly`,
-		// );
-
-		//배포환경
-		// res.set({
-		// 	'Access-Control-Allow-Origin': 'http://localhost:3000',
-		// 	'Access-Control-Allow-Credentials': 'true',
-		// 	'Set-Cookie': `refreshToken=${refreshToken}`,
-		// 	path: '/',
-		// 	SameSite: 'None',
-		// 	Secure: true,
-		// 	httpOnly: true,
-		// });
-
-		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-		res.setHeader('Access-Control-Allow-Credentials', 'true');
-		res.setHeader(
-			'Set-Cookie',
-			`refreshToken=${refreshToken}; path=/; domain=need-romance.site; SameSite=None; Secure; httpOnly;`,
-		);
+		res.cookie('refreshToken', refreshToken, {
+			domain: process.env.FRONTEND_DOMAIN, //
+			path: '/',
+			httpOnly: true,
+			secure: false, //프론트의 주소가 https로 배포되면 true로 바꿀것.
+		});
 	}
 
 	setAdminRefreshToken({ res }: IAuthServiceSetAdminRefreshToken): void {
@@ -83,16 +66,13 @@ export class AuthService {
 			{ sub: 1 }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
-		//개발환경
-		// res.setHeader('Set-Cookie', `refreshToken=${refreshToken};path=/; httpOnly`);
 
-		// 배포환경
-		res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-		res.setHeader('Access-Control-Allow-Credentials', 'true');
-		res.setHeader(
-			'Set-Cookie',
-			`refreshToken=${refreshToken};path=/; domain=need-romance.site; SameSite=None; Secure; httpOnly;`,
-		);
+		res.cookie('refreshToken', refreshToken, {
+			domain: process.env.FRONTEND_DOMAIN, //
+			path: '/',
+			httpOnly: true,
+			secure: false, //프론트의 주소가 https로 배포되면 true로 바꿀것.
+		});
 	}
 
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
@@ -108,7 +88,7 @@ export class AuthService {
 		if (!isValid) {
 			throw new UnauthorizedException('올바른 정보를 입력해주세요');
 		}
-		this.setRefreshToken({ user, res });
+		await this.setRefreshToken({ user, res });
 
 		return this.getUserAccessToken({ user });
 	}
