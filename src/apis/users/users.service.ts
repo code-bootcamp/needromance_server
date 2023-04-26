@@ -150,6 +150,10 @@ export class UsersService {
 			throw new UnprocessableEntityException(`${createUserDTO.email}로 가입된 유저가 존재합니다.`);
 		}
 
+		if (await this.getOneUserByNickname({ nickname: createUserDTO.nickname })) {
+			throw new UnprocessableEntityException(`${createUserDTO.nickname}로 가입된 유저가 존재합니다.`);
+		}
+
 		const hashPassword = await bcrypt.hash(createUserDTO.password, 10);
 		return this.dataSource
 			.createQueryBuilder()
