@@ -19,6 +19,7 @@ import {
 	IUserServiceFetchUser,
 	IUserServiceFindOneByEmail,
 	IUserServiceGetOneUserById,
+	IUserServiceGetOneUserByNickname,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceRstorePassword,
@@ -133,11 +134,19 @@ export class UsersService {
 		return getToken === token ? true : false;
 	}
 
+	async getOneUserByNickname({ nickname }: IUserServiceGetOneUserByNickname): Promise<User> {
+		const queryBuilder = this.userRepository.createQueryBuilder('user');
+		const user = await queryBuilder //
+			.where('user.nickname = :nickname', { nickname })
+			.getOne();
+		return user;
+	}
+
 	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
 		//검증된 nickname과 email그리고 password를 입력받는다.
 		//insert와 우사하게 동작하는 query이다.
 
-		if (this.isUser({ email: createUserDTO.email })) {
+		if (await this.isUser({ email: createUserDTO.email })) {
 			throw new UnprocessableEntityException(`${createUserDTO.email}로 가입된 유저가 존재합니다.`);
 		}
 
