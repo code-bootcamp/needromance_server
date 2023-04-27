@@ -86,7 +86,9 @@ export class AuthService {
 		}
 
 		const user = await this.usersService.isUser({ email });
-		if (!user) throw new UnprocessableEntityException('등록되지 않은 회원입니다.');
+		console.log(user);
+		console.log('$$$');
+		if (!user || !user.state) throw new UnprocessableEntityException('등록되지 않았거나, 정지된 계정입니다.');
 		const isValid = await bcrypt.compare(password, user.password);
 		if (!isValid) {
 			throw new UnauthorizedException('올바른 정보를 입력해주세요');
