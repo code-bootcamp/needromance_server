@@ -52,6 +52,8 @@ export class AdminService {
 	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
 		if (req.user.role === 'admin') {
 			return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
+		} else {
+			throw new UnauthorizedException('관리자가 아닙니다.');
 		}
 	}
 }
