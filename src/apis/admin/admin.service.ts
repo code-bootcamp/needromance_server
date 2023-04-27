@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { Admin } from './entity/admin.entity';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { IAdminServiceFetchBoards } from './interface/admin-services.interface';
+import { IAdminServiceFetchBoards, IAdminServiceSearchUsers } from './interface/admin-services.interface';
 import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
@@ -14,6 +14,7 @@ export class AdminService {
 		private readonly usersService: UsersService,
 		private readonly boardsService: BoardsService,
 	) {}
+
 	async signup(): Promise<string> {
 		const email = process.env.ADMIN_EMAIL;
 		const password = process.env.ADMIN_PASSWORD;
@@ -45,6 +46,12 @@ export class AdminService {
 			return this.boardsService.getBoards();
 		} else {
 			throw new UnauthorizedException('권한이 없습니다.');
+		}
+	}
+
+	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
+		if (req.user.role === 'admin') {
+			return this.usersService.searchUserByKeyword({ keyword: req.body.keyword });
 		}
 	}
 }

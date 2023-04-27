@@ -37,6 +37,14 @@ export class AdminController {
 		return this.adminService.fetchUsers({ req });
 	}
 
+	@Get('/user/search')
+	@UseGuards(restAuthGuard('access'))
+	searchUsers(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User[]> {
+		return this.adminService.searchUser({ req });
+	}
+
 	@Get('/boards')
 	@UseGuards(restAuthGuard('access'))
 	fetchBoards(

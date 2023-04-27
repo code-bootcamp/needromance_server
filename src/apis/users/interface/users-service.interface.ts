@@ -57,3 +57,7 @@ export interface IUsersServiceUpdateUserPoint {
 export interface IUsersServiceGetTopUsers {
 	sort: string;
 }
+
+export interface IUserServiceSearchUserByKeyword {
+	keyword: string;
+}
