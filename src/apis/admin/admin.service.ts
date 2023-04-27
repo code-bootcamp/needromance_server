@@ -51,7 +51,7 @@ export class AdminService {
 
 	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
 		if (req.user.role === 'admin') {
-			return this.usersService.searchUserByKeyword({ keyword: req.body.keyword });
+			return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
 		}
 	}
 }
