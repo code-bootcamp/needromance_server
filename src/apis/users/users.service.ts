@@ -321,7 +321,7 @@ export class UsersService {
 			.getRepository(User) //
 			.createQueryBuilder('user')
 			.where('user.email LIKE :email', { email: `%${keyword}%` })
-			.andWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
+			.orWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
 			.getMany();
 		if (!users[0]) {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
