@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
+import { Admin } from '../admin/entity/admin.entity';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from './dto/create-user.dto';
@@ -119,7 +120,7 @@ export class UsersController {
 	@Get('login')
 	fetchUser(
 		@Req() req: Request & IAuthUser, //
-	): Promise<User> {
+	): Promise<User | Admin> {
 		return this.userService.fetchUser({ req });
 	}
 

@@ -30,6 +30,8 @@ import {
 } from './interface/users-service.interface';
 import { AnswersService } from '../answers/answers.service';
 import { BoardsService } from '../boards/boards.service';
+import { AdminService } from '../admin/admin.service';
+import { Admin } from '../admin/entity/admin.entity';
 
 @Injectable()
 export class UsersService {
@@ -42,8 +44,10 @@ export class UsersService {
 
 		private readonly mailerService: MailerService,
 		private readonly dataSource: DataSource,
+
 		@Inject(forwardRef(() => AnswersService))
 		private readonly answersService: AnswersService,
+
 		@Inject(forwardRef(() => BoardsService))
 		private readonly boardsService: BoardsService,
 	) {}
@@ -244,7 +248,14 @@ export class UsersService {
 		return result.affected ? '비밀번호 재설정 성공' : '비밀번호 재설정 실패';
 	}
 
-	async fetchUser({ req }: IUserServiceFetchUser): Promise<User> {
+	async fetchUser({ req }: IUserServiceFetchUser): Promise<User | Admin> {
+		if (req.user.role === 'admin') {
+			return this.dataSource
+				.getRepository(Admin)
+				.createQueryBuilder('admin')
+				.where('admin.email = :email', { email: req.user.email })
+				.getOne();
+		}
 		const result = await this.isUser({ email: req.user.email });
 		const { password, ...user } = result;
 		return user;
