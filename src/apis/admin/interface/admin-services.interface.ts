@@ -8,3 +8,7 @@ export interface IAdminServiceFetchUsers {
 export interface IAdminServiceFetchBoards {
 	req: Request & IAuthUser;
 }
+
+export interface IAdminServiceSearchUsers {
+	req: Request & IAuthUser;
+}

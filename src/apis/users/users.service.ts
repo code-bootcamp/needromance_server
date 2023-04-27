@@ -23,6 +23,7 @@ import {
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
 	IUserServiceRstorePassword,
+	IUserServiceSearchUserByKeyword,
 	IUserServiceSendToken,
 	IUserServiceUpdateUser,
 	IUsersServiceGetTopUsers,
@@ -313,5 +314,18 @@ export class UsersService {
 		} else {
 			throw new UnprocessableEntityException('쿼리를 잘못 입력했습니다.');
 		}
+	}
+
+	async searchUserByKeyword({ keyword }: IUserServiceSearchUserByKeyword): Promise<User[]> {
+		const users = await this.dataSource
+			.getRepository(User) //
+			.createQueryBuilder('user')
+			.where('user.email LIKE :email', { email: `%${keyword}%` })
+			.andWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
+			.getMany();
+		if (!users[0]) {
+			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
+		}
+		return users;
 	}
 }
