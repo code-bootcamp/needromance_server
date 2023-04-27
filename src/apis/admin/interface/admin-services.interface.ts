@@ -12,3 +12,7 @@ export interface IAdminServiceFetchBoards {
 export interface IAdminServiceSearchUsers {
 	req: Request & IAuthUser;
 }
+
+export interface IAdminServiceManagesStatus {
+	req: Request & IAuthUser;
+}

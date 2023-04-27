@@ -3,7 +3,11 @@ import { DataSource } from 'typeorm';
 import { Admin } from './entity/admin.entity';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { IAdminServiceFetchBoards, IAdminServiceSearchUsers } from './interface/admin-services.interface';
+import {
+	IAdminServiceFetchBoards,
+	IAdminServiceManagesStatus,
+	IAdminServiceSearchUsers,
+} from './interface/admin-services.interface';
 import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
@@ -52,6 +56,13 @@ export class AdminService {
 	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
 		if (req.user.role === 'admin') {
 			return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
+		} else {
+			throw new UnauthorizedException('관리자가 아닙니다.');
+		}
+	}
+	async mangeStatus({ req }: IAdminServiceManagesStatus): Promise<User> {
+		if (req.user.role === 'admin') {
+			return this.usersService.mangeStatus({ id: req.body.id });
 		} else {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}

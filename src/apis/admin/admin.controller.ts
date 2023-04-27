@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
@@ -51,5 +51,13 @@ export class AdminController {
 		@Req() req: Request & IAuthUser, //
 	): Promise<Board[]> {
 		return this.adminService.fetchBoards({ req });
+	}
+
+	@Patch('/user/status')
+	@UseGuards(restAuthGuard('access'))
+	manageStatus(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User> {
+		return this.adminService.mangeStatus({ req });
 	}
 }

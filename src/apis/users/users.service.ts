@@ -22,6 +22,7 @@ import {
 	IUserServiceGetOneUserByNickname,
 	IUserServiceIsValidEmail,
 	IUserServiceIsValidNickname,
+	IUserServiceManageStatus,
 	IUserServiceRstorePassword,
 	IUserServiceSearchUserByKeyword,
 	IUserServiceSendToken,
@@ -327,5 +328,19 @@ export class UsersService {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
 		}
 		return users;
+	}
+	async mangeStatus({ id }: IUserServiceManageStatus): Promise<User> {
+		await this.dataSource
+			.createQueryBuilder()
+			.update(User)
+			.set({ state: () => 'NOT state' })
+			.where('id = :id', { id })
+			.execute();
+
+		return this.dataSource //
+			.getRepository(User)
+			.createQueryBuilder('user')
+			.where('user.id = :id', { id })
+			.getOne();
 	}
 }

@@ -61,3 +61,7 @@ export interface IUsersServiceGetTopUsers {
 export interface IUserServiceSearchUserByKeyword {
 	keyword: string;
 }
+
+export interface IUserServiceManageStatus {
+	id: string;
+}
