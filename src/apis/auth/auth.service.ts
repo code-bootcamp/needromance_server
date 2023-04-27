@@ -57,7 +57,7 @@ export class AuthService {
 		res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
-			sameSite: 'none',
+			// sameSite: 'none', //로컬환경에서의 개발을 위해 sameSite옵션을 없애준다.
 			httpOnly: true,
 			secure: false, //프론트의 주소가 https로 배포되면 true로 바꿀것.
 		});
@@ -72,6 +72,7 @@ export class AuthService {
 		return res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
+			// sameSite: 'none', //로컬환경에서의 개발을 위해 sameSite옵션을 없애준다.
 			httpOnly: true,
 			secure: false, //프론트의 주소가 https로 배포되면 true로 바꿀것.
 		});
