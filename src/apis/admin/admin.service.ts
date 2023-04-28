@@ -59,6 +59,14 @@ export class AdminService {
 		}
 	}
 
+	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
+		if (req.user.role === 'admin') {
+			return await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
+		} else {
+			throw new UnauthorizedException('관리자가 아닙니다.');
+		}
+	}
+
 	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
 		if (req.user.role === 'admin') {
 			return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
@@ -70,14 +78,6 @@ export class AdminService {
 	async mangeStatus({ req }: IAdminServiceManagesStatus): Promise<User> {
 		if (req.user.role === 'admin') {
 			return this.usersService.mangeStatus({ id: req.body.id });
-		} else {
-			throw new UnauthorizedException('관리자가 아닙니다.');
-		}
-	}
-
-	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
-		if (req.user.role === 'admin') {
-			return await this.boardsService.searchBoards({ keyword: req.query.keyword as string });
 		} else {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}
