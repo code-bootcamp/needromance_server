@@ -69,7 +69,6 @@ export class UsersService {
 			.createQueryBuilder('user')
 			.select('user.id')
 			.addSelect('user.email')
-			.addSelect('user.password')
 			.addSelect('user.nickname')
 			.addSelect('user.point')
 			.addSelect('user.userImg')
@@ -334,7 +333,16 @@ export class UsersService {
 			.createQueryBuilder('user')
 			.where('user.email LIKE :email', { email: `%${keyword}%` })
 			.orWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.userRanking')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
 			.getMany();
+		console.log(users);
 		if (!users[0]) {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
 		}

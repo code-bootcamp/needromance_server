@@ -45,6 +45,14 @@ export class AdminController {
 		return this.adminService.searchUser({ req });
 	}
 
+	@Patch('/user/status')
+	@UseGuards(restAuthGuard('access'))
+	manageStatus(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User> {
+		return this.adminService.mangeStatus({ req });
+	}
+
 	@Get('/boards')
 	@UseGuards(restAuthGuard('access'))
 	fetchBoards(
@@ -52,12 +60,11 @@ export class AdminController {
 	): Promise<Board[]> {
 		return this.adminService.fetchBoards({ req });
 	}
-
-	@Patch('/user/status')
+	@Get('/boards/search')
 	@UseGuards(restAuthGuard('access'))
-	manageStatus(
+	searchBoards(
 		@Req() req: Request & IAuthUser, //
-	): Promise<User> {
-		return this.adminService.mangeStatus({ req });
+	): Promise<Board[]> {
+		return this.adminService.searchBoards({ req });
 	}
 }

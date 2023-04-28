@@ -147,12 +147,11 @@ export class BoardsService {
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
 			.select('user.nickname')
+			.addSelect('user.id')
 			.addSelect('board.title')
 			.addSelect('board.createdAt')
 			.getMany();
 
-		console.log(boards);
-		console.log('###');
 		if (!boards) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
 		}
