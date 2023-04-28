@@ -41,3 +41,7 @@ export interface IBoardsServiceDeleteBoardsByUserId {
 export interface IBoardsServiceGetBoardsByUserId {
 	userId: string;
 }
+
+export interface IBoardsServiceGetBoards {
+	page: number;
+}

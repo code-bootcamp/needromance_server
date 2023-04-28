@@ -8,6 +8,7 @@ import {
 	IBoardsServiceDeleteBoardsByUserId,
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
+	IBoardsServiceGetBoards,
 	IBoardsServiceGetBoardsByUserId,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceSearchBoards,
@@ -62,7 +63,6 @@ export class BoardsService {
 			.leftJoinAndSelect('board.hashtags', 'hashtags')
 			.leftJoinAndSelect('board.answers', 'answer')
 			.orderBy({ 'board.createdAt': 'DESC' })
-
 			.where('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
 			.orWhere('title LIKE :keyword', { keyword: `%${keyword}%` })
 			.getMany();
@@ -141,7 +141,7 @@ export class BoardsService {
 	 * @param null 입력값 없음
 	 * @returns 모든 게시글
 	 */
-	async getBoards(): Promise<Board[]> {
+	async getBoards({ page }: IBoardsServiceGetBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
@@ -149,6 +149,9 @@ export class BoardsService {
 			.addSelect('user.id')
 			.addSelect('board.title')
 			.addSelect('board.createdAt')
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.skip(10 * (page - 1))
+			.take(10)
 			.getMany();
 
 		if (!boards) {
