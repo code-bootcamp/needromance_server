@@ -45,7 +45,10 @@ export class AnswersController {
 	 * @param createAnswerDTO 답변 생성 DTO: contents, userId, boardId
 	 * @returns 생성한 답변 정보
 	 */
-	@ApiOperation({ summary: '답변 생성 API' })
+	@ApiOperation({
+		summary: '답변 생성 API',
+		description: '게시글에 답변을 추가함. 유저 정보가 필요하므로 액세스 토큰이 필요함.',
+	})
 	@ApiCreatedResponse({ description: '답변이 성공적으로 생성되었음', type: Answer })
 	@ApiNotFoundResponse({ description: '유저를 찾을 수 없습니다.' })
 	@ApiBearerAuth()
@@ -66,7 +69,10 @@ export class AnswersController {
 	 * @param updateAnswerDTO 답변 업데이트 DTO: contents
 	 * @returns 업데이트한 답변 정보
 	 */
-	@ApiOperation({ summary: '답변 수정 API' })
+	@ApiOperation({
+		summary: '답변 수정 API',
+		description: '답변 내용을 수정함. 유저 정보가 필요하므로 액세스 토큰이 필요함.',
+	})
 	@ApiOkResponse({ description: '답변이 성공적으로 업데이트되었음', type: Answer })
 	@ApiNotFoundResponse({ description: '답변(또는 유저)을 찾을 수 없습니다.' })
 	@ApiParam({ name: 'id', description: '답변 id' })
@@ -87,7 +93,10 @@ export class AnswersController {
 	 * @param req HTTP 요청 객체 - req.user: id, exp, role, nickname
 	 * @param id 답변 id
 	 */
-	@ApiOperation({ summary: '답변 삭제 API' })
+	@ApiOperation({
+		summary: '답변 삭제 API',
+		description: '답변을 삭제함. 유저 정보가 필요하므로 액세스 토큰이 필요함.',
+	})
 	@ApiOkResponse({ description: '답변이 성공적으로 삭제되었음' })
 	@ApiNotFoundResponse({ description: '답변(또는 유저)을 찾을 수 없습니다.' })
 	@ApiParam({ name: 'id', description: '답변 id' })
@@ -108,7 +117,10 @@ export class AnswersController {
 	 * @param updateAnswerStatusDTO 답변 상태 업데이트 DTO: boardId, status
 	 * @returns 업데이트한 답변 정보
 	 */
-	@ApiOperation({ summary: '답변 채택 API' })
+	@ApiOperation({
+		summary: '답변 채택 API',
+		description: '게시글 작성자가 답변을 채택함. 유저 정보가 필요하므로 액세스 토큰이 필요함.',
+	})
 	@ApiOkResponse({ description: '답변이 성공적으로 업데이트되었음', type: Answer })
 	@ApiNotFoundResponse({ description: '게시글을 찾을 수 없습니다.' })
 	@ApiParam({ name: 'id', description: '답변 id' })
@@ -130,7 +142,10 @@ export class AnswersController {
 	 * @param status 채택 여부 - 1: 채택됨 / 0: 채택되지 않음
 	 * @returns 게시글 id로 조회한 답변 정보(유저 조인)
 	 */
-	@ApiOperation({ summary: '답변 조회 API' })
+	@ApiOperation({
+		summary: '답변 조회 API',
+		description: '채택 여부를 1(채택) 또는 0(채택안됨)으로 전달하여 게시글의 답변을 조회함.',
+	})
 	@ApiOkResponse({ description: '답변이 성공적으로 조회되었음', type: [Answer] })
 	@ApiQuery({ name: 'board-id', description: '게시글 id' })
 	@ApiQuery({ name: 'status', description: '채택 여부' })
@@ -148,7 +163,11 @@ export class AnswersController {
 	 * @param id 답변 id
 	 * @returns 업데이트한 답변 정보
 	 */
-	@ApiOperation({ summary: '답변 좋아요 API' })
+	@ApiOperation({
+		summary: '답변 좋아요 API',
+		description:
+			'답변에 좋아요를 누를 때 호출함. 유저가 이미 답변에 좋아요가 누른 경우 좋아요가 취소됨. 유저 정보가 필요하므로 액세스 토큰이 필요함.',
+	})
 	@ApiOkResponse({ description: '답변이 성공적으로 업데이트되었음', type: Number })
 	@ApiParam({ name: 'id', description: '답변 id' })
 	@ApiBearerAuth()
@@ -165,7 +184,10 @@ export class AnswersController {
 	 * GET '/answers/best' 라우트 핸들러
 	 * @returns GetBestAnswers 배열 - GetBestAnswers: userImg, nickname, contents, likes
 	 */
-	@ApiOperation({ summary: '좋아요 TOP3 답변 조회 API' })
+	@ApiOperation({
+		summary: '좋아요 TOP3 답변 조회 API',
+		description: '메인페이지에서 좋아요 수가 가장 높은 3개의 답변을 조회함.',
+	})
 	@ApiOkResponse({ description: '답변이 성공적으로 조회되었음', type: [GetBestAnswers] })
 	@Get('/best')
 	getBestAnswers(): Promise<GetBestAnswers[]> {
