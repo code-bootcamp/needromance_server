@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
 import { IAuthUser } from '../auth/interfaces/auth-services.interface';
@@ -67,5 +67,14 @@ export class AdminController {
 		@Req() req: Request & IAuthUser, //
 	): Promise<Board[]> {
 		return this.adminService.searchBoards({ req });
+	}
+
+	@Delete('/boards/:id')
+	@UseGuards(restAuthGuard('access'))
+	deleteBoard(
+		@Req() req: Request & IAuthUser, //
+		@Param('id', ParseIntPipe) id: number,
+	): Promise<void> {
+		return this.adminService.deleteBoards({ req, id });
 	}
 }
