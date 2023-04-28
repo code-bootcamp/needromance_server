@@ -15,6 +15,7 @@ export class Hashtag {
 	@ManyToMany(
 		() => Board, //
 		(boards) => boards.hashtags,
+		{ onDelete: 'CASCADE' },
 	)
 	boards: Board[];
 }
