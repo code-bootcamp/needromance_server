@@ -146,7 +146,7 @@ export class BoardsService {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
-			.select('user.email')
+			.select('user.nickname')
 			.addSelect('board.title')
 			.addSelect('board.createdAt')
 			.getMany();
