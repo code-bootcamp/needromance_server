@@ -11,18 +11,23 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Answer } from 'src/apis/answers/entity/answer.entity';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Entity()
 export class Board {
+	@ApiProperty()
 	@PrimaryGeneratedColumn()
 	id: number;
 
+	@ApiProperty()
 	@Column()
 	title: string;
 
+	@ApiProperty()
 	@Column()
 	contents: string;
 
+	@ApiProperty()
 	@CreateDateColumn({
 		type: 'timestamp',
 		transformer: {
@@ -34,17 +39,20 @@ export class Board {
 	})
 	createdAt: Date;
 
+	@ApiProperty()
 	@Column({
 		default: 0,
 	})
 	views: number;
 
+	@ApiProperty()
 	@ManyToOne(
 		() => User, //
 		(user) => user.boards,
 	)
 	user: User;
 
+	@ApiPropertyOptional()
 	@ManyToMany(
 		() => Hashtag, //
 		(hashtags) => hashtags.boards,
