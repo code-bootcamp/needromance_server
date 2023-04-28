@@ -9,6 +9,9 @@ export interface IBoardsServiceCreateBoard {
 export interface IBoardsServiceSearchBoards {
 	keyword: string;
 }
+export interface IBoardsServiceSearchBoardsForAdmin {
+	keyword: string;
+}
 
 export interface IBoardsServiceGetTenBoards {
 	page: number;

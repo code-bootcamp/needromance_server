@@ -12,6 +12,7 @@ import {
 	IBoardsServiceGetBoardsWithPage,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceSearchBoards,
+	IBoardsServiceSearchBoardsForAdmin,
 	IBoardsServiceUpdateBoard,
 } from './interfaces/boards-service.interface';
 import { HashtagsService } from '../hashtags/hashtags.service';
@@ -66,6 +67,29 @@ export class BoardsService {
 			.where('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
 			.orWhere('title LIKE :keyword', { keyword: `%${keyword}%` })
 			.getMany();
+
+		return boards;
+	}
+
+	/**
+	 * (게시글 제목 기준) 메인페이지 게시글 검색 서비스 로직.
+	 * @param keyword 검색 키워드
+	 * @param page 메인페이지의 게시글 페이지 // 프론튼엔드의 요청으로 삭제 했습니다.
+	 * @returns 검색 키워드로 조회한 게시글 10개
+	 */
+	async searchBoardsForAdmin({ keyword }: IBoardsServiceSearchBoardsForAdmin): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder //
+			.leftJoinAndSelect('board.user', 'user')
+			.select('board.title')
+			.addSelect('board.id')
+			.addSelect('user.nickname')
+			.addSelect('board.createdAt')
+			.addSelect('user.id')
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.where('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
+			.orWhere('title LIKE :keyword', { keyword: `%${keyword}%` })
+			.execute();
 
 		return boards;
 	}
