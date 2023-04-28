@@ -8,8 +8,8 @@ import {
 	IBoardsServiceDeleteBoardsByUserId,
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
-	IBoardsServiceGetBoards,
 	IBoardsServiceGetBoardsByUserId,
+	IBoardsServiceGetBoardsWithPage,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceSearchBoards,
 	IBoardsServiceUpdateBoard,
@@ -141,7 +141,7 @@ export class BoardsService {
 	 * @param null 입력값 없음
 	 * @returns 모든 게시글
 	 */
-	async getBoards({ page }: IBoardsServiceGetBoards): Promise<Board[]> {
+	async getBoardsWithPage({ page }: IBoardsServiceGetBoardsWithPage): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
@@ -153,6 +153,30 @@ export class BoardsService {
 			.orderBy({ 'board.createdAt': 'DESC' })
 			.skip(10 * (page - 1))
 			.take(10)
+			.execute();
+
+		if (!boards) {
+			throw new NotFoundException('게시글을 찾을 수 없습니다.');
+		}
+
+		return boards;
+	}
+
+	/**
+	 *admin에서 사용될 단일 로직, 모든 게시글을 조회한다.
+	 * @param null 입력값 없음
+	 * @returns 모든 게시글
+	 */
+	async getBoards(): Promise<Board[]> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const boards = await queryBuilder //
+			.leftJoinAndSelect('board.user', 'user')
+			.select('board.title')
+			.addSelect('board.id')
+			.addSelect('user.nickname')
+			.addSelect('board.createdAt')
+			.addSelect('user.id')
+			.orderBy({ 'board.createdAt': 'DESC' })
 			.execute();
 
 		if (!boards) {

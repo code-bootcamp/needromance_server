@@ -42,6 +42,6 @@ export interface IBoardsServiceGetBoardsByUserId {
 	userId: string;
 }
 
-export interface IBoardsServiceGetBoards {
+export interface IBoardsServiceGetBoardsWithPage {
 	page: number;
 }
