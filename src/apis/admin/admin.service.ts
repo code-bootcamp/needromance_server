@@ -72,9 +72,7 @@ export class AdminService {
 
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
 		if (req.user.role === 'admin') {
-			const { page: get } = req.query;
-			const page = Number(get);
-			return await this.boardsService.searchBoards({ keyword: req.query.keyword as string, page });
+			return await this.boardsService.searchBoards({ keyword: req.query.keyword as string });
 		} else {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}

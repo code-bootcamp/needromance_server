@@ -8,7 +8,6 @@ export interface IBoardsServiceCreateBoard {
 
 export interface IBoardsServiceSearchBoards {
 	keyword: string;
-	page: number;
 }
 
 export interface IBoardsServiceGetTenBoards {
