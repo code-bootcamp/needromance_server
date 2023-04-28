@@ -61,19 +61,16 @@ export class BoardsController {
 	}
 
 	/**
-	 * GET '/boards/search?keyword=:keyword&page=:page' 라우트 핸들러
-	 * @param keyword 검색 키워드
-	 * @param page 메인페이지의 게시글 페이지
-	 * @returns 검색 키워드로 조회한 게시글 10개
+	 * GET '/boards/search?keyword=:keyword' 라우트 핸들러
+	 * @param keyword 검색 키워드(게시글 제목 또는 유저 닉네임)
+	 * @returns 검색 키워드로 조회한 모든 게시글
 	 */
 	@ApiOperation({
 		summary: '게시글 검색 API',
-		description:
-			'키워드로 검색한 모든 게시글을 최신 순서대로 조회함. 페이징 옵션이 적용되어 1페이지에 10개의 게시글을 조회함.',
+		description: '키워드로 검색한 모든 게시글을 조회함. 정렬 기준은 작성일(내림차순).',
 	})
 	@ApiOkResponse({ description: '키워드에 해당하는 게시글이 성공적으로 조회되었음', type: [Board] })
 	@ApiQuery({ name: 'keyword', description: '검색 키워드(게시글 제목 또는 유저 닉네임)' })
-	@ApiQuery({ name: 'page', description: '페이지' })
 	@Get('/search')
 	searchBoards(
 		@Query('keyword') keyword: string, //
