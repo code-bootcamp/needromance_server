@@ -64,19 +64,11 @@ export class UsersService {
 	}
 
 	async fetchUsers(): Promise<User[]> {
-		const result = await this.dataSource //
+		return this.dataSource //
 			.getRepository(User)
 			.createQueryBuilder('user')
-			.select('user.id')
-			.addSelect('user.email')
-			.addSelect('user.nickname')
-			.addSelect('user.point')
-			.addSelect('user.userImg')
-			.addSelect('user.createdAt')
-			.addSelect('user.state')
+			.select()
 			.getMany();
-		console.log(result);
-		return result;
 	}
 
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
