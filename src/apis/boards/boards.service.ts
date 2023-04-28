@@ -145,11 +145,14 @@ export class BoardsService {
 	async getBoards(): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
-			.select('board.user.email')
+			.leftJoinAndSelect('board.user', 'user')
+			.select('user.email')
 			.addSelect('board.title')
 			.addSelect('board.createdAt')
 			.getMany();
 
+		console.log(boards);
+		console.log('###');
 		if (!boards) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
 		}

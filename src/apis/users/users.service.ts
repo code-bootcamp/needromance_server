@@ -67,7 +67,15 @@ export class UsersService {
 		return this.dataSource //
 			.getRepository(User)
 			.createQueryBuilder('user')
-			.select()
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.password')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.userRanking')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
 			.getMany();
 	}
 
@@ -262,7 +270,18 @@ export class UsersService {
 	 */
 	async getOneUserById({ id }: IUserServiceGetOneUserById): Promise<User> {
 		const queryBuilder = this.userRepository.createQueryBuilder('user');
-		const user = await queryBuilder.where('user.id = :id', { id }).getOne();
+		const user = await queryBuilder
+			.where('user.id = :id', { id })
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.password')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.userRanking')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
+			.getOne();
 
 		if (!user) {
 			throw new NotFoundException('유저를 찾을 수 없습니다.');
