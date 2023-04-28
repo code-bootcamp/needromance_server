@@ -35,6 +35,7 @@ export class Answer {
 	@ManyToOne(
 		() => Board, //
 		(board) => board.answers,
+		{ onDelete: 'CASCADE' },
 	)
 	board: Board;
 
