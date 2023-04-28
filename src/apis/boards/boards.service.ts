@@ -145,7 +145,9 @@ export class BoardsService {
 	async getBoards(): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
-			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.select('board.id')
+			.addSelect('board.title')
+			.addSelect('board.createdAt')
 			.getMany();
 
 		if (!boards) {
