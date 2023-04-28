@@ -48,7 +48,10 @@ export class AdminService {
 
 	async fetchBoards({ req }): Promise<Board[]> {
 		if (req.user.role === 'admin') {
-			return this.boardsService.getBoards();
+			console.log(req.query);
+			const { page: get } = req.query;
+			const page = Number(get);
+			return this.boardsService.getBoards({ page });
 		} else {
 			throw new UnauthorizedException('권한이 없습니다.');
 		}
@@ -72,9 +75,7 @@ export class AdminService {
 
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
 		if (req.user.role === 'admin') {
-			const { page: get } = req.query;
-			const page = Number(get);
-			return await this.boardsService.searchBoards({ keyword: req.query.keyword as string, page });
+			return await this.boardsService.searchBoards({ keyword: req.query.keyword as string });
 		} else {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}

@@ -8,7 +8,6 @@ export interface IBoardsServiceCreateBoard {
 
 export interface IBoardsServiceSearchBoards {
 	keyword: string;
-	page: number;
 }
 
 export interface IBoardsServiceGetTenBoards {
@@ -41,4 +40,8 @@ export interface IBoardsServiceDeleteBoardsByUserId {
 
 export interface IBoardsServiceGetBoardsByUserId {
 	userId: string;
+}
+
+export interface IBoardsServiceGetBoards {
+	page: number;
 }

@@ -8,6 +8,7 @@ import {
 	IBoardsServiceDeleteBoardsByUserId,
 	IBoardsServiceGetBoardById,
 	IBoardsServiceGetBoardByIdAndUserId,
+	IBoardsServiceGetBoards,
 	IBoardsServiceGetBoardsByUserId,
 	IBoardsServiceGetTenBoards,
 	IBoardsServiceSearchBoards,
@@ -52,18 +53,16 @@ export class BoardsService {
 	/**
 	 * (게시글 제목 기준) 메인페이지 게시글 검색 서비스 로직.
 	 * @param keyword 검색 키워드
-	 * @param page 메인페이지의 게시글 페이지
+	 * @param page 메인페이지의 게시글 페이지 // 프론튼엔드의 요청으로 삭제 했습니다.
 	 * @returns 검색 키워드로 조회한 게시글 10개
 	 */
-	async searchBoards({ keyword, page }: IBoardsServiceSearchBoards): Promise<Board[]> {
+	async searchBoards({ keyword }: IBoardsServiceSearchBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
 			.leftJoinAndSelect('board.hashtags', 'hashtags')
 			.leftJoinAndSelect('board.answers', 'answer')
 			.orderBy({ 'board.createdAt': 'DESC' })
-			.skip(10 * (page - 1))
-			.take(10)
 			.where('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
 			.orWhere('title LIKE :keyword', { keyword: `%${keyword}%` })
 			.getMany();
@@ -142,7 +141,7 @@ export class BoardsService {
 	 * @param null 입력값 없음
 	 * @returns 모든 게시글
 	 */
-	async getBoards(): Promise<Board[]> {
+	async getBoards({ page }: IBoardsServiceGetBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
@@ -150,6 +149,9 @@ export class BoardsService {
 			.addSelect('user.id')
 			.addSelect('board.title')
 			.addSelect('board.createdAt')
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.skip(10 * (page - 1))
+			.take(10)
 			.getMany();
 
 		if (!boards) {
