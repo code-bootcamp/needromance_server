@@ -145,14 +145,15 @@ export class BoardsService {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
 		const boards = await queryBuilder //
 			.leftJoinAndSelect('board.user', 'user')
-			.select('user.nickname')
-			.addSelect('user.id')
-			.addSelect('board.title')
+			.select('board.title')
+			.addSelect('board.id')
+			.addSelect('user.nickname')
 			.addSelect('board.createdAt')
+			.addSelect('user.id')
 			.orderBy({ 'board.createdAt': 'DESC' })
 			.skip(10 * (page - 1))
 			.take(10)
-			.getMany();
+			.execute();
 
 		if (!boards) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');

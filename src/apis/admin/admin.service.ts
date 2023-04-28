@@ -48,7 +48,6 @@ export class AdminService {
 
 	async fetchBoards({ req }): Promise<Board[]> {
 		if (req.user.role === 'admin') {
-			console.log(req.query);
 			const { page: get } = req.query;
 			const page = Number(get);
 			return this.boardsService.getBoards({ page });

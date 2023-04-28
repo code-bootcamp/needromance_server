@@ -60,6 +60,7 @@ export class AdminController {
 	): Promise<Board[]> {
 		return this.adminService.fetchBoards({ req });
 	}
+
 	@Get('/boards/search')
 	@UseGuards(restAuthGuard('access'))
 	searchBoards(
