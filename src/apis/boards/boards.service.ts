@@ -52,10 +52,9 @@ export class BoardsService {
 	}
 
 	/**
-	 * (게시글 제목 기준) 메인페이지 게시글 검색 서비스 로직.
-	 * @param keyword 검색 키워드
-	 * @param page 메인페이지의 게시글 페이지 // 프론튼엔드의 요청으로 삭제 했습니다.
-	 * @returns 검색 키워드로 조회한 게시글 10개
+	 * 메인페이지 게시글 검색 서비스 로직.
+	 * @param keyword 검색 키워드(게시글 제목 또는 유저 닉네임)
+	 * @returns 검색 키워드로 조회한 모든 게시글
 	 */
 	async searchBoards({ keyword }: IBoardsServiceSearchBoards): Promise<Board[]> {
 		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
