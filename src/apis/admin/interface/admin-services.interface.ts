@@ -20,3 +20,8 @@ export interface IAdminServiceManagesStatus {
 export interface IAdminServiceSearchBoards {
 	req: Request & IAuthUser;
 }
+
+export interface IAdminServiceDeleteBoards {
+	req: Request & IAuthUser;
+	id: number;
+}

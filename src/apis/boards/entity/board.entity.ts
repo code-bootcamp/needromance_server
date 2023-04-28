@@ -56,6 +56,7 @@ export class Board {
 	@ManyToMany(
 		() => Hashtag, //
 		(hashtags) => hashtags.boards,
+		{ onDelete: 'CASCADE' },
 	)
 	@JoinTable({
 		name: 'board_hashtags',
@@ -65,6 +66,7 @@ export class Board {
 	@OneToMany(
 		() => Answer, //
 		(answers) => answers.board,
+		{ onDelete: 'CASCADE' },
 	)
 	answers: Answer[];
 }

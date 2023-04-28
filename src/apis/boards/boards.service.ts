@@ -252,6 +252,21 @@ export class BoardsService {
 	}
 
 	/**
+	 * 게시글 삭제 서비스 로직. 게시글을 삭제하지 못하면 NotFoundException 던짐.
+	 * @param id 게시글 id
+	 */
+	async deleteBoardForAdmin({ id }): Promise<void> {
+		const queryBuilder = this.boardsRepository.createQueryBuilder('board');
+		const deleteResult = await queryBuilder
+			.delete() //
+			.where('board.id = :id', { id })
+			.execute();
+		if (!deleteResult.affected) {
+			throw new NotFoundException('게시글을 찾을 수 없습니다.');
+		}
+	}
+
+	/**
 	 * (유저 id 사용) 유저의 모든 게시글 삭제 서비스 로직.
 	 * @param userId 유저 id
 	 */

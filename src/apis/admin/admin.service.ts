@@ -4,6 +4,7 @@ import { Admin } from './entity/admin.entity';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import {
+	IAdminServiceDeleteBoards,
 	IAdminServiceFetchBoards,
 	IAdminServiceManagesStatus,
 	IAdminServiceSearchBoards,
@@ -62,6 +63,15 @@ export class AdminService {
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
 		if (req.user.role === 'admin') {
 			return await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
+		} else {
+			throw new UnauthorizedException('관리자가 아닙니다.');
+		}
+	}
+
+	async deleteBoards({ req, id }: IAdminServiceDeleteBoards): Promise<void> {
+		if (req.user.role === 'admin') {
+			console.log(id);
+			await this.boardsService.deleteBoardForAdmin({ id });
 		} else {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}
