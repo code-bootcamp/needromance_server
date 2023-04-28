@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBoardDTO {
@@ -26,7 +26,7 @@ export class CreateBoardDTO {
 	})
 	contents: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		type: [String],
 		example: `['#연애', '#상담']`,
 		description: '게시글 해시태그(문자열 배열)',
