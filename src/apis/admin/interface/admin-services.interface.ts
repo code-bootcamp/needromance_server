@@ -16,3 +16,7 @@ export interface IAdminServiceSearchUsers {
 export interface IAdminServiceManagesStatus {
 	req: Request & IAuthUser;
 }
+
+export interface IAdminServiceSearchBoards {
+	req: Request & IAuthUser;
+}

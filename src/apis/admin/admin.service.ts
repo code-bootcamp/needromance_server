@@ -6,6 +6,7 @@ import { UsersService } from '../users/users.service';
 import {
 	IAdminServiceFetchBoards,
 	IAdminServiceManagesStatus,
+	IAdminServiceSearchBoards,
 	IAdminServiceSearchUsers,
 } from './interface/admin-services.interface';
 import { User } from '../users/entity/user.entity';
@@ -60,9 +61,20 @@ export class AdminService {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}
 	}
+
 	async mangeStatus({ req }: IAdminServiceManagesStatus): Promise<User> {
 		if (req.user.role === 'admin') {
 			return this.usersService.mangeStatus({ id: req.body.id });
+		} else {
+			throw new UnauthorizedException('관리자가 아닙니다.');
+		}
+	}
+
+	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
+		if (req.user.role === 'admin') {
+			const { page: get } = req.query;
+			const page = Number(get);
+			return await this.boardsService.searchBoards({ keyword: req.query.keyword as string, page });
 		} else {
 			throw new UnauthorizedException('관리자가 아닙니다.');
 		}

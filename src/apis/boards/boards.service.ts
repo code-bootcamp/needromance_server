@@ -152,8 +152,6 @@ export class BoardsService {
 			.addSelect('board.createdAt')
 			.getMany();
 
-		console.log(boards);
-		console.log('###');
 		if (!boards) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
 		}
