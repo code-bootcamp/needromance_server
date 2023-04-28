@@ -138,6 +138,7 @@ export class BoardsController {
 	@ApiOkResponse({ description: '게시글이 성공적으로 삭제되었음' })
 	@ApiNotFoundResponse({ description: '게시글(또는 유저)을 찾을 수 없습니다.' })
 	@ApiParam({ name: 'id', description: '게시글 id' })
+	@ApiBearerAuth()
 	@Delete('/:id')
 	@UseGuards(restAuthGuard('access'))
 	deleteBoard(

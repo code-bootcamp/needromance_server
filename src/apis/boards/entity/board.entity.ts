@@ -11,7 +11,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Answer } from 'src/apis/answers/entity/answer.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Entity()
 export class Board {
@@ -52,7 +52,7 @@ export class Board {
 	)
 	user: User;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@ManyToMany(
 		() => Hashtag, //
 		(hashtags) => hashtags.boards,
