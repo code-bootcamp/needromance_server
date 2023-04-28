@@ -48,9 +48,12 @@ export class AdminService {
 
 	async fetchBoards({ req }): Promise<Board[]> {
 		if (req.user.role === 'admin') {
+			if (req.query) {
+				return this.boardsService.getBoards();
+			}
 			const { page: get } = req.query;
 			const page = Number(get);
-			return this.boardsService.getBoards({ page });
+			return this.boardsService.getBoardsWithPage({ page });
 		} else {
 			throw new UnauthorizedException('권한이 없습니다.');
 		}
