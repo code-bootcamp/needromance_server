@@ -138,7 +138,25 @@ export class UsersController {
 
 	@UseGuards(restAuthGuard('access'))
 	@Get('/boards')
-	fetchMyBoards(@Req() req: Request & IAuthUser): Promise<User[]> {
+	fetchMyBoards(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User[]> {
 		return this.userService.fetchMyBoards({ req });
+	}
+
+	@UseGuards(restAuthGuard('access'))
+	@Get('/answers')
+	fetchMyAnswers(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User[]> {
+		return this.userService.fetchMyAnswers({ req });
+	}
+
+	@UseGuards(restAuthGuard('access'))
+	@Get('/boards/search')
+	SearchMyBoards(
+		@Req() req: Request & IAuthUser, //
+	): Promise<User[]> {
+		return this.userService.searchMyBoards({ req });
 	}
 }
