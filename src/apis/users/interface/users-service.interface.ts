@@ -65,3 +65,6 @@ export interface IUserServiceSearchUserByKeyword {
 export interface IUserServiceManageStatus {
 	id: string;
 }
+export interface IUSerServiceFetchMyBoards {
+	req: Request & IAuthUser;
+}

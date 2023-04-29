@@ -16,6 +16,7 @@ import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
 	IUserServiceDeleteUser,
+	IUSerServiceFetchMyBoards,
 	IUserServiceFetchUser,
 	IUserServiceFindOneByEmail,
 	IUserServiceGetOneUserById,
@@ -342,12 +343,12 @@ export class UsersService {
 			.addSelect('user.createdAt')
 			.addSelect('user.state')
 			.getMany();
-		console.log(users);
 		if (!users[0]) {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
 		}
 		return users;
 	}
+
 	async mangeStatus({ id }: IUserServiceManageStatus): Promise<User> {
 		await this.dataSource
 			.createQueryBuilder()
@@ -361,5 +362,16 @@ export class UsersService {
 			.createQueryBuilder('user')
 			.where('user.id = :id', { id })
 			.getOne();
+	}
+
+	async fetchMyBoards({ req }: IUSerServiceFetchMyBoards): Promise<User[]> {
+		return this.dataSource
+			.getRepository(User)
+			.createQueryBuilder('user') //
+			.where('user.id = :id', { id: req.user.id })
+			.leftJoinAndSelect('user.boards', 'board')
+			.leftJoinAndSelect('board.answers', 'answer')
+			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.getMany();
 	}
 }
