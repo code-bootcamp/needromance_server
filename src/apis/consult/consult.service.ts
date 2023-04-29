@@ -18,15 +18,14 @@ export class ConsultService {
 				n: 1,
 				echo: true,
 				best_of: 1,
-
+				presence_penalty: 1,
 				frequency_penalty: 0.0,
-				presence_penalty: 0.6,
-				stop: [' Human:', ' AI:'],
+				// stop: [' Human:', ' AI:'],
 				max_tokens: 500,
 			});
 
-			console.log(completion.data.choices[0]);
-			res.send(completion.data.choices[0].text);
+			console.log(completion.data.choices[0].text.split('\n\n')[1]);
+			res.send(completion.data.choices[0].text.split('\n\n')[1]);
 			return completion.data.choices[0].text;
 		} catch (error) {
 			if (error.response) {
