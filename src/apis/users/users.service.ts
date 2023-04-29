@@ -16,6 +16,7 @@ import {
 	IUserServiceCheckToken,
 	IUserServiceCreateUser,
 	IUserServiceDeleteUser,
+	IUSerServiceFetchAnswers,
 	IUSerServiceFetchMyBoards,
 	IUserServiceFetchUser,
 	IUserServiceFindOneByEmail,
@@ -25,6 +26,7 @@ import {
 	IUserServiceIsValidNickname,
 	IUserServiceManageStatus,
 	IUserServiceRstorePassword,
+	IUSerServiceSearchMyBoards,
 	IUserServiceSearchUserByKeyword,
 	IUserServiceSendToken,
 	IUserServiceUpdateUser,
@@ -33,7 +35,6 @@ import {
 } from './interface/users-service.interface';
 import { AnswersService } from '../answers/answers.service';
 import { BoardsService } from '../boards/boards.service';
-import { AdminService } from '../admin/admin.service';
 import { Admin } from '../admin/entity/admin.entity';
 
 @Injectable()
@@ -372,6 +373,39 @@ export class UsersService {
 			.leftJoinAndSelect('user.boards', 'board')
 			.leftJoinAndSelect('board.answers', 'answer')
 			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.orderBy({ 'answer.createdAt': 'DESC' })
 			.getMany();
+	}
+
+	async fetchMyAnswers({ req }: IUSerServiceFetchAnswers): Promise<User[]> {
+		return this.dataSource
+			.getRepository(User)
+			.createQueryBuilder('user') //
+			.where('user.id = :id', { id: req.user.id })
+			.leftJoinAndSelect('user.answers', 'answer')
+			.orderBy({ 'answer.createdAt': 'DESC' })
+			.getMany();
+	}
+
+	async searchMyBoards({ req }: IUSerServiceSearchMyBoards): Promise<User[]> {
+		const keyword = req.query.keyword;
+
+		const result = await this.dataSource //
+			.getRepository(User)
+			.createQueryBuilder('user')
+			.where('user.id = :id', { id: req.user.id })
+			.leftJoinAndSelect('user.boards', 'board')
+			.leftJoinAndSelect('board.answers', 'answer')
+			.leftJoinAndSelect('board.hashtags', 'hashtag')
+			.where('board.title LIKE :title', { title: `%${keyword}%` })
+			.orWhere('board.contents LIKE :contents', { contents: `%${keyword}%` })
+			.orderBy({ 'board.createdAt': 'DESC' })
+			.orderBy({ 'answer.createdAt': 'DESC' })
+			.getMany();
+		if (!result[0]) {
+			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
+		}
+		return result;
 	}
 }
