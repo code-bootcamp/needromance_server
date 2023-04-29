@@ -8,7 +8,6 @@ export class ConsultService {
 		const configuration = new Configuration({
 			apiKey: process.env.OPENAI_KEY,
 		});
-
 		const openAi = new OpenAIApi(configuration);
 		const response = await openAi.createCompletion({
 			model: 'text-davinci-003',
@@ -25,6 +24,8 @@ export class ConsultService {
 			max_tokens: 1000,
 		});
 
+		console.log(response.data.choices[0].text);
+		res.send(response.data.choices[0].text);
 		return response.data.choices[0].text;
 	}
 }
