@@ -135,4 +135,10 @@ export class UsersController {
 	): Promise<User[]> {
 		return this.userService.getTopUsers({ sort });
 	}
+
+	@UseGuards(restAuthGuard('access'))
+	@Get('/boards')
+	fetchMyBoards(@Req() req: Request & IAuthUser): Promise<User[]> {
+		return this.userService.fetchMyBoards({ req });
+	}
 }
