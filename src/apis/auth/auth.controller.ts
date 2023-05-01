@@ -32,7 +32,7 @@ export class AuthController {
 	 */
 
 	@HttpCode(HttpStatus.OK)
-	@Post('/logout')
+	@Get('/logout')
 	@UseGuards(restAuthGuard('access'))
 	logout(
 		@Req() req: Request & IAuthUser, //
