@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { BoardsModule } from '../boards/boards.module';
 import { AnswersModule } from '../answers/answers.module';
 import { Admin } from '../admin/entity/admin.entity';
+import { UserSubscriber } from './entity/user.subscriber';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { Admin } from '../admin/entity/admin.entity';
 	],
 	providers: [
 		UsersService, //
+		UserSubscriber,
 	],
 	exports: [
 		UsersService, //

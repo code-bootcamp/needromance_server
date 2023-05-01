@@ -175,11 +175,6 @@ export class UsersService {
 				console.log(err);
 				throw new UnprocessableEntityException('회원가입 실패');
 			});
-		//왤컴 템플릿도 보내줘야 할까?
-		//상태코드는 모두 200으로 갈텐데 메세지와 상태코드를 맞춰서 보내는 방법이 없을까?
-
-		// const user = await this.userRepository.save({ ...createUserDTO });
-		// return user ? '회원가입 성공' : '회원가입 실패';
 	}
 
 	async deleteUser({ req }: IUserServiceDeleteUser): Promise<string> {
@@ -304,8 +299,9 @@ export class UsersService {
 		if (status) {
 			user.point += 10;
 		} else {
-			// user.point -= 10;
+			user.point -= 10;
 		}
+		//이부분을 querybuilder로 업데이트해보자.
 
 		await this.userRepository.save(user);
 	}
