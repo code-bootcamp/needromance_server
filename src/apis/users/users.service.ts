@@ -301,7 +301,6 @@ export class UsersService {
 		} else {
 			user.point -= 10;
 		}
-		//이부분을 querybuilder로 업데이트해보자.
 
 		await this.userRepository.save(user);
 	}
