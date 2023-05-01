@@ -59,6 +59,7 @@ export class AuthService {
 		// 	`refreshToken=${refreshToken}; path=/; httpOnly`, //Secure;
 		// );
 		res.setHeader('Content-Type', 'application/json');
+		res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
 		res.setHeader('Access-Control-Allow-Credentials', 'true');
 		res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
