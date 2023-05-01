@@ -54,6 +54,11 @@ export class AuthService {
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 		//개발환경
+		// res.setHeader(
+		// 	'set-Cookie',
+		// 	`refreshToken=${refreshToken}; path=/; httpOnly`, //Secure;
+		// );
+		res.setHeader('Content-Type', 'application/json');
 		res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
