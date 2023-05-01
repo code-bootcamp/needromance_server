@@ -10,7 +10,7 @@ async function bootstrap() {
 	app.enableCors({
 		credentials: true,
 		origin: process.env.FRONTEND_URL, //
-		methods: 'GET,PATCH,POST,DELETE,',
+		methods: ['GET', 'POST', 'DELETE', 'PATCH'],
 	});
 
 	const swaggerConfig = new SwaggerDocumentConfig().initializeOptions();
