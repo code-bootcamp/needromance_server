@@ -8,12 +8,14 @@ import {
 	IAuthServiceSetRefreshToken,
 	IAuthServiceSignIn,
 	IAuthServiceSocialLogin,
+	IAuthServiceSocialNickname,
 } from './interfaces/auth-services.interface';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { Response } from 'express';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -53,6 +55,7 @@ export class AuthService {
 			{ sub: user.id },
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
+
 		res.setHeader('Content-Type', 'application/json');
 		res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
 		res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -107,7 +110,6 @@ export class AuthService {
 			const accessToken = req.headers.authorization.split(' ')[1];
 			const refreshToken = req.headers.cookie.split('=')[1];
 
-			//여기서 에러가 발생함
 			const isAccessToken = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
 			const isRefreshToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
 			const isSave1 = await this.cacheManager.set(
@@ -141,12 +143,16 @@ export class AuthService {
 	}
 
 	async socialLogin({ req, res }: IAuthServiceSocialLogin): Promise<void> {
-		console.log(req);
-
-		const user = await this.usersService.isUser({ email: req.user.email });
+		// console.log(req.user);
+		const email = req.user.email;
+		const user = await this.usersService.isUser({ email });
 		//회원이 아닌경우 닉네임 재설정을 해준다.
 		if (!user) {
-			//이 부분은 배포후 작업하겠다.
+			//유저 정보를 저장후 받아오고 이를 이용하여 리프레쉬 토큰을 만든다.
+			const socialLoginUser = await this.usersService.createSocialUser({ email });
+			//닉네임 만드는 페이지로 리다이렉트 시켜준다.
+			await this.setRefreshToken({ user: socialLoginUser, res });
+			return res.redirect('/닉네임 만드는 페이지');
 		}
 
 		//회원인 경우 토큰발급해주어 로그인 시켜준다.
@@ -154,5 +160,27 @@ export class AuthService {
 
 		//마지막으로 메인페이지로 라다이랙트시켜준다.
 		return res.redirect('http://127.0.0.1:5500/need-romance/test.html');
+		// return res.redirect('http://127.0.0.1:3000/auth/login');
+	}
+
+	async socialNickname({ req }: IAuthServiceSocialNickname): Promise<string> {
+		const user = await this.usersService.getOneUserById({ id: req.user.id });
+
+		user.nickname = req.body.nickname;
+
+		const isSaveUser = await this.usersService.saveUser({ user });
+		//문제없이 업데이트된경우 토큰을 없애준다.
+		if (isSaveUser) {
+			const refreshToken = req.headers.cookie.split('=')[1];
+			const isRefreshToken = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
+			const isSave = await this.cacheManager.set(
+				`refreshToken:${refreshToken}`, //
+				'refreshToken',
+				{
+					ttl: isRefreshToken['exp'] - Math.trunc(Date.now() / 1000),
+				},
+			);
+			return isSave ? '소셜회원가입 성공' : '소셜회원가입 실패';
+		}
 	}
 }

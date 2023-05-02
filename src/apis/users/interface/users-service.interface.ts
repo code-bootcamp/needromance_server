@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { IAuthUser } from 'src/apis/auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from '../dto/create-user.dto';
+import { User } from '../entity/user.entity';
 
 export interface IUserServiceFindOneByEmail {
 	email: string;
@@ -24,7 +25,9 @@ export interface IUserServiceCheckToken {
 export interface IUserServiceGetOneUserByNickname {
 	nickname: string;
 }
-
+export interface IUserServiceCreateSocialUser {
+	email: string;
+}
 export interface IUserServiceCreateUser {
 	createUserDTO: CreateUserDTO;
 }
@@ -32,7 +35,9 @@ export interface IUserServiceCreateUser {
 export interface IUserServiceDeleteUser {
 	req: Request & IAuthUser;
 }
-
+export interface IUserServiceSaveUser {
+	user: User;
+}
 export interface IUserServiceUpdateUser {
 	req: Request & IAuthUser;
 }
