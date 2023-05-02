@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
-import { IUploadsServiceUploadsFile } from './interface/uploads-service.interface';
 
 @Injectable()
 export class uploadsService {
-	async uploadsFile({ file }: IUploadsServiceUploadsFile): Promise<string> {
+	async uploadsFile({ file }): Promise<string> {
 		const AWS_S3_BUCKET = 'needromance';
 		const params = {
 			Bucket: AWS_S3_BUCKET,
@@ -22,6 +21,7 @@ export class uploadsService {
 			const upload = await new AWS.S3() //
 				.upload(params)
 				.promise();
+
 			return upload.Location;
 		} catch (error) {
 			throw new Error(error);

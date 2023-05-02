@@ -108,7 +108,7 @@ export class UsersController {
 	@Patch('/update')
 	@UseInterceptors(FileInterceptor('file'))
 	updateUser(
-		@UploadedFile() file: Express.Multer.File,
+		@UploadedFile() file,
 		@Req() req: Request & IAuthUser, //
 	): Promise<User> {
 		return this.userService.updateUser({ req, file });
