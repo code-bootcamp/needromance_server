@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Patch,
+	Post,
+	Query,
+	Req,
+	UploadedFile,
+	UseGuards,
+	UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { Admin } from '../admin/entity/admin.entity';
 import { restAuthGuard } from '../auth/guard/jwt-auth-quard';
@@ -93,10 +106,12 @@ export class UsersController {
 	 */
 	@UseGuards(restAuthGuard('access'))
 	@Patch('/update')
+	@UseInterceptors(FileInterceptor('file'))
 	updateUser(
+		@UploadedFile() file: Express.Multer.File,
 		@Req() req: Request & IAuthUser, //
 	): Promise<User> {
-		return this.userService.updateUser({ req });
+		return this.userService.updateUser({ req, file });
 	}
 
 	/**

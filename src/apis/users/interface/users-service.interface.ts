@@ -40,6 +40,7 @@ export interface IUserServiceSaveUser {
 }
 export interface IUserServiceUpdateUser {
 	req: Request & IAuthUser;
+	file: Express.Multer.File;
 }
 
 export interface IUserServiceRstorePassword {

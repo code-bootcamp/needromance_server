@@ -7,6 +7,7 @@ import { BoardsModule } from '../boards/boards.module';
 import { AnswersModule } from '../answers/answers.module';
 import { Admin } from '../admin/entity/admin.entity';
 import { UserSubscriber } from './entity/user.subscriber';
+import { UploadsModule } from '../uploads/upload.module';
 
 @Module({
 	imports: [
@@ -16,6 +17,7 @@ import { UserSubscriber } from './entity/user.subscriber';
 		]),
 		forwardRef(() => AnswersModule),
 		forwardRef(() => BoardsModule),
+		UploadsModule,
 	],
 	controllers: [
 		UsersController, //

@@ -24,8 +24,7 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
 		if (event.entity.point < 0) {
 			event.entity.point = 0;
 		}
-		// console.log(event.entity);
-		// console.log('@@@');
+
 		event.entity.userRanking = Math.trunc(event.entity.point / 50);
 	}
 }

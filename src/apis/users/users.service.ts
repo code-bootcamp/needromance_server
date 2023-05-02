@@ -38,6 +38,8 @@ import {
 import { AnswersService } from '../answers/answers.service';
 import { BoardsService } from '../boards/boards.service';
 import { Admin } from '../admin/entity/admin.entity';
+import { uploadsService } from '../uploads/upload.service';
+import { use } from 'passport';
 
 @Injectable()
 export class UsersService {
@@ -56,6 +58,8 @@ export class UsersService {
 
 		@Inject(forwardRef(() => BoardsService))
 		private readonly boardsService: BoardsService,
+
+		private readonly uploadsService: uploadsService,
 	) {}
 
 	async isUser({ email }: IUserServiceFindOneByEmail): Promise<User> {
@@ -234,20 +238,14 @@ export class UsersService {
 			});
 	}
 
-	async updateUser({ req }: IUserServiceUpdateUser): Promise<User> {
+	async updateUser({ req, file }: IUserServiceUpdateUser): Promise<User> {
 		const user = await this.isUser({ email: req.user.email });
 
-		await this.dataSource
-			.createQueryBuilder()
-			.update(User)
-			.set({
-				nickname: req.body.nickname,
-				userImg: req.body.userImg,
-			})
-			.where('user.id = :id', { id: user.id })
-			.execute();
+		const imgUrl = await this.uploadsService.uploadsFile({ file });
+		user.nickname = req.body.nickname;
+		user.userImg = imgUrl;
+		const result = await this.userRepository.save(user);
 
-		const result = await this.isUser({ email: req.user.email });
 		const { password, ...updateUser } = result;
 		return updateUser;
 	}
@@ -256,16 +254,10 @@ export class UsersService {
 		const user = await this.isUser({ email: req.body.email });
 
 		const hashPassword = await bcrypt.hash(req.body.password, 10);
-		const result = await this.dataSource
-			.createQueryBuilder()
-			.update(User)
-			.set({
-				password: hashPassword,
-			})
-			.where('user.id = :id', { id: user.id })
-			.execute();
+		user.password = hashPassword;
+		const result = await this.userRepository.save(user);
 
-		return result.affected ? '비밀번호 재설정 성공' : '비밀번호 재설정 실패';
+		return result ? '비밀번호 재설정 성공' : '비밀번호 재설정 실패';
 	}
 
 	async fetchUser({ req }: IUserServiceFetchUser): Promise<User | Admin> {
@@ -370,13 +362,7 @@ export class UsersService {
 	async mangeStatus({ id }: IUserServiceManageStatus): Promise<User> {
 		const user = await this.getOneUserById({ id });
 		user.state = !user.state;
-		await this.userRepository.save(user);
-
-		return this.dataSource //
-			.getRepository(User)
-			.createQueryBuilder('user')
-			.where('user.id = :id', { id })
-			.getOne();
+		return this.userRepository.save(user);
 	}
 
 	async fetchMyBoards({ req }: IUSerServiceFetchMyBoards): Promise<User[]> {
