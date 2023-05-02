@@ -10,7 +10,10 @@ export class User {
 	@Column({ type: 'text' })
 	email: string;
 
-	@Column({ type: 'text', default: null })
+	@Column({
+		type: 'text', //
+		default: null,
+	})
 	password?: string;
 
 	@Column({
@@ -37,8 +40,12 @@ export class User {
 	})
 	userRanking: number;
 
-	//가입시의 한국시간을 넣어줘야한다.
-	//작은 부분이지만 기록해두자.
+	@Column({
+		type: 'boolean', //
+		default: true,
+	})
+	state: boolean;
+
 	@CreateDateColumn({
 		type: 'timestamp',
 		transformer: {
@@ -49,12 +56,6 @@ export class User {
 		},
 	})
 	createdAt: Date;
-
-	@Column({
-		type: 'boolean', //
-		default: true,
-	})
-	state: boolean;
 
 	@OneToMany(
 		() => Board, //

@@ -368,12 +368,9 @@ export class UsersService {
 	}
 
 	async mangeStatus({ id }: IUserServiceManageStatus): Promise<User> {
-		await this.dataSource
-			.createQueryBuilder()
-			.update(User)
-			.set({ state: () => 'NOT state' })
-			.where('id = :id', { id })
-			.execute();
+		const user = await this.getOneUserById({ id });
+		user.state = !user.state;
+		await this.userRepository.save(user);
 
 		return this.dataSource //
 			.getRepository(User)
