@@ -370,13 +370,7 @@ export class UsersService {
 	async mangeStatus({ id }: IUserServiceManageStatus): Promise<User> {
 		const user = await this.getOneUserById({ id });
 		user.state = !user.state;
-		await this.userRepository.save(user);
-
-		return this.dataSource //
-			.getRepository(User)
-			.createQueryBuilder('user')
-			.where('user.id = :id', { id })
-			.getOne();
+		return this.userRepository.save(user);
 	}
 
 	async fetchMyBoards({ req }: IUSerServiceFetchMyBoards): Promise<User[]> {
