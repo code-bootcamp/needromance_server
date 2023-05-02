@@ -238,11 +238,16 @@ export class UsersService {
 	}
 
 	async updateUser({ req, file }: IUserServiceUpdateUser): Promise<User> {
+		const imgUrl = await this.uploadsService.uploadsFile({ file });
+
 		const user = await this.isUser({ email: req.user.email });
 
-		const imgUrl = await this.uploadsService.uploadsFile({ file });
-		user.nickname = req.body.nickname;
 		user.userImg = imgUrl;
+
+		if (req.query.nickname) {
+			user.nickname = req.query.nickname as string;
+		}
+
 		const result = await this.userRepository.save(user);
 
 		const { password, ...updateUser } = result;
