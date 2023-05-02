@@ -1,6 +1,6 @@
 import { Answer } from 'src/apis/answers/entity/answer.entity';
 import { Board } from 'src/apis/boards/entity/board.entity';
-import { BeforeUpdate, Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -29,8 +29,8 @@ export class User {
 	userImg: string;
 
 	@Column({
-		type: 'tinyint', //
-		default: 1,
+		type: 'int', //
+		default: 0,
 	})
 	userRanking: number;
 

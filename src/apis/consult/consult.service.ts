@@ -9,6 +9,8 @@ export class ConsultService {
 			organization: process.env.OPENAI_ORGANIZATION,
 			apiKey: process.env.OPENAI_KEY,
 		});
+		console.log(req.user);
+		console.log('##');
 		const openAi = new OpenAIApi(configuration);
 		try {
 			const completion = await openAi.createCompletion({
@@ -20,7 +22,7 @@ export class ConsultService {
 				best_of: 1,
 				presence_penalty: 0.1,
 				max_tokens: 500,
-				user: req.user.id,
+				// user: req.user.id as string,
 			});
 
 			res.send(completion.data.choices[0].text.split('\n\n')[1]);
