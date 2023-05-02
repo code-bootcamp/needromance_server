@@ -138,7 +138,6 @@ export class AuthService {
 
 	async restoreAccessToken({ req }: IAuthServiceRestoreToken): Promise<string> {
 		if (req.user.role === 'user') {
-			console.log(req.user.email);
 			const user = await this.usersService.isUser({ email: req.user.email });
 			return this.getUserAccessToken({ user });
 		} else {
@@ -146,8 +145,8 @@ export class AuthService {
 		}
 	}
 
-	async socialLogin({ req, res }: IAuthServiceSocialLogin) {
-		console.log(req.user);
+	async socialLogin({ req, res }: IAuthServiceSocialLogin): Promise<void> {
+		console.log(req);
 
 		const user = await this.usersService.isUser({ email: req.user.email });
 		//회원이 아닌경우 닉네임 재설정을 해준다.
@@ -159,6 +158,6 @@ export class AuthService {
 		await this.setRefreshToken({ user, res });
 
 		//마지막으로 메인페이지로 라다이랙트시켜준다.
-		res.redirect('/마이페이지');
+		return res.redirect('http://127.0.0.1:5500/need-romance/test.html');
 	}
 }
