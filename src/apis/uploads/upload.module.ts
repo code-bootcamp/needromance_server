@@ -3,9 +3,6 @@ import { UploadsController } from './upload.controller';
 import { uploadsService } from './upload.service';
 
 @Module({
-	imports: [
-		//
-	],
 	controllers: [
 		UploadsController,
 		//
@@ -13,6 +10,9 @@ import { uploadsService } from './upload.service';
 	providers: [
 		uploadsService,
 		//
+	],
+	exports: [
+		uploadsService, //
 	],
 })
 export class UploadsModule {}
