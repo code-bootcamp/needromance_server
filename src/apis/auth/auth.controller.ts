@@ -49,21 +49,19 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	@Post('/restoretoken')
 	@UseGuards(restAuthGuard('refresh'))
-	// @UseGuards(restAuthGuard('access'))
 	restoreAccessToken(
 		@Req() req: Request & IAuthUser, //
 	): Promise<string> {
 		return this.authService.restoreAccessToken({ req });
 	}
 
-	// @HttpCode(HttpStatus.OK)
+	@HttpCode(HttpStatus.OK)
 	@Get('/login/google')
 	@UseGuards(AuthGuard('google'))
 	async loginGoogle(
 		@Req() req: Request & IOAuthUser, //
 		@Res() res: Response,
-	) {
-		this.authService.socialLogin({ req, res });
-		return res.redirect('http://127.0.0.1:5500/need-romance/test.html');
+	): Promise<void> {
+		return this.authService.socialLogin({ req, res });
 	}
 }

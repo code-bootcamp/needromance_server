@@ -9,7 +9,7 @@ services:
       - ./src:/romance-service/src
     restart: always
     ports:
-      - 80:3100
+      - 3000:3100
     env_file:
       - ./.env.docker
 
