@@ -13,6 +13,7 @@ import { AnswersModule } from './apis/answers/answers.module';
 import { AuthModule } from './apis/auth/auth.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { ConsultModule } from './apis/consult/consult.module';
+import { UploadsModule } from './apis/uploads/upload.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { ConsultModule } from './apis/consult/consult.module';
 		BoardsModule,
 		ConsultModule,
 		UsersModule,
+		UploadsModule,
 		HashtagsModule,
 		ConfigModule.forRoot(),
 		TypeOrmModule.forRoot({
