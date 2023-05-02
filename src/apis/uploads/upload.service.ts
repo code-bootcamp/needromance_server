@@ -5,6 +5,12 @@ import { IUploadsServiceUploadsFile } from './interface/uploads-service.interfac
 @Injectable()
 export class uploadsService {
 	async uploadsFile({ file }: IUploadsServiceUploadsFile) {
+		const AWS_S3_BUCKET = 'needromance';
+		const params = {
+			Bucket: AWS_S3_BUCKET,
+			Key: `${Date.now() + file.originalname}`,
+			Body: file.buffer,
+		};
 		AWS.config.update({
 			region: 'ap-northeast-2',
 			credentials: {
@@ -14,13 +20,11 @@ export class uploadsService {
 		});
 		try {
 			const upload = await new AWS.S3() //
-				.createBucket({ Bucket: 'needromance' })
+				.upload(params)
 				.promise();
-			console.log(file);
-			console.log('###');
-			console.log(upload);
+			return upload;
 		} catch (error) {
-			console.log(error);
+			throw new Error(error);
 		}
 	}
 }

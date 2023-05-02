@@ -1,3 +1,3 @@
 export interface IUploadsServiceUploadsFile {
-	file: object;
+	file: Express.Multer.File;
 }
