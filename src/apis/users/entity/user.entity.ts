@@ -10,11 +10,14 @@ export class User {
 	@Column({ type: 'text' })
 	email: string;
 
-	@Column({ type: 'text' })
+	@Column({ type: 'text', default: null })
 	password?: string;
 
-	@Column({ type: 'text' })
-	nickname: string;
+	@Column({
+		type: 'text', //
+		default: null,
+	})
+	nickname?: string;
 
 	@Column({
 		type: 'int', //

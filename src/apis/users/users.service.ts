@@ -9,11 +9,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ObjectLiteral, Repository } from 'typeorm';
 import { User } from './entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import {
 	IUserServiceCheckToken,
+	IUserServiceCreateSocialUser,
 	IUserServiceCreateUser,
 	IUserServiceDeleteUser,
 	IUSerServiceFetchAnswers,
@@ -26,6 +27,7 @@ import {
 	IUserServiceIsValidNickname,
 	IUserServiceManageStatus,
 	IUserServiceRstorePassword,
+	IUserServiceSaveUser,
 	IUSerServiceSearchMyBoards,
 	IUserServiceSearchUserByKeyword,
 	IUserServiceSendToken,
@@ -149,10 +151,19 @@ export class UsersService {
 		return user;
 	}
 
-	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
-		//검증된 nickname과 email그리고 password를 입력받는다.
-		//insert와 우사하게 동작하는 query이다.
+	async createSocialUser({ email }: IUserServiceCreateSocialUser): Promise<User | ObjectLiteral> {
+		return this.dataSource //
+			.createQueryBuilder()
+			.insert()
+			.into(User)
+			.values({ email })
+			.execute()
+			.then((res) => {
+				return res.generatedMaps[0];
+			});
+	}
 
+	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
 		if (await this.isUser({ email: createUserDTO.email })) {
 			throw new UnprocessableEntityException(`${createUserDTO.email}로 가입된 유저가 존재합니다.`);
 		}
@@ -210,6 +221,17 @@ export class UsersService {
 		} else {
 			throw new UnprocessableEntityException('이메일이 일치하지 않습니다.');
 		}
+	}
+
+	async saveUser({ user }: IUserServiceSaveUser): Promise<boolean> {
+		return this.userRepository
+			.save(user)
+			.then(() => {
+				return true;
+			})
+			.catch(() => {
+				return false;
+			});
 	}
 
 	async updateUser({ req }: IUserServiceUpdateUser): Promise<User> {

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from 'src/apis/users/entity/user.entity';
+import { ObjectLiteral } from 'typeorm';
 
 export interface IAuthServiceSignIn {
 	req: Request;
@@ -20,7 +21,7 @@ export interface IAuthServiceGetAccessToken {
 }
 
 export interface IAuthServiceSetRefreshToken {
-	user: User;
+	user: User | ObjectLiteral;
 	res: Response;
 }
 
@@ -39,6 +40,10 @@ export interface IAuthServiceRestoreToken {
 export interface IAuthServiceSocialLogin {
 	req: Request & IOAuthUser;
 	res: Response;
+}
+
+export interface IAuthServiceSocialNickname {
+	req: Request & IAuthUser;
 }
 export interface IOAuthUser {
 	user: {

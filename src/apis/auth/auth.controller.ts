@@ -64,4 +64,13 @@ export class AuthController {
 	): Promise<void> {
 		return this.authService.socialLogin({ req, res });
 	}
+
+	@HttpCode(HttpStatus.OK)
+	@Post('/login/google/nickname')
+	@UseGuards(restAuthGuard('refresh'))
+	async socialNickname(
+		@Req() req: Request & IAuthUser, //
+	): Promise<string> {
+		return this.authService.socialNickname({ req });
+	}
 }
