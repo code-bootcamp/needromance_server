@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { IAuthUser } from 'src/apis/auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { User } from '../entity/user.entity';
+import { Express } from 'express';
 
 export interface IUserServiceFindOneByEmail {
 	email: string;
@@ -40,7 +41,7 @@ export interface IUserServiceSaveUser {
 }
 export interface IUserServiceUpdateUser {
 	req: Request & IAuthUser;
-	file: any;
+	file: Express.Multer.File;
 }
 
 export interface IUserServiceRstorePassword {
