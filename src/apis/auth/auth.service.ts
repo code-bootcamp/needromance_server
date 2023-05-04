@@ -151,7 +151,7 @@ export class AuthService {
 			const socialLoginUser = await this.usersService.createSocialUser({ email });
 			//닉네임 만드는 페이지로 리다이렉트 시켜준다.
 			await this.setRefreshToken({ user: socialLoginUser, res });
-			return res.redirect('https://needromance.online/닉네임 만드는 페이지');
+			return res.redirect('https://needromance.online/signup/social');
 		}
 
 		//회원인 경우 토큰발급해주어 로그인 시켜준다.
