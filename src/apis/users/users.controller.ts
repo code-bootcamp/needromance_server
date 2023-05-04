@@ -19,6 +19,7 @@ import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
+import { Express } from 'express';
 
 @Controller('user')
 export class UsersController {
@@ -108,7 +109,7 @@ export class UsersController {
 	@Patch('/update')
 	@UseInterceptors(FileInterceptor('file'))
 	updateUser(
-		@UploadedFile() file,
+		@UploadedFile() file: Express.Multer.File,
 		@Req() req: Request & IAuthUser, //
 	): Promise<User> {
 		return this.userService.updateUser({ req, file });
