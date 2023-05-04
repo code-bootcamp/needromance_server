@@ -15,7 +15,6 @@ import * as jwt from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { Response } from 'express';
-import { use } from 'passport';
 
 @Injectable()
 export class AuthService {
@@ -152,15 +151,14 @@ export class AuthService {
 			const socialLoginUser = await this.usersService.createSocialUser({ email });
 			//닉네임 만드는 페이지로 리다이렉트 시켜준다.
 			await this.setRefreshToken({ user: socialLoginUser, res });
-			return res.redirect('/닉네임 만드는 페이지');
+			return res.redirect('https://needromance.online/닉네임 만드는 페이지');
 		}
 
 		//회원인 경우 토큰발급해주어 로그인 시켜준다.
 		await this.setRefreshToken({ user, res });
 
 		//마지막으로 메인페이지로 라다이랙트시켜준다.
-		return res.redirect('http://127.0.0.1:5500/need-romance/test.html');
-		// return res.redirect('http://127.0.0.1:3000/auth/login');
+		return res.redirect('https://needromance.online/');
 	}
 
 	async socialNickname({ req }: IAuthServiceSocialNickname): Promise<string> {
