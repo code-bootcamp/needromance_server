@@ -145,8 +145,8 @@ export class AuthService {
 		// console.log(req.user);
 		const email = req.user.email;
 		const user = await this.usersService.isUser({ email });
-		//회원이 아닌경우 닉네임 재설정을 해준다.
-		if (!user) {
+		//회원이 아닌경우 닉네임 재설정을 해준다. 회원이지만 닉네임을 설정하지 않은 경우도 있을것이다.
+		if (!user || !user.nickname) {
 			//유저 정보를 저장후 받아오고 이를 이용하여 리프레쉬 토큰을 만든다.
 			const socialLoginUser = await this.usersService.createSocialUser({ email });
 			//닉네임 만드는 페이지로 리다이렉트 시켜준다.
