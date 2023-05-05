@@ -1,6 +1,8 @@
 import { Request } from 'express';
 import { IAuthUser } from 'src/apis/auth/interfaces/auth-services.interface';
-
+export interface IAdminServiceFetchAdmin {
+	email: string;
+}
 export interface IAdminServiceSignup {
 	req: Request;
 }

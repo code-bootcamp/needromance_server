@@ -1,7 +1,11 @@
 import { CACHE_MANAGER, Inject, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
+import { AdminService } from '../admin/admin.service';
+import { JwtService } from '@nestjs/jwt';
+
 import {
 	IAuthServiceGetAccessToken,
+	IAuthServiceGetAdminAccessToken,
 	IAuthServiceLogout,
 	IAuthServiceRestoreToken,
 	IAuthServiceSetAdminRefreshToken,
@@ -10,9 +14,9 @@ import {
 	IAuthServiceSocialLogin,
 	IAuthServiceSocialNickname,
 } from './interfaces/auth-services.interface';
+
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
-import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { Response } from 'express';
 
@@ -22,6 +26,7 @@ export class AuthService {
 		@Inject(CACHE_MANAGER)
 		private readonly cacheManager: Cache,
 		private readonly usersService: UsersService, //
+		private readonly adminService: AdminService,
 		private readonly jwtService: JwtService,
 	) {}
 
@@ -37,13 +42,13 @@ export class AuthService {
 		);
 	}
 
-	getAdminAccessToken(): string {
+	getAdminAccessToken({ admin }: IAuthServiceGetAdminAccessToken): string {
 		return this.jwtService.sign(
 			{
 				role: 'admin',
-				nickname: 'admin', //
-				email: process.env.ADMIN_EMAIL,
-				sub: 1,
+				nickname: admin.nickname, //
+				email: admin.email,
+				sub: admin.id,
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
 		);
@@ -56,8 +61,6 @@ export class AuthService {
 		);
 
 		res.setHeader('Content-Type', 'application/json');
-		res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
-		res.setHeader('Access-Control-Allow-Credentials', 'true');
 		res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
@@ -67,9 +70,9 @@ export class AuthService {
 		});
 	}
 
-	setAdminRefreshToken({ res }: IAuthServiceSetAdminRefreshToken): Response {
+	setAdminRefreshToken({ admin, res }: IAuthServiceSetAdminRefreshToken): Response {
 		const refreshToken = this.jwtService.sign(
-			{ sub: 1 }, //
+			{ sub: admin.id }, //
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 
@@ -84,18 +87,27 @@ export class AuthService {
 
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
 		const { email, password } = req.body;
-		if (email === process.env.ADMIN_EMAIL) {
-			await this.setAdminRefreshToken({ res });
-			return this.getAdminAccessToken();
+		//admin 테이블에서 조회
+		//admin을 따로 뺏어야 하나?
+		const admin = await this.adminService.fetchAdmin({ email });
+
+		if (email === admin.email) {
+			await this.setAdminRefreshToken({ admin, res });
+			return this.getAdminAccessToken({ admin });
 		}
 
 		const user = await this.usersService.isUser({ email });
 
-		if (!user || !user.state) throw new UnprocessableEntityException('등록되지 않았거나, 정지된 계정입니다.');
+		if (!user || !user.state) {
+			throw new UnprocessableEntityException('등록되지 않았거나, 정지된 계정입니다.');
+		}
+
 		const isValid = await bcrypt.compare(password, user.password);
+
 		if (!isValid) {
 			throw new UnauthorizedException('올바른 정보를 입력해주세요');
 		}
+
 		await this.setRefreshToken({ user, res });
 
 		return this.getUserAccessToken({ user });
@@ -137,7 +149,8 @@ export class AuthService {
 			const user = await this.usersService.isUser({ email: req.user.email });
 			return this.getUserAccessToken({ user });
 		} else {
-			return this.getAdminAccessToken();
+			const admin = await this.adminService.fetchAdmin({ email: req.user.email });
+			return this.getAdminAccessToken({ admin });
 		}
 	}
 

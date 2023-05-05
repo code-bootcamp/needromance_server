@@ -167,6 +167,7 @@ export class UsersService {
 	}
 
 	async createUser({ createUserDTO }: IUserServiceCreateUser): Promise<string> {
+		//하나의 로직으로 수정할 수 있겠다.
 		if (await this.isUser({ email: createUserDTO.email })) {
 			throw new UnprocessableEntityException(`${createUserDTO.email}로 가입된 유저가 존재합니다.`);
 		}

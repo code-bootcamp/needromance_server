@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import {
 	IAdminServiceDeleteBoards,
+	IAdminServiceFetchAdmin,
 	IAdminServiceFetchBoards,
 	IAdminServiceManagesStatus,
 	IAdminServiceSearchBoards,
@@ -21,9 +22,18 @@ export class AdminService {
 		private readonly usersService: UsersService,
 		private readonly boardsService: BoardsService,
 	) {}
+
 	adminQueryBuilder = this.dataSource //
 		.getRepository(Admin)
 		.createQueryBuilder('admin');
+
+	async fetchAdmin(
+		{ email }: IAdminServiceFetchAdmin, //
+	): Promise<Admin> {
+		return this.adminQueryBuilder //
+			.where('admin.email = :email', { email })
+			.getOne();
+	}
 
 	async signup({ req }: IAdminServiceSignup): Promise<void> {
 		const { email, nickname, password } = req.body;
