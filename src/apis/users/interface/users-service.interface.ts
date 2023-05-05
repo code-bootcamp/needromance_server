@@ -13,12 +13,14 @@ export interface IUserServiceFindOneByEmail {
 	email: string;
 }
 
-export interface IUserServiceIsValidEmail {
-	req: Request;
-}
 export interface IUserServiceCreateAdmin {
 	req: Request;
 }
+
+export interface IUserServiceIsValidEmail {
+	req: Request;
+}
+
 export interface IUserServiceIsValidNickname {
 	req: Request;
 }
