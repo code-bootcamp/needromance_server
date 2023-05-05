@@ -48,7 +48,7 @@ export class AuthService {
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
 		);
 	}
-	//refreashtoken 헤더에 넣을때 어떻게 넣지?
+
 	setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
 		const refreshToken = this.jwtService.sign(
 			{ sub: user.id },

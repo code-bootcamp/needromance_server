@@ -9,6 +9,7 @@ import {
 	IAdminServiceManagesStatus,
 	IAdminServiceSearchBoards,
 	IAdminServiceSearchUsers,
+	IAdminServiceSignup,
 } from './interface/admin-services.interface';
 import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
@@ -20,23 +21,41 @@ export class AdminService {
 		private readonly usersService: UsersService,
 		private readonly boardsService: BoardsService,
 	) {}
+	adminQueryBuilder = this.dataSource //
+		.getRepository(Admin)
+		.createQueryBuilder('admin');
 
-	async signup(): Promise<string> {
-		const email = process.env.ADMIN_EMAIL;
-		const password = process.env.ADMIN_PASSWORD;
-		const hashPassword = await bcrypt.hash(password, 10);
-		return this.dataSource
-			.createQueryBuilder()
-			.insert()
-			.into(Admin)
-			.values({ email: email as string, password: hashPassword, nickname: 'admin' })
-			.execute()
-			.then(() => {
-				return '회원 가입 성공';
-			})
-			.catch((err) => {
-				throw new UnprocessableEntityException('회원가입 실패');
-			});
+	async signup({ req }: IAdminServiceSignup): Promise<void> {
+		// 이메일을 통해 등록여부를 확인한다.
+		// 이메일로 조회한다.
+		// 닉네임을 통해 닉네임 중복여부를 확인한다.
+		// 닉네임으로 조회한다.
+		// DB에 한번접근하여 해결할 수 없을까?
+
+		const { email, nickname, password } = req.body;
+		//어떤게 같아서 에러가 발생하는지 알 수 없다.
+		const result = await this.adminQueryBuilder
+			.where('admin.email = :email', { email })
+			.orWhere('admin.nickname = :nickname', { nickname })
+			.getOne();
+		if (!result[0]) {
+			const hashPassword = await bcrypt.hash(password, 10);
+			await this.adminQueryBuilder
+				.insert()
+				.values({ email, nickname, password: hashPassword })
+				.execute()
+				.then(() => {
+					return '회원 가입 성공';
+				})
+				.catch((err) => {
+					throw new UnprocessableEntityException('회원가입 실패');
+				});
+		}
+		if (result.email === email) {
+			throw new UnprocessableEntityException('이미 등록되 회원입니다.');
+		} else {
+			throw new UnprocessableEntityException('이미 사용중인 nickname 입니다.');
+		}
 	}
 
 	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<User[]> {
