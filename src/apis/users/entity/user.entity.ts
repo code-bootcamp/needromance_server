@@ -53,6 +53,7 @@ export class User {
 		default: UserRole.USER,
 	})
 	role: UserRole;
+
 	@CreateDateColumn({
 		type: 'timestamp',
 		transformer: {

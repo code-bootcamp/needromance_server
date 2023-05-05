@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Admin } from 'src/apis/admin/entity/admin.entity';
 import { User } from 'src/apis/users/entity/user.entity';
 import { ObjectLiteral } from 'typeorm';
 
@@ -20,16 +19,9 @@ export interface IAuthUser {
 export interface IAuthServiceGetAccessToken {
 	user: User;
 }
-export interface IAuthServiceGetAdminAccessToken {
-	admin: Admin;
-}
+
 export interface IAuthServiceSetRefreshToken {
 	user: User | ObjectLiteral;
-	res: Response;
-}
-
-export interface IAuthServiceSetAdminRefreshToken {
-	admin: Admin;
 	res: Response;
 }
 

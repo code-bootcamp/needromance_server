@@ -21,7 +21,7 @@ export class AdminController {
 	@Post('/signup')
 	createAdmin(
 		@Req() req: Request, //
-	): Promise<void> {
+	): Promise<string> {
 		return this.adminService.signup({ req });
 	}
 

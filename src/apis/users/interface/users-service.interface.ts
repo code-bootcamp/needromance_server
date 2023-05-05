@@ -2,15 +2,22 @@ import { Request } from 'express';
 import { IAuthUser } from 'src/apis/auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { User } from '../entity/user.entity';
-import { Express } from 'express';
+
+export interface IUserServiceFindUserWithInfo {
+	email: string;
+	nickname: string;
+}
 
 export interface IUserServiceFindOneByEmail {
 	email: string;
 }
+
 export interface IUserServiceIsValidEmail {
 	req: Request;
 }
-
+export interface IUserServiceCreateAdmin {
+	req: Request;
+}
 export interface IUserServiceIsValidNickname {
 	req: Request;
 }

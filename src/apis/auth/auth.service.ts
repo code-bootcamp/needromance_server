@@ -5,10 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 
 import {
 	IAuthServiceGetAccessToken,
-	IAuthServiceGetAdminAccessToken,
 	IAuthServiceLogout,
 	IAuthServiceRestoreToken,
-	IAuthServiceSetAdminRefreshToken,
 	IAuthServiceSetRefreshToken,
 	IAuthServiceSignIn,
 	IAuthServiceSocialLogin,
@@ -18,7 +16,6 @@ import {
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Cache } from 'cache-manager';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -30,25 +27,13 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
-	getUserAccessToken({ user }: IAuthServiceGetAccessToken): string {
+	getAccessToken({ user }: IAuthServiceGetAccessToken): string {
 		return this.jwtService.sign(
 			{
-				role: 'user',
+				role: user.role,
 				nickname: user.nickname, //
 				email: user.email,
 				sub: user.id,
-			}, //
-			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
-		);
-	}
-
-	getAdminAccessToken({ admin }: IAuthServiceGetAdminAccessToken): string {
-		return this.jwtService.sign(
-			{
-				role: 'admin',
-				nickname: admin.nickname, //
-				email: admin.email,
-				sub: admin.id,
 			}, //
 			{ secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' },
 		);
@@ -70,33 +55,10 @@ export class AuthService {
 		});
 	}
 
-	setAdminRefreshToken({ admin, res }: IAuthServiceSetAdminRefreshToken): Response {
-		const refreshToken = this.jwtService.sign(
-			{ sub: admin.id }, //
-			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
-		);
-
-		return res.cookie('refreshToken', refreshToken, {
-			domain: process.env.FRONTEND_DOMAIN, //
-			path: '/',
-			sameSite: 'none', //로컬환경에서의 개발을 위해 sameSite옵션을 없애준다.
-			httpOnly: true,
-			secure: true, //프론트의 주소가 https로 배포되면 true로 바꿀것.
-		});
-	}
-
 	async signIn({ req, res }: IAuthServiceSignIn): Promise<string> {
 		const { email, password } = req.body;
-		//admin 테이블에서 조회
-		//admin을 따로 뺏어야 하나?
-		const admin = await this.adminService.fetchAdmin({ email });
 
-		if (email === admin.email) {
-			await this.setAdminRefreshToken({ admin, res });
-			return this.getAdminAccessToken({ admin });
-		}
-
-		const user = await this.usersService.isUser({ email });
+		const user = await this.usersService.findUserByEmail({ email });
 
 		if (!user || !user.state) {
 			throw new UnprocessableEntityException('등록되지 않았거나, 정지된 계정입니다.');
@@ -110,7 +72,7 @@ export class AuthService {
 
 		await this.setRefreshToken({ user, res });
 
-		return this.getUserAccessToken({ user });
+		return this.getAccessToken({ user });
 	}
 
 	async logout({ req }: IAuthServiceLogout): Promise<string> {
@@ -145,32 +107,23 @@ export class AuthService {
 	}
 
 	async restoreAccessToken({ req }: IAuthServiceRestoreToken): Promise<string> {
-		if (req.user.role === 'user') {
-			const user = await this.usersService.isUser({ email: req.user.email });
-			return this.getUserAccessToken({ user });
-		} else {
-			const admin = await this.adminService.fetchAdmin({ email: req.user.email });
-			return this.getAdminAccessToken({ admin });
-		}
+		const user = await this.usersService.findUserByEmail({ email: req.user.email });
+		return this.getAccessToken({ user });
 	}
 
 	async socialLogin({ req, res }: IAuthServiceSocialLogin): Promise<void> {
-		// console.log(req.user);
 		const email = req.user.email;
-		const user = await this.usersService.isUser({ email });
-		//회원이 아닌경우 닉네임 재설정을 해준다. 회원이지만 닉네임을 설정하지 않은 경우도 있을것이다.
+		const user = await this.usersService.findUserByEmail({ email });
+
 		if (!user || !user.nickname) {
-			//유저 정보를 저장후 받아오고 이를 이용하여 리프레쉬 토큰을 만든다.
 			const socialLoginUser = await this.usersService.createSocialUser({ email });
-			//닉네임 만드는 페이지로 리다이렉트 시켜준다.
+
 			await this.setRefreshToken({ user: socialLoginUser, res });
 			return res.redirect('https://needromance.online/signup/social');
 		}
 
-		//회원인 경우 토큰발급해주어 로그인 시켜준다.
 		await this.setRefreshToken({ user, res });
 
-		//마지막으로 메인페이지로 라다이랙트시켜준다.
 		return res.redirect('https://needromance.online/');
 	}
 

@@ -1,11 +1,7 @@
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import { Admin } from './entity/admin.entity';
-import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import {
 	IAdminServiceDeleteBoards,
-	IAdminServiceFetchAdmin,
 	IAdminServiceFetchBoards,
 	IAdminServiceManagesStatus,
 	IAdminServiceSearchBoards,
@@ -18,45 +14,19 @@ import { Board } from '../boards/entity/board.entity';
 @Injectable()
 export class AdminService {
 	constructor(
-		private readonly dataSource: DataSource, //
-		private readonly usersService: UsersService,
+		private readonly usersService: UsersService, //
 		private readonly boardsService: BoardsService,
 	) {}
 
-	adminQueryBuilder = this.dataSource //
-		.getRepository(Admin)
-		.createQueryBuilder('admin');
+	async signup({ req }: IAdminServiceSignup): Promise<string> {
+		const { email, nickname } = req.body;
 
-	async fetchAdmin(
-		{ email }: IAdminServiceFetchAdmin, //
-	): Promise<Admin> {
-		return this.adminQueryBuilder //
-			.where('admin.email = :email', { email })
-			.getOne();
-	}
+		const admin = await this.usersService.findUserWithInfo({ email, nickname });
 
-	async signup({ req }: IAdminServiceSignup): Promise<void> {
-		const { email, nickname, password } = req.body;
-		const result = await this.adminQueryBuilder
-			.where('admin.email = :email', { email })
-			.orWhere('admin.nickname = :nickname', { nickname })
-			.getOne();
-
-		if (!result[0]) {
-			const hashPassword = await bcrypt.hash(password, 10);
-			await this.adminQueryBuilder
-				.insert()
-				.values({ email, nickname, password: hashPassword })
-				.execute()
-				.then(() => {
-					return '회원 가입 성공';
-				})
-				.catch((err) => {
-					throw new UnprocessableEntityException('회원가입 실패');
-				});
+		if (!admin) {
+			return this.usersService.createAdmin({ req });
 		}
-
-		if (result.email === email) {
+		if (admin.email === email) {
 			throw new UnprocessableEntityException('이미 등록되 회원입니다.');
 		} else {
 			throw new UnprocessableEntityException('이미 사용중인 닉네임입니다.');
