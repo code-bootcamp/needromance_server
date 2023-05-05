@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminModule } from '../admin/admin.module';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -10,6 +11,7 @@ import { JwtGoogleStrategy } from './strategies/jwt-social-google.strategy';
 @Module({
 	imports: [
 		UsersModule, //
+		AdminModule,
 		JwtModule.register({
 			global: true,
 		}),

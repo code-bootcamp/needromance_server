@@ -9,12 +9,15 @@ import { AdminService } from './admin.service';
 		BoardsModule,
 		UsersModule, //
 	],
+	controllers: [
+		AdminController, //
+	],
 	providers: [
 		AdminService,
 		//
 	],
-	controllers: [
-		AdminController, //
+	exports: [
+		AdminService, //
 	],
 })
 export class AdminModule {}

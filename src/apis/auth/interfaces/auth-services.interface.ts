@@ -25,10 +25,6 @@ export interface IAuthServiceSetRefreshToken {
 	res: Response;
 }
 
-export interface IAuthServiceSetAdminRefreshToken {
-	res: Response;
-}
-
 export interface IAuthServiceLogout {
 	req: Request & IAuthUser;
 }

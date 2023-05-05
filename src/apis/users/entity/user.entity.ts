@@ -1,6 +1,7 @@
 import { Answer } from 'src/apis/answers/entity/answer.entity';
 import { Board } from 'src/apis/boards/entity/board.entity';
 import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserRole } from './user.enum';
 
 @Entity()
 export class User {
@@ -45,6 +46,13 @@ export class User {
 		default: true,
 	})
 	state: boolean;
+
+	@Column({
+		type: 'enum',
+		enum: UserRole,
+		default: UserRole.USER,
+	})
+	role: UserRole;
 
 	@CreateDateColumn({
 		type: 'timestamp',
