@@ -39,7 +39,6 @@ import {
 } from './interface/users-service.interface';
 import { AnswersService } from '../answers/answers.service';
 import { BoardsService } from '../boards/boards.service';
-
 import { uploadsService } from '../uploads/upload.service';
 import { UserRole } from './entity/user.enum';
 
