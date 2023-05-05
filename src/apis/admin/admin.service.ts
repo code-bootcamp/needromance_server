@@ -26,18 +26,12 @@ export class AdminService {
 		.createQueryBuilder('admin');
 
 	async signup({ req }: IAdminServiceSignup): Promise<void> {
-		// 이메일을 통해 등록여부를 확인한다.
-		// 이메일로 조회한다.
-		// 닉네임을 통해 닉네임 중복여부를 확인한다.
-		// 닉네임으로 조회한다.
-		// DB에 한번접근하여 해결할 수 없을까?
-
 		const { email, nickname, password } = req.body;
-		//어떤게 같아서 에러가 발생하는지 알 수 없다.
 		const result = await this.adminQueryBuilder
 			.where('admin.email = :email', { email })
 			.orWhere('admin.nickname = :nickname', { nickname })
 			.getOne();
+
 		if (!result[0]) {
 			const hashPassword = await bcrypt.hash(password, 10);
 			await this.adminQueryBuilder
@@ -51,10 +45,11 @@ export class AdminService {
 					throw new UnprocessableEntityException('회원가입 실패');
 				});
 		}
+
 		if (result.email === email) {
 			throw new UnprocessableEntityException('이미 등록되 회원입니다.');
 		} else {
-			throw new UnprocessableEntityException('이미 사용중인 nickname 입니다.');
+			throw new UnprocessableEntityException('이미 사용중인 닉네임입니다.');
 		}
 	}
 
