@@ -90,9 +90,7 @@ export class UsersService {
 	}
 
 	async fetchUsers(): Promise<User[]> {
-		return this.dataSource //
-			.getRepository(User)
-			.createQueryBuilder('user')
+		return this.userQueryBuilder
 			.select('user.id')
 			.addSelect('user.email')
 			.addSelect('user.nickname')
@@ -123,28 +121,25 @@ export class UsersService {
 
 	async isValidEmail({ req }: IUserServiceIsValidEmail): Promise<boolean> {
 		const { email } = req.query;
-		const isValid = await this.userRepository.count({
-			where: {
-				email: email as string,
-			},
-		});
+		const isValid = await this.userQueryBuilder //
+			.where('user.email = :email', { email })
+			.getCount();
+
 		return isValid ? false : true;
 	}
 
 	async isValidNickname({ req }: IUserServiceIsValidNickname) {
 		const { nickname } = req.query;
-		const isValid = await this.userRepository.count({
-			where: {
-				nickname: nickname as string,
-			},
-		});
+		const isValid = await this.userQueryBuilder //
+			.where('user.nickname = :nickname', { nickname })
+			.getCount();
 		return isValid ? false : true;
 	}
 
 	async sendToken({ req }: IUserServiceSendToken): Promise<void> {
 		const token = String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
 		const { email } = req.query;
-		//redis에 email과 인증번호 저장
+
 		await this.cacheManager.set(email as string, token, {
 			ttl: 180, //
 		});
@@ -165,15 +160,12 @@ export class UsersService {
         </html>
       `;
 		//이메일로 인증번호 전송
-		const test2 = await this.mailerService.sendMail({
+		await this.mailerService.sendMail({
 			to: email as string,
 			from: process.env.EMAIL_USER,
 			subject: `💞로맨스가 필요해💞`,
 			html: romanceTemplate,
 		});
-		console.log(test2);
-		//만에하나 에러가 날 경우를 대비한 에러 에러핸들링이 필요하다.
-		//전반적인 기능개발 이후 에러 핸들링 할것
 	}
 
 	async checkToken({ req }: IUserServiceCheckToken): Promise<boolean> {
@@ -183,18 +175,15 @@ export class UsersService {
 	}
 
 	async getOneUserByNickname({ nickname }: IUserServiceGetOneUserByNickname): Promise<User> {
-		const queryBuilder = this.userRepository.createQueryBuilder('user');
-		const user = await queryBuilder //
+		const user = await this.userQueryBuilder //
 			.where('user.nickname = :nickname', { nickname })
 			.getOne();
 		return user;
 	}
 
 	async createSocialUser({ email }: IUserServiceCreateSocialUser): Promise<User | ObjectLiteral> {
-		return this.dataSource //
-			.createQueryBuilder()
+		return this.userQueryBuilder
 			.insert()
-			.into(User)
 			.values({ email })
 			.execute()
 			.then((res) => {
@@ -213,10 +202,8 @@ export class UsersService {
 		}
 
 		const hashPassword = await bcrypt.hash(createUserDTO.password, 10);
-		return this.dataSource
-			.createQueryBuilder()
+		return this.userQueryBuilder
 			.insert()
-			.into(User)
 			.values({ ...createUserDTO, password: hashPassword })
 			.execute()
 			.then((res) => {
@@ -302,13 +289,6 @@ export class UsersService {
 	}
 
 	async fetchUser({ req }: IUserServiceFetchUser): Promise<User> {
-		// if (req.user.role === 'admin') {
-		// 	return this.dataSource
-		// 		.getRepository(Admin)
-		// 		.createQueryBuilder('admin')
-		// 		.where('admin.email = :email', { email: req.user.email })
-		// 		.getOne();
-		// }
 		const result = await this.findUserByEmail({ email: req.user.email });
 		const { password, ...user } = result;
 		return user;
@@ -320,8 +300,7 @@ export class UsersService {
 	 * @returns id로 조회한 유저 정보
 	 */
 	async getOneUserById({ id }: IUserServiceGetOneUserById): Promise<User> {
-		const queryBuilder = this.userRepository.createQueryBuilder('user');
-		const user = await queryBuilder
+		const user = await this.userQueryBuilder
 			.where('user.id = :id', { id })
 			.select('user.id')
 			.addSelect('user.email')
@@ -380,9 +359,7 @@ export class UsersService {
 	}
 
 	async searchUserByKeyword({ keyword }: IUserServiceSearchUserByKeyword): Promise<User[]> {
-		const users = await this.dataSource
-			.getRepository(User) //
-			.createQueryBuilder('user')
+		const users = await this.userQueryBuilder
 			.where('user.email LIKE :email', { email: `%${keyword}%` })
 			.orWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
 			.select('user.id')
@@ -407,9 +384,7 @@ export class UsersService {
 	}
 
 	async fetchMyBoards({ req }: IUSerServiceFetchMyBoards): Promise<User[]> {
-		return this.dataSource
-			.getRepository(User)
-			.createQueryBuilder('user') //
+		return this.userQueryBuilder //
 			.where('user.id = :id', { id: req.user.id })
 			.leftJoinAndSelect('user.boards', 'board')
 			.leftJoinAndSelect('board.answers', 'answer')
@@ -420,9 +395,7 @@ export class UsersService {
 	}
 
 	async fetchMyAnswers({ req }: IUSerServiceFetchAnswers): Promise<User[]> {
-		return this.dataSource
-			.getRepository(User)
-			.createQueryBuilder('user') //
+		return this.userQueryBuilder //
 			.where('user.id = :id', { id: req.user.id })
 			.leftJoinAndSelect('user.answers', 'answer')
 			.orderBy({ 'answer.createdAt': 'DESC' })
@@ -432,9 +405,7 @@ export class UsersService {
 	async searchMyBoards({ req }: IUSerServiceSearchMyBoards): Promise<User[]> {
 		const keyword = req.query.keyword;
 
-		const result = await this.dataSource //
-			.getRepository(User)
-			.createQueryBuilder('user')
+		const result = await this.userQueryBuilder
 			.where('user.id = :id', { id: req.user.id })
 			.leftJoinAndSelect('user.boards', 'board')
 			.leftJoinAndSelect('board.answers', 'answer')
