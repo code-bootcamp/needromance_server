@@ -45,13 +45,13 @@ export class AuthService {
 			{ secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
 		);
 
-		res.setHeader('Content-Type', 'application/json');
+		res.setHeader('Access-Control-Allow-Credentials', 'true');
 		res.cookie('refreshToken', refreshToken, {
 			domain: process.env.FRONTEND_DOMAIN, //
 			path: '/',
-			sameSite: 'none', //로컬환경에서의 개발을 위해 sameSite옵션을 없애준다.
+			sameSite: 'none',
 			httpOnly: true,
-			secure: true, //프론트의 주소가 https로 배포되면 true로 바꿀것.
+			secure: true,
 		});
 	}
 
@@ -80,6 +80,7 @@ export class AuthService {
 			if (!req.headers) {
 				throw new UnauthorizedException('JWT token is missing');
 			}
+
 			const accessToken = req.headers.authorization.split(' ')[1];
 			const refreshToken = req.headers.cookie.split('=')[1];
 

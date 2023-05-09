@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { IAuthUser } from 'src/apis/auth/interfaces/auth-services.interface';
 import { CreateUserDTO } from '../dto/create-user.dto';
 import { User } from '../entity/user.entity';
+import { Express } from 'express';
 
 export interface IUserServiceFindUserWithInfo {
 	email: string;
