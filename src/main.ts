@@ -9,7 +9,10 @@ async function bootstrap() {
 	app.use(cookieParser());
 	app.enableCors({
 		credentials: true,
-		origin: process.env.FRONTEND_URL, //
+		origin: [
+			process.env.FRONTEND_URL,
+			process.env.LOCALHOST_URL, //
+		],
 		methods: ['GET', 'POST', 'DELETE', 'PATCH'],
 	});
 
@@ -18,6 +21,7 @@ async function bootstrap() {
 	SwaggerModule.setup('api', app, swaggerDocument);
 
 	await app.listen(3100, () => {
+		console.log(process.env.FRONTEND_URL, '###', process.env.FRONTEND_DOMAIN);
 		console.log('💞💞💞로맨스가 필요해💞💞💞');
 	});
 }

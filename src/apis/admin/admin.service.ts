@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import {
 	IAdminServiceDeleteBoards,
 	IAdminServiceFetchBoards,
+	IAdminServiceIsAdmin,
 	IAdminServiceManagesStatus,
 	IAdminServiceSearchBoards,
 	IAdminServiceSearchUsers,
@@ -11,6 +12,7 @@ import {
 import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
+import { UserRole } from '../users/entity/user.enum';
 @Injectable()
 export class AdminService {
 	constructor(
@@ -33,57 +35,42 @@ export class AdminService {
 		}
 	}
 
+	async isAdmin({ role }: IAdminServiceIsAdmin) {
+		if (role === UserRole.USER) throw new UnauthorizedException('권한이 없습니다.');
+	}
+
 	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<User[]> {
-		if (req.user.role === 'admin') {
-			return this.usersService.fetchUsers();
-		} else {
-			throw new UnauthorizedException('권한이 없습니다.');
-		}
+		await this.isAdmin({ role: req.user.role });
+		return this.usersService.fetchUsers();
 	}
 
 	async fetchBoards({ req }): Promise<Board[]> {
-		if (req.user.role === 'admin') {
-			if (req.query) {
-				return this.boardsService.getBoards();
-			}
-			const { page: get } = req.query;
-			const page = Number(get);
-			return this.boardsService.getBoardsWithPage({ page });
-		} else {
-			throw new UnauthorizedException('권한이 없습니다.');
+		await this.isAdmin({ role: req.user.role });
+		if (req.query) {
+			return this.boardsService.getBoards();
 		}
+		const { page: get } = req.query;
+		const page = Number(get);
+		return this.boardsService.getBoardsWithPage({ page });
 	}
 
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
-		if (req.user.role === 'admin') {
-			return await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
-		} else {
-			throw new UnauthorizedException('관리자가 아닙니다.');
-		}
+		await this.isAdmin({ role: req.user.role });
+		return await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
 	}
 
 	async deleteBoards({ req, id }: IAdminServiceDeleteBoards): Promise<void> {
-		if (req.user.role === 'admin') {
-			console.log(id);
-			await this.boardsService.deleteBoardForAdmin({ id });
-		} else {
-			throw new UnauthorizedException('관리자가 아닙니다.');
-		}
+		await this.isAdmin({ role: req.user.role });
+		await this.boardsService.deleteBoardForAdmin({ id });
 	}
 
 	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
-		if (req.user.role === 'admin') {
-			return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
-		} else {
-			throw new UnauthorizedException('관리자가 아닙니다.');
-		}
+		await this.isAdmin({ role: req.user.role });
+		return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
 	}
 
 	async mangeStatus({ req }: IAdminServiceManagesStatus): Promise<User> {
-		if (req.user.role === 'admin') {
-			return this.usersService.mangeStatus({ id: req.body.id });
-		} else {
-			throw new UnauthorizedException('관리자가 아닙니다.');
-		}
+		await this.isAdmin({ role: req.user.role });
+		return this.usersService.mangeStatus({ id: req.body.id });
 	}
 }

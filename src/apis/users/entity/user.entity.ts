@@ -14,6 +14,7 @@ export class User {
 	@Column({
 		type: 'text', //
 		default: null,
+		select: true,
 	})
 	password?: string;
 
@@ -50,6 +51,7 @@ export class User {
 	@Column({
 		type: 'enum',
 		enum: UserRole,
+		select: true,
 		default: UserRole.USER,
 	})
 	role: UserRole;
