@@ -83,14 +83,24 @@ export class UsersService {
 	}
 
 	async findUserByEmail({ email }: IUserServiceFindOneByEmail): Promise<User> {
-		const user = await this.userQueryBuilder //
+		return this.userQueryBuilder //
 			.where('user.email = :email', { email })
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.userRanking')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
+			.addSelect('user.role')
+			.addSelect('user.password')
 			.getOne();
-		return user;
 	}
 
 	async fetchUsers(): Promise<User[]> {
 		return this.userQueryBuilder
+			.where('user.role = :role', { role: 'user' })
 			.select('user.id')
 			.addSelect('user.email')
 			.addSelect('user.nickname')
@@ -359,18 +369,31 @@ export class UsersService {
 	}
 
 	async searchUserByKeyword({ keyword }: IUserServiceSearchUserByKeyword): Promise<User[]> {
+		console.log('###');
 		const users = await this.userQueryBuilder
-			.where('user.email LIKE :email', { email: `%${keyword}%` })
-			.orWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
-			.select('user.id')
-			.addSelect('user.email')
-			.addSelect('user.nickname')
-			.addSelect('user.point')
-			.addSelect('user.userImg')
-			.addSelect('user.userRanking')
-			.addSelect('user.createdAt')
-			.addSelect('user.state')
+			.where('user.role = :role', { role: 'user' })
+			.andWhere(
+				new Brackets((user) => {
+					console.log(user.where('user.email = :email', { email: `%${keyword}%` }));
+					console.log('###');
+					user
+						.where('user.email = :email', { email: `%${keyword}%` }) //
+						.orWhere('user.nickname = :nickname', { nickname: `%${keyword}%` });
+				}),
+			)
+			// )
+			// .where('user.email LIKE :email', { email: `%${keyword}%` })
+			// .orWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
+			// .select('user.id')
+			// .addSelect('user.email')
+			// .addSelect('user.nickname')
+			// .addSelect('user.point')
+			// .addSelect('user.userImg')
+			// .addSelect('user.userRanking')
+			// .addSelect('user.createdAt')
+			// .addSelect('user.state')
 			.getMany();
+		console.log(users);
 		if (!users[0]) {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
 		}

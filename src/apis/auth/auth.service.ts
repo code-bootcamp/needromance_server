@@ -59,7 +59,8 @@ export class AuthService {
 		const { email, password } = req.body;
 
 		const user = await this.usersService.findUserByEmail({ email });
-
+		console.log(user);
+		console.log('#####');
 		if (!user || !user.state) {
 			throw new UnprocessableEntityException('등록되지 않았거나, 정지된 계정입니다.');
 		}
