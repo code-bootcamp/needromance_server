@@ -369,31 +369,28 @@ export class UsersService {
 	}
 
 	async searchUserByKeyword({ keyword }: IUserServiceSearchUserByKeyword): Promise<User[]> {
-		console.log('###');
 		const users = await this.userQueryBuilder
-			.where('user.role = :role', { role: 'user' })
+			.where('user.role = :role', { role: UserRole.USER })
 			.andWhere(
-				new Brackets((user) => {
-					console.log(user.where('user.email = :email', { email: `%${keyword}%` }));
-					console.log('###');
-					user
-						.where('user.email = :email', { email: `%${keyword}%` }) //
-						.orWhere('user.nickname = :nickname', { nickname: `%${keyword}%` });
+				new Brackets((qb) => {
+					qb.where(`user.email LIKE :filter`, {
+						filter: `%${keyword}%`,
+					}).orWhere(`user.nickname LIKE :filter`, {
+						filter: `%${keyword}%`,
+					});
 				}),
 			)
-			// )
-			// .where('user.email LIKE :email', { email: `%${keyword}%` })
-			// .orWhere('user.nickname LIKE :nickname', { nickname: `%${keyword}%` })
-			// .select('user.id')
-			// .addSelect('user.email')
-			// .addSelect('user.nickname')
-			// .addSelect('user.point')
-			// .addSelect('user.userImg')
-			// .addSelect('user.userRanking')
-			// .addSelect('user.createdAt')
-			// .addSelect('user.state')
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.userRanking')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
+			.addSelect('user.role')
 			.getMany();
-		console.log(users);
+
 		if (!users[0]) {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
 		}
