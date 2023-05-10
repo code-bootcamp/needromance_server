@@ -8,13 +8,14 @@ export class User {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column({ type: 'text' })
+	@Column({
+		type: 'text',
+	})
 	email: string;
 
 	@Column({
 		type: 'text', //
 		default: null,
-		select: true,
 	})
 	password?: string;
 
@@ -51,7 +52,6 @@ export class User {
 	@Column({
 		type: 'enum',
 		enum: UserRole,
-		select: true,
 		default: UserRole.USER,
 	})
 	role: UserRole;
@@ -64,6 +64,7 @@ export class User {
 				return new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
 			},
 		},
+		select: true,
 	})
 	createdAt: Date;
 
