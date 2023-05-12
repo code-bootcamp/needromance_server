@@ -286,4 +286,13 @@ export class BoardsService {
 
 		return boards;
 	}
+
+	/**
+	 * 모든 게시글의 갯수를 조회하는 서비스 로직
+	 * @param 없다.
+	 * @returns 모든 게시글의 수
+	 */
+	async countAllBoards(): Promise<number> {
+		return this.boardsRepository.createQueryBuilder('board').getCount();
+	}
 }

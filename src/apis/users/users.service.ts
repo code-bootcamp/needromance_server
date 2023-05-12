@@ -41,6 +41,7 @@ import { AnswersService } from '../answers/answers.service';
 import { BoardsService } from '../boards/boards.service';
 import { uploadsService } from '../uploads/upload.service';
 import { UserRole } from './entity/user.enum';
+import { FetchTotalInfoDTO } from './dto/fetchTotalInfo-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -80,6 +81,12 @@ export class UsersService {
 				}),
 			)
 			.getOne();
+	}
+
+	async countAllUsers(): Promise<number> {
+		return this.userQueryBuilder //
+			.where('user.role = :role', { role: 'user' })
+			.getCount();
 	}
 
 	async findUserByEmail({ email }: IUserServiceFindOneByEmail): Promise<User> {
@@ -439,5 +446,14 @@ export class UsersService {
 			throw new UnprocessableEntityException('일치하는 단어가 없습니다.');
 		}
 		return result;
+	}
+	async fetchTotalInfo(): Promise<FetchTotalInfoDTO> {
+		const countUsers = await this.countAllUsers();
+
+		const countBoards = await this.boardsService.countAllBoards();
+
+		const countAnswers = await this.answersService.countAllAnswers();
+
+		return { countUsers, countBoards, countAnswers };
 	}
 }

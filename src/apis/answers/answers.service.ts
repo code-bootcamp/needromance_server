@@ -255,4 +255,13 @@ export class AnswersService {
 		const user = await this.usersService.getOneUserById({ id: userId });
 		await this.answersRepository.delete({ user });
 	}
+
+	/**
+	 * (유저 id 사용) 유저의 모든 답변 삭제 서비스 로직.
+	 * @param 없다.
+	 * @returns 모든 답변의 수
+	 */
+	async countAllAnswers(): Promise<number> {
+		return this.answersRepository.createQueryBuilder('answer').getCount();
+	}
 }

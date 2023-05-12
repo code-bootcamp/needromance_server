@@ -19,6 +19,7 @@ import { CreateUserDTO } from './dto/create-user.dto';
 import { User } from './entity/user.entity';
 import { UsersService } from './users.service';
 import { Express } from 'express';
+import { FetchTotalInfoDTO } from './dto/fetchTotalInfo-user.dto';
 
 @Controller('user')
 export class UsersController {
@@ -173,5 +174,12 @@ export class UsersController {
 		@Req() req: Request & IAuthUser, //
 	): Promise<User[]> {
 		return this.userService.searchMyBoards({ req });
+	}
+
+	@Get('/total')
+	fetchTotalInfo(
+		@Req() req: Request, //
+	): Promise<FetchTotalInfoDTO> {
+		return this.userService.fetchTotalInfo();
 	}
 }
