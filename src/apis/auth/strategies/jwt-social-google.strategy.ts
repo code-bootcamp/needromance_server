@@ -3,7 +3,6 @@ import { Strategy, Profile } from 'passport-google-oauth20';
 
 export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor() {
-		console.log('@@@@@');
 		super({
 			clientID: process.env.GOOGLE_CLIENT_ID,
 			clientSecret: process.env.GOOGLE_SECRET,
@@ -13,7 +12,6 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	}
 
 	validate(accessToken: string, refreshToken: string, profile: Profile) {
-		console.log(profile);
 		return {
 			email: profile._json.email,
 			role: 'user',
