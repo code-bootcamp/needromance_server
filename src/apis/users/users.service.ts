@@ -447,6 +447,7 @@ export class UsersService {
 		}
 		return result;
 	}
+
 	async fetchTotalInfo(): Promise<FetchTotalInfoDTO> {
 		const countUsers = await this.countAllUsers();
 
