@@ -31,6 +31,8 @@ export class AnswersService {
 		private readonly boardsService: BoardsService,
 	) {}
 
+	relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+
 	/**
 	 * 답변 생성 서비스 로직. 유저를 찾지 못하면 NotFoundException 던짐.
 	 * @param userId 유저 id
@@ -58,8 +60,8 @@ export class AnswersService {
 	 * @returns id에 해당하는 답변
 	 */
 	async getAnswerById({ id }: IAnswersServiceGetAnswerById): Promise<Answer> {
-		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await relationQueryBuilder.where('id = :id', { id }).getOne();
+		// const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await this.relationQueryBuilder.where('id = :id', { id }).getOne();
 
 		if (!answer) {
 			throw new NotFoundException('답변을 찾을 수 없습니다.');
@@ -75,8 +77,8 @@ export class AnswersService {
 	 * @returns 답변 id와 유저 id로 조회한 답변 정보
 	 */
 	async getAnswerByIdAndUserId({ id, userId }: IAnswersServiceGetAnswerByIdAndUserId): Promise<Answer> {
-		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await relationQueryBuilder
+		// const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await this.relationQueryBuilder
 			.where('id = :id', { id })
 			.andWhere('answer.user.id = :userId', { userId })
 			.getOne();
@@ -137,8 +139,8 @@ export class AnswersService {
 		await this.boardsService.getBoardByIdAndUserId({ id: updateAnswerStatusDTO.boardId, userId });
 
 		// 답변 id로 답변 조회하기(유저 조인 필요)
-		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answer = await relationQueryBuilder
+		// const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answer = await this.relationQueryBuilder
 			.where('answer.id = :id', { id })
 			.leftJoinAndSelect('answer.user', 'user')
 			.getOne();
@@ -163,8 +165,8 @@ export class AnswersService {
 	 * @returns 게시글 id로 조회한 채택되지 않은 답변 정보(유저 조인)
 	 */
 	async getAnswersByBoardId({ boardId, status }: IAnswersServiceGetAnswersByBoardId): Promise<Answer[]> {
-		const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
-		const answers = await relationQueryBuilder
+		// const relationQueryBuilder = this.answersRepository.createQueryBuilder('answer');
+		const answers = await this.relationQueryBuilder
 			.where('answer.board.id = :boardId', { boardId })
 			.andWhere('answer.status = :status', { status })
 			.leftJoinAndSelect('answer.user', 'user')
@@ -262,6 +264,6 @@ export class AnswersService {
 	 * @returns 모든 답변의 수
 	 */
 	async countAllAnswers(): Promise<number> {
-		return this.answersRepository.createQueryBuilder('answer').getCount();
+		return this.relationQueryBuilder.getCount();
 	}
 }
