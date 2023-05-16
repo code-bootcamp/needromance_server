@@ -13,6 +13,7 @@ import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
 import { UserRole } from '../users/entity/user.enum';
+import { FetchUsersDTO } from './dto/fetch-users-dto';
 @Injectable()
 export class AdminService {
 	constructor(
@@ -39,7 +40,7 @@ export class AdminService {
 		if (role === UserRole.USER) throw new UnauthorizedException('권한이 없습니다.');
 	}
 
-	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<User[]> {
+	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<FetchUsersDTO> {
 		await this.isAdmin({ role: req.user.role });
 		return this.usersService.fetchUsers();
 	}

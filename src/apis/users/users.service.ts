@@ -42,6 +42,7 @@ import { BoardsService } from '../boards/boards.service';
 import { uploadsService } from '../uploads/upload.service';
 import { UserRole } from './entity/user.enum';
 import { FetchTotalInfoDTO } from './dto/fetchTotalInfo-user.dto';
+import { FetchUsersDTO } from '../admin/dto/fetch-users-dto';
 
 @Injectable()
 export class UsersService {
@@ -105,8 +106,8 @@ export class UsersService {
 			.getOne();
 	}
 
-	async fetchUsers(): Promise<User[]> {
-		return this.userQueryBuilder
+	async fetchUsers(): Promise<FetchUsersDTO> {
+		const users = await this.userQueryBuilder
 			.where('user.role = :role', { role: 'user' })
 			.select('user.id')
 			.addSelect('user.email')
@@ -117,6 +118,9 @@ export class UsersService {
 			.addSelect('user.createdAt')
 			.addSelect('user.state')
 			.getMany();
+		const counts = await this.countAllUsers();
+
+		return { users, counts };
 	}
 
 	async createAdmin(
