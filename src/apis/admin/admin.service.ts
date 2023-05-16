@@ -13,7 +13,7 @@ import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
 import { UserRole } from '../users/entity/user.enum';
-import { FetchUsersDTO } from './dto/fetch-users-dto';
+import { FetchUsersDTO } from './dto/fetch-users.dto';
 @Injectable()
 export class AdminService {
 	constructor(

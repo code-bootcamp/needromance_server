@@ -5,7 +5,7 @@ import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { Board } from '../boards/entity/board.entity';
 import { User } from '../users/entity/user.entity';
 import { AdminService } from './admin.service';
-import { FetchUsersDTO } from './dto/fetch-users-dto';
+import { FetchUsersDTO } from './dto/fetch-users.dto';
 
 @Controller('admin')
 export class AdminController {
