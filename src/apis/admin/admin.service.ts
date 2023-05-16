@@ -14,6 +14,7 @@ import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
 import { UserRole } from '../users/entity/user.enum';
 import { FetchUsersDTO } from './dto/fetch-users.dto';
+import { SearchUsersDTO } from './dto/search-users.dto';
 @Injectable()
 export class AdminService {
 	constructor(
@@ -65,9 +66,11 @@ export class AdminService {
 		await this.boardsService.deleteBoardForAdmin({ id });
 	}
 
-	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
+	async searchUser({ req }: IAdminServiceSearchUsers): Promise<SearchUsersDTO> {
 		await this.isAdmin({ role: req.user.role });
-		return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
+
+		const users = await this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
+		return { users, counts: users.length };
 	}
 
 	async mangeStatus({ req }: IAdminServiceManagesStatus): Promise<User> {
