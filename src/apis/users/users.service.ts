@@ -106,8 +106,8 @@ export class UsersService {
 			.getOne();
 	}
 
-	async fetchUsers(): Promise<FetchUsersDTO> {
-		const users = await this.userQueryBuilder
+	async fetchUsers(): Promise<User[]> {
+		return this.userQueryBuilder
 			.where('user.role = :role', { role: 'user' })
 			.select('user.id')
 			.addSelect('user.email')
@@ -118,9 +118,6 @@ export class UsersService {
 			.addSelect('user.createdAt')
 			.addSelect('user.state')
 			.getMany();
-		const counts = await this.countAllUsers();
-
-		return { users, counts };
 	}
 
 	async createAdmin(
