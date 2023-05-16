@@ -13,9 +13,9 @@ import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
 import { UserRole } from '../users/entity/user.enum';
-import { FetchUsersDTO } from './dto/fetch-users.dto';
-import { SearchUsersDTO } from './dto/search-users.dto';
 import { BoardsCountsDTO } from './dto/boards-counts.dto';
+import { UsersCountsDTO } from './dto/users-counts.dto';
+
 @Injectable()
 export class AdminService {
 	constructor(
@@ -42,7 +42,7 @@ export class AdminService {
 		if (role === UserRole.USER) throw new UnauthorizedException('권한이 없습니다.');
 	}
 
-	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<FetchUsersDTO> {
+	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<UsersCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
 
 		const users = await this.usersService.fetchUsers();
@@ -75,7 +75,7 @@ export class AdminService {
 		await this.boardsService.deleteBoardForAdmin({ id });
 	}
 
-	async searchUser({ req }: IAdminServiceSearchUsers): Promise<SearchUsersDTO> {
+	async searchUser({ req }: IAdminServiceSearchUsers): Promise<UsersCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
 
 		const users = await this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });

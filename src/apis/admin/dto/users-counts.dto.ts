@@ -1,6 +1,6 @@
 import { User } from 'src/apis/users/entity/user.entity';
 
-export class FetchUsersDTO {
+export class UsersCountsDTO {
 	users: User[];
 	counts: number;
 }

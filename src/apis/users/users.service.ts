@@ -42,7 +42,6 @@ import { BoardsService } from '../boards/boards.service';
 import { uploadsService } from '../uploads/upload.service';
 import { UserRole } from './entity/user.enum';
 import { FetchTotalInfoDTO } from './dto/fetchTotalInfo-user.dto';
-import { FetchUsersDTO } from '../admin/dto/fetch-users.dto';
 
 @Injectable()
 export class UsersService {
