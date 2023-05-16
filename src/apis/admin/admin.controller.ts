@@ -7,6 +7,7 @@ import { User } from '../users/entity/user.entity';
 import { AdminService } from './admin.service';
 import { FetchUsersDTO } from './dto/fetch-users.dto';
 import { SearchUsersDTO } from './dto/search-users.dto';
+import { BoardsCountsDTO } from './dto/boards-counts.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -61,7 +62,7 @@ export class AdminController {
 	@UseGuards(restAuthGuard('access'))
 	fetchBoards(
 		@Req() req: Request & IAuthUser, //
-	): Promise<Board[]> {
+	): Promise<BoardsCountsDTO> {
 		return this.adminService.fetchBoards({ req });
 	}
 

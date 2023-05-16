@@ -15,6 +15,7 @@ import { Board } from '../boards/entity/board.entity';
 import { UserRole } from '../users/entity/user.enum';
 import { FetchUsersDTO } from './dto/fetch-users.dto';
 import { SearchUsersDTO } from './dto/search-users.dto';
+import { BoardsCountsDTO } from './dto/boards-counts.dto';
 @Injectable()
 export class AdminService {
 	constructor(
@@ -48,14 +49,18 @@ export class AdminService {
 		return { users, counts: users.length };
 	}
 
-	async fetchBoards({ req }): Promise<Board[]> {
+	async fetchBoards({ req }): Promise<BoardsCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
+
 		if (req.query) {
-			return this.boardsService.getBoards();
+			const boards = await this.boardsService.getBoards();
+			return { boards, counts: boards.length };
 		}
+
 		const { page: get } = req.query;
 		const page = Number(get);
-		return this.boardsService.getBoardsWithPage({ page });
+		const boards = await this.boardsService.getBoardsWithPage({ page });
+		return { boards, counts: boards.length };
 	}
 
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
