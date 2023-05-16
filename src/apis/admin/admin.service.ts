@@ -63,9 +63,11 @@ export class AdminService {
 		return { boards, counts: boards.length };
 	}
 
-	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
+	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<BoardsCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
-		return await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
+
+		const boards = await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
+		return { boards, counts: boards.length };
 	}
 
 	async deleteBoards({ req, id }: IAdminServiceDeleteBoards): Promise<void> {

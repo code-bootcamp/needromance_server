@@ -70,7 +70,7 @@ export class AdminController {
 	@UseGuards(restAuthGuard('access'))
 	searchBoards(
 		@Req() req: Request & IAuthUser, //
-	): Promise<Board[]> {
+	): Promise<BoardsCountsDTO> {
 		return this.adminService.searchBoards({ req });
 	}
 
