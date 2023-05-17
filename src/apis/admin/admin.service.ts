@@ -13,6 +13,9 @@ import { User } from '../users/entity/user.entity';
 import { BoardsService } from '../boards/boards.service';
 import { Board } from '../boards/entity/board.entity';
 import { UserRole } from '../users/entity/user.enum';
+import { BoardsCountsDTO } from './dto/boards-counts.dto';
+import { UsersCountsDTO } from './dto/users-counts.dto';
+
 @Injectable()
 export class AdminService {
 	constructor(
@@ -39,24 +42,32 @@ export class AdminService {
 		if (role === UserRole.USER) throw new UnauthorizedException('권한이 없습니다.');
 	}
 
-	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<User[]> {
+	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<UsersCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
-		return this.usersService.fetchUsers();
+
+		const users = await this.usersService.fetchUsers();
+		return { users, counts: users.length };
 	}
 
-	async fetchBoards({ req }): Promise<Board[]> {
+	async fetchBoards({ req }): Promise<BoardsCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
+
 		if (req.query) {
-			return this.boardsService.getBoards();
+			const boards = await this.boardsService.getBoards();
+			return { boards, counts: boards.length };
 		}
+
 		const { page: get } = req.query;
 		const page = Number(get);
-		return this.boardsService.getBoardsWithPage({ page });
+		const boards = await this.boardsService.getBoardsWithPage({ page });
+		return { boards, counts: boards.length };
 	}
 
-	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<Board[]> {
+	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<BoardsCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
-		return await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
+
+		const boards = await this.boardsService.searchBoardsForAdmin({ keyword: req.query.keyword as string });
+		return { boards, counts: boards.length };
 	}
 
 	async deleteBoards({ req, id }: IAdminServiceDeleteBoards): Promise<void> {
@@ -64,9 +75,11 @@ export class AdminService {
 		await this.boardsService.deleteBoardForAdmin({ id });
 	}
 
-	async searchUser({ req }: IAdminServiceSearchUsers): Promise<User[]> {
+	async searchUser({ req }: IAdminServiceSearchUsers): Promise<UsersCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
-		return this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
+
+		const users = await this.usersService.searchUserByKeyword({ keyword: req.query.keyword as string });
+		return { users, counts: users.length };
 	}
 
 	async mangeStatus({ req }: IAdminServiceManagesStatus): Promise<User> {

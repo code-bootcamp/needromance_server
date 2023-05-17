@@ -5,6 +5,8 @@ import { IAuthUser } from '../auth/interfaces/auth-services.interface';
 import { Board } from '../boards/entity/board.entity';
 import { User } from '../users/entity/user.entity';
 import { AdminService } from './admin.service';
+import { BoardsCountsDTO } from './dto/boards-counts.dto';
+import { UsersCountsDTO } from './dto/users-counts.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -35,7 +37,7 @@ export class AdminController {
 	@UseGuards(restAuthGuard('access'))
 	fetchUsers(
 		@Req() req: Request & IAuthUser, //
-	): Promise<User[]> {
+	): Promise<UsersCountsDTO> {
 		return this.adminService.fetchUsers({ req });
 	}
 
@@ -43,7 +45,7 @@ export class AdminController {
 	@UseGuards(restAuthGuard('access'))
 	searchUsers(
 		@Req() req: Request & IAuthUser, //
-	): Promise<User[]> {
+	): Promise<UsersCountsDTO> {
 		return this.adminService.searchUser({ req });
 	}
 
@@ -59,7 +61,7 @@ export class AdminController {
 	@UseGuards(restAuthGuard('access'))
 	fetchBoards(
 		@Req() req: Request & IAuthUser, //
-	): Promise<Board[]> {
+	): Promise<BoardsCountsDTO> {
 		return this.adminService.fetchBoards({ req });
 	}
 
@@ -67,7 +69,7 @@ export class AdminController {
 	@UseGuards(restAuthGuard('access'))
 	searchBoards(
 		@Req() req: Request & IAuthUser, //
-	): Promise<Board[]> {
+	): Promise<BoardsCountsDTO> {
 		return this.adminService.searchBoards({ req });
 	}
 
