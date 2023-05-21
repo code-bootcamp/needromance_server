@@ -49,6 +49,11 @@ export class AdminService {
 			const users = await this.usersService.fetchUsers();
 			return { users, counts: users.length };
 		}
+
+		const page = Number(req.query.page);
+		const users = await this.usersService.fetchUsersWithPage({ page });
+		const counts = await this.usersService.countAllUsers();
+		return { users, counts };
 	}
 
 	async fetchBoards({ req }): Promise<BoardsCountsDTO> {
