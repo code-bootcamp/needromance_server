@@ -59,7 +59,8 @@ export class AdminService {
 
 		const page = Number(req.query.page);
 		const boards = await this.boardsService.getBoardsWithPage({ page });
-		return { boards, counts: boards.length };
+		const counts = await this.boardsService.countAllBoards();
+		return { boards, counts };
 	}
 
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<BoardsCountsDTO> {
