@@ -52,13 +52,12 @@ export class AdminService {
 	async fetchBoards({ req }): Promise<BoardsCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
 
-		if (req.query) {
+		if (Object.keys(req.query).length === 0) {
 			const boards = await this.boardsService.getBoards();
 			return { boards, counts: boards.length };
 		}
 
-		const { page: get } = req.query;
-		const page = Number(get);
+		const page = Number(req.query.page);
 		const boards = await this.boardsService.getBoardsWithPage({ page });
 		return { boards, counts: boards.length };
 	}
