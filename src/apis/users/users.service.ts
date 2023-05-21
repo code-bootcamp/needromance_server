@@ -21,6 +21,7 @@ import {
 	IUSerServiceFetchAnswers,
 	IUSerServiceFetchMyBoards,
 	IUserServiceFetchUser,
+	IUserServiceFetchUsersWithPage,
 	IUserServiceFindOneByEmail,
 	IUserServiceFindUserWithInfo,
 	IUserServiceGetOneUserById,
@@ -116,6 +117,23 @@ export class UsersService {
 			.addSelect('user.userRanking')
 			.addSelect('user.createdAt')
 			.addSelect('user.state')
+			.getMany();
+	}
+
+	fetchUsersWithPage({ page }: IUserServiceFetchUsersWithPage): Promise<User[]> {
+		return this.userQueryBuilder
+			.where('user.role = :role', { role: 'user' })
+			.select('user.id')
+			.addSelect('user.email')
+			.addSelect('user.nickname')
+			.addSelect('user.point')
+			.addSelect('user.userImg')
+			.addSelect('user.userRanking')
+			.addSelect('user.createdAt')
+			.addSelect('user.state')
+			.orderBy({ 'user.createdAt': 'DESC' })
+			.skip(10 * (page - 1))
+			.take(10)
 			.getMany();
 	}
 
