@@ -45,8 +45,10 @@ export class AdminService {
 	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<UsersCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
 
-		const users = await this.usersService.fetchUsers();
-		return { users, counts: users.length };
+		if (Object.keys(req.query).length === 0) {
+			const users = await this.usersService.fetchUsers();
+			return { users, counts: users.length };
+		}
 	}
 
 	async fetchBoards({ req }): Promise<BoardsCountsDTO> {
