@@ -1,26 +1,35 @@
-# 로맨스가 필요해 <img src="https://user-images.githubusercontent.com/56855262/236980413-c81c758b-55b9-40a7-9ecb-c41858faf1bd.png" width="50" height="50">
+# 로맨스가 필요해
 
-기존 연애 상담 서비스는 유료이거나 비회원일 경우 비공개로 되어 있어 유저의 접근성이 좋지 않았습니다. 또한 연애 고민 상담을 주제로 한 커뮤니티가 없는 상황입니다.
+🤔 연애 고민은 어디서 해결하지?
 
-그래서 저희는 '연애 생활이 지치고 힘들 때, 내 연애 고민을 들어줄 사람이 없다면?' 이라는 아이디어로 ChatGPT를 활용한 연애 고민 상담과 유저들끼리 고민을 공유하고 상담할 수 있도록 연애 고민 상담 커뮤니티 프로젝트를 구상하였습니다.
+_'연애가 지치고 힘들 때 내 고민을 들어줄 사람이 없을까?'_ 라는 아이디어를 시작으로 ChatGPT를 활용한 연애 고민 상담 서비스, 유저들과 함께 연애 고민을 공유하고 상담하는 커뮤니티 서비스를 구상했습니다.
 
-# 아키텍처
+- 대부분의 상담 서비스는 유료거나 비회원에게 비공개 되어 있어 유저 접근성이 좋지 않다고 판단하여 유저들이 좀 더 편하게 접근해 연애 고민을 상담할 수 있도록 ChatGPT를 활용했습니다.
+- 연애를 주제로 한 커뮤니티를 찾기 어렵습니다. 그래서 유저들과 함께 연애 고민을 공유하고 상담하는 커뮤니티 서비스를 구상했습니다.
+
+## 기술 스택
+
+`TypeScript`, `NestJS`, `TypeORM`, `MySQL`, `Redis`, `REST API`, `PM2`, `AWS`, `Docker`, `ChatGPT`, `Git`
+
+<br>
+
+## 아키텍처
 
 ![](https://user-images.githubusercontent.com/56855262/236967001-8e8988fd-1d02-4dad-93ab-db6f52db9aae.png)
 
-# 기술 스택
+<br>
 
-![](https://user-images.githubusercontent.com/56855262/236966559-ad49485b-04fb-4fe6-9156-dda92444445c.png)
-
-# ERD
+## ERD
 
 ![](https://user-images.githubusercontent.com/56855262/236966517-111ec1d2-6ab6-49a5-9461-26ea81ab4b88.png)
 
-# 팀원
+<br>
+
+## 팀원 구성
 
 <table>
    <tr>
-     <td colspan='4' align="center">
+     <td colspan='2' align="center">
        <b>Backend</b>
      </td>
    </tr>
