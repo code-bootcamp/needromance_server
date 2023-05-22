@@ -176,7 +176,7 @@ export class BoardsService {
 			.orderBy({ 'board.createdAt': 'DESC' })
 			.skip(10 * (page - 1))
 			.take(10)
-			.execute();
+			.getMany();
 
 		if (!boards) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');
@@ -200,7 +200,7 @@ export class BoardsService {
 			.addSelect('board.createdAt')
 			.addSelect('user.id')
 			.orderBy({ 'board.createdAt': 'DESC' })
-			.execute();
+			.getMany();
 
 		if (!boards) {
 			throw new NotFoundException('게시글을 찾을 수 없습니다.');

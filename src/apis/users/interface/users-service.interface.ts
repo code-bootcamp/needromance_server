@@ -13,12 +13,18 @@ export interface IUserServiceFindOneByEmail {
 	email: string;
 }
 
+export interface IUserServiceFetchUsersWithPage {
+	page: number;
+}
+
 export interface IUserServiceIsValidEmail {
 	req: Request;
 }
+
 export interface IUserServiceCreateAdmin {
 	req: Request;
 }
+
 export interface IUserServiceIsValidNickname {
 	req: Request;
 }
@@ -34,9 +40,11 @@ export interface IUserServiceCheckToken {
 export interface IUserServiceGetOneUserByNickname {
 	nickname: string;
 }
+
 export interface IUserServiceCreateSocialUser {
 	email: string;
 }
+
 export interface IUserServiceCreateUser {
 	createUserDTO: CreateUserDTO;
 }
@@ -44,9 +52,11 @@ export interface IUserServiceCreateUser {
 export interface IUserServiceDeleteUser {
 	req: Request & IAuthUser;
 }
+
 export interface IUserServiceSaveUser {
 	user: User;
 }
+
 export interface IUserServiceUpdateUser {
 	req: Request & IAuthUser;
 	file: Express.Multer.File;

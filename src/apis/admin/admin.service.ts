@@ -45,22 +45,29 @@ export class AdminService {
 	async fetchUsers({ req }: IAdminServiceFetchBoards): Promise<UsersCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
 
-		const users = await this.usersService.fetchUsers();
-		return { users, counts: users.length };
+		if (Object.keys(req.query).length === 0) {
+			const users = await this.usersService.fetchUsers();
+			return { users, counts: users.length };
+		}
+
+		const page = Number(req.query.page);
+		const users = await this.usersService.fetchUsersWithPage({ page });
+		const counts = await this.usersService.countAllUsers();
+		return { users, counts };
 	}
 
 	async fetchBoards({ req }): Promise<BoardsCountsDTO> {
 		await this.isAdmin({ role: req.user.role });
 
-		if (req.query) {
+		if (Object.keys(req.query).length === 0) {
 			const boards = await this.boardsService.getBoards();
 			return { boards, counts: boards.length };
 		}
 
-		const { page: get } = req.query;
-		const page = Number(get);
+		const page = Number(req.query.page);
 		const boards = await this.boardsService.getBoardsWithPage({ page });
-		return { boards, counts: boards.length };
+		const counts = await this.boardsService.countAllBoards();
+		return { boards, counts };
 	}
 
 	async searchBoards({ req }: IAdminServiceSearchBoards): Promise<BoardsCountsDTO> {
